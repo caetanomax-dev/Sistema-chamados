@@ -13,76 +13,22 @@ body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8}
 .layout{display:flex;min-height:100vh}
 .sidebar{width:260px;background:#111827;color:#fff;padding:20px}
 .sidebar img{max-width:100%;max-height:60px;margin-bottom:10px}
-.sidebar h1{font-size:16px;margin:5px 0}
-.sidebar button{width:100%;background:none;border:none;color:#d1d5db;padding:12px;text-align:left;border-radius:6px;cursor:pointer;margin-bottom:8px;transition:0.2s}
+.sidebar button{width:100%;background:none;border:none;color:#d1d5db;padding:12px;text-align:left;border-radius:6px;cursor:pointer;margin-bottom:8px}
 .sidebar button.active,.sidebar button:hover{background:#2563eb;color:#fff}
-.content{flex:1;padding:30px}
+.content{flex:1;padding:20px}
 .hidden{display:none}
-
-.btn{background:#2563eb;color:#fff;border:none;padding:10px 16px;border-radius:6px;cursor:pointer;transition:0.2s}
-.btn:hover{background:#1e40af}
-.btn-danger{background:#dc2626;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;transition:0.2s}
-.btn-danger:hover{background:#b91c1c}
-
-table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;margin-top:15px}
-th,td{padding:10px;border-bottom:1px solid #e5e7eb}
-th{background:#f9fafb;font-size:12px;text-transform:uppercase}
-
-.status{padding:4px 10px;border-radius:999px;font-size:12px;cursor:pointer;transition:0.2s}
-.pendente{background:#fef3c7;color:#92400e}
-.resolvido{background:#dcfce7;color:#166534}
-
-/* MODAL */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:1000;
-}
+.btn{background:#2563eb;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
+.btn-danger{background:#dc2626;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer}
+table{width:100%;border-collapse:collapse;background:#fff;margin-top:15px}
+th,td{padding:8px;border-bottom:1px solid #ddd;font-size:14px}
+th{background:#f9fafb}
+.status{padding:4px 10px;border-radius:999px;font-size:12px;cursor:pointer}
+.pendente{background:#fef3c7}
+.resolvido{background:#dcfce7}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
 .modal.active{display:flex}
-.modal-content{
-  background:#fff;
-  padding:20px;
-  border-radius:10px;
-  width:400px;
-  max-height:90vh;
-  overflow-y:auto;
-}
-.modal-content input,
-.modal-content textarea{
-  width:100%;
-  margin-bottom:10px;
-  padding:8px;
-  border:1px solid #ddd;
-  border-radius:4px;
-}
-.erro{color:#dc2626;padding:10px;background:#fee;border-radius:6px;margin:10px 0}
-
-/* Config */
-#config input{
-  display:block;
-  width:100%;
-  margin-bottom:10px;
-  padding:8px;
-  border:1px solid #ddd;
-  border-radius:6px;
-}
-#config button{margin-top:10px}
-
-/* Cronologia */
-#listaCronologia div{
-  padding:5px;
-  border-bottom:1px solid #eee;
-  border-radius:4px;
-  margin-bottom:4px;
-  background:#f9fafb;
-  transition:0.2s;
-}
-#listaCronologia div.ultimo{background:#dbeafe;}
-#listaCronologia div span{font-size:10px;color:#555;display:block;margin-bottom:2px;}
+.modal-content{background:#fff;padding:20px;border-radius:10px;width:400px}
+.modal-content input,textarea{width:100%;margin-bottom:10px;padding:8px}
 </style>
 </head>
 
@@ -91,8 +37,7 @@ th{background:#f9fafb;font-size:12px;text-transform:uppercase}
 <div class="layout">
   <aside class="sidebar">
     <img id="logoEmpresa" class="hidden">
-    <h1 id="nomeEmpresa">Sistema</h1>
-
+    <h3 id="nomeEmpresa">Sistema</h3>
     <button class="active" onclick="app.aba('chamados',this)">📋 Chamados</button>
     <button onclick="app.aba('clientes',this)">👥 Clientes</button>
     <button onclick="app.aba('relatorios',this)">📊 Relatórios</button>
@@ -100,254 +45,191 @@ th{background:#f9fafb;font-size:12px;text-transform:uppercase}
   </aside>
 
   <main class="content">
-    <div id="msgErro"></div>
 
-    <!-- Chamados -->
-    <section id="chamados">
-      <button class="btn" onclick="app.abrirModal()">+ Abrir Chamado</button>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th><th>Cliente</th><th>Solicitante</th>
-            <th>Técnico</th><th>Descrição</th><th>Status</th><th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="listaChamados"></tbody>
-      </table>
-    </section>
+<!-- CHAMADOS -->
+<section id="chamados">
+<button class="btn" onclick="app.abrirModal()">+ Abrir Chamado</button>
+<table>
+<thead>
+<tr>
+<th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th>
+<th>Técnico</th><th>Descrição</th><th>Status</th><th>Ações</th>
+</tr>
+</thead>
+<tbody id="listaChamados"></tbody>
+</table>
+</section>
 
-    <!-- Clientes -->
-    <section id="clientes" class="hidden">
-      <ul id="listaClientes"></ul>
-    </section>
+<!-- CLIENTES -->
+<section id="clientes" class="hidden">
+<ul id="listaClientes"></ul>
+</section>
 
-    <!-- Relatórios -->
-    <section id="relatorios" class="hidden">
-      <input id="fCliente" placeholder="Cliente">
-      <input id="fSolicitante" placeholder="Solicitante">
-      <input id="fTecnico" placeholder="Técnico">
-      <select id="fStatus">
-        <option value="">Todos</option>
-        <option value="pendente">Pendente</option>
-        <option value="resolvido">Resolvido</option>
-      </select>
-      <button class="btn" onclick="app.relatorio()">Filtrar</button>
+<!-- RELATÓRIOS -->
+<section id="relatorios" class="hidden">
+<input id="fCliente" placeholder="Cliente">
+<input id="fSolicitante" placeholder="Solicitante">
+<input id="fTecnico" placeholder="Técnico">
+<select id="fStatus">
+<option value="">Todos</option>
+<option value="pendente">Pendente</option>
+<option value="resolvido">Resolvido</option>
+</select>
+<button class="btn" onclick="app.relatorio()">Filtrar</button>
 
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th><th>Cliente</th><th>Solicitante</th>
-            <th>Técnico</th><th>Status</th><th>Cronologia</th>
-          </tr>
-        </thead>
-        <tbody id="resultadoRelatorio"></tbody>
-      </table>
-    </section>
+<table>
+<thead>
+<tr>
+<th>ID</th><th>Data</th><th>Cliente</th>
+<th>Solicitante</th><th>Técnico</th><th>Status</th><th>Cronologia</th>
+</tr>
+</thead>
+<tbody id="resultadoRelatorio"></tbody>
+</table>
+</section>
 
-    <!-- Configurações -->
-    <section id="config" class="hidden">
-      <input id="confEmpresa" placeholder="Nome da empresa">
-      <input id="confLogo" placeholder="URL da logo">
-      <button class="btn" onclick="app.salvarConfig()">Salvar</button>
-    </section>
+<!-- CONFIG -->
+<section id="config" class="hidden">
+<input id="confEmpresa" placeholder="Nome da empresa">
+<input id="confLogo" placeholder="URL da logo">
+<button class="btn" onclick="app.salvarConfig()">Salvar</button>
+</section>
 
-  </main>
+</main>
 </div>
 
-<!-- Modal Chamado -->
+<!-- MODAL CHAMADO -->
 <div id="modal" class="modal">
-  <div class="modal-content">
-    <input id="mCliente" placeholder="Cliente">
-    <input id="mSolicitante" placeholder="Solicitante">
-    <input id="mTecnico" placeholder="Técnico">
-    <textarea id="mDescricao" placeholder="Descrição"></textarea>
-    <button class="btn" onclick="app.salvarChamado()">Salvar</button>
-    <button class="btn-danger" onclick="app.fecharModal()">Cancelar</button>
-  </div>
+<div class="modal-content">
+<input id="mCliente" placeholder="Cliente">
+<input id="mSolicitante" placeholder="Solicitante">
+<input id="mTecnico" placeholder="Técnico">
+<textarea id="mDescricao" placeholder="Descrição"></textarea>
+<button class="btn" onclick="app.salvarChamado()">Salvar</button>
+<button class="btn-danger" onclick="app.fecharModal()">Cancelar</button>
 </div>
-
-<!-- Modal Cronologia -->
-<div id="modalCronologia" class="modal">
-  <div class="modal-content">
-    <h3>Cronologia do Chamado <span id="cronId"></span></h3>
-    <div id="listaCronologia" style="max-height:250px; overflow:auto; border:1px solid #ddd; padding:5px; margin-bottom:10px;"></div>
-    <textarea id="novaAtualizacao" placeholder="Nova atualização..."></textarea>
-    <button class="btn" onclick="app.salvarAtualizacao()">Adicionar</button>
-    <button class="btn-danger" onclick="app.fecharModalCronologia()">Fechar</button>
-  </div>
 </div>
 
 <script>
-// ============================
-// COLOQUE AQUI SUA URL E CHAVE
-// ============================
+// ======== SUPABASE =========
 const SUPABASE_URL = 'https://boendmrotsttljydigld.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvZW5kbXJvdHN0dGxqeWRpZ2xkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1OTI5NTksImV4cCI6MjA4MjE2ODk1OX0.k6vVvD6kNV8r-a9lR6jaTcAm1wz5c_jbTDnjKlpo0cE';
-
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const app = {
-  mostrarErro(msg){
-    const div = document.getElementById('msgErro');
-    div.innerHTML = `<div class="erro">❌ ${msg}</div>`;
-    setTimeout(() => div.innerHTML = '', 5000);
-    console.error(msg);
-  },
-  aba(id,btn){
-    document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
-    document.getElementById(id).classList.remove('hidden');
-    document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-  },
-  abrirModal(){ 
-    document.getElementById('modal').classList.add('active');
-    mCliente.value = '';
-    mSolicitante.value = '';
-    mTecnico.value = '';
-    mDescricao.value = '';
-  },
-  fecharModal(){ document.getElementById('modal').classList.remove('active'); },
 
-  async carregarChamados(){
-    try {
-      const {data, error} = await supabaseClient.from('chamados').select('*').order('id',{ascending:false});
-      if(error) return this.mostrarErro('Erro ao carregar chamados: ' + error.message);
-      const tbody = document.getElementById('listaChamados'); tbody.innerHTML='';
-      if(!data || data.length===0){tbody.innerHTML='<tr><td colspan="7">Nenhum chamado</td></tr>'; return;}
-      data.forEach(c=>{
-        tbody.innerHTML+=`<tr>
-          <td>${c.id}</td>
-          <td>${c.cliente}</td>
-          <td>${c.solicitante}</td>
-          <td>${c.tecnico}</td>
-          <td style="cursor:pointer; text-decoration:underline;" onclick="app.abrirCronologia(${c.id})">${c.descricao}</td>
-          <td><span class="status ${c.status}" onclick="app.toggle(${c.id},'${c.status}')">${c.status}</span></td>
-          <td><button class="btn-danger" onclick="app.excluirChamado(${c.id})">🗑️</button></td>
-        </tr>`;
-      });
-    } catch(e){ this.mostrarErro('Erro: '+e.message); }
-  },
+aba(id,btn){
+document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
+document.getElementById(id).classList.remove('hidden');
+document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+},
 
-  async salvarChamado(){
-    if(!mCliente.value||!mSolicitante.value||!mTecnico.value||!mDescricao.value){alert('Preencha todos os campos!'); return;}
-    try{
-      const {data: clienteExistente} = await supabaseClient.from('clientes').select('*').eq('nome', mCliente.value).single();
-      if(!clienteExistente){ await supabaseClient.from('clientes').insert({nome:mCliente.value}); }
-      const {error} = await supabaseClient.from('chamados').insert({cliente:mCliente.value, solicitante:mSolicitante.value, tecnico:mTecnico.value, descricao:mDescricao.value, status:'pendente'});
-      if(error) return this.mostrarErro('Erro ao salvar: '+error.message);
-      this.fecharModal(); this.carregarChamados(); this.carregarClientes();
-    }catch(e){ this.mostrarErro('Erro: '+e.message); }
-  },
+abrirModal(){modal.classList.add('active')},
+fecharModal(){modal.classList.remove('active')},
 
-  async toggle(id,status){
-    try{
-      const novoStatus = status==='pendente'?'resolvido':'pendente';
-      const {error} = await supabaseClient.from('chamados').update({status:novoStatus}).eq('id',id);
-      if(error) return this.mostrarErro('Erro ao atualizar: '+error.message);
-      this.carregarChamados(); this.relatorio();
-    }catch(e){ this.mostrarErro('Erro: '+e.message); }
-  },
+async carregarChamados(){
+const hoje = new Date(); hoje.setHours(0,0,0,0);
+const {data} = await supabaseClient.from('chamados').select('*').order('created_at',{ascending:false});
+listaChamados.innerHTML='';
+data.filter(c=>{
+if(c.status==='pendente') return true;
+const d=new Date(c.created_at); d.setHours(0,0,0,0);
+return d.getTime()===hoje.getTime();
+}).forEach(c=>{
+listaChamados.innerHTML+=`
+<tr>
+<td>${c.id}</td>
+<td>${new Date(c.created_at).toLocaleDateString()}</td>
+<td>${c.cliente}</td>
+<td>${c.solicitante}</td>
+<td>${c.tecnico}</td>
+<td>${c.descricao}</td>
+<td><span class="status ${c.status}" onclick="app.toggle(${c.id},'${c.status}')">${c.status}</span></td>
+<td><button class="btn-danger" onclick="app.excluirChamado(${c.id})">🗑️</button></td>
+</tr>`;
+});
+},
 
-  async excluirChamado(id){if(!confirm('Excluir este chamado?'))return;
-    try{const {error} = await supabaseClient.from('chamados').delete().eq('id',id);
-      if(error) return this.mostrarErro('Erro ao excluir: '+error.message);
-      this.carregarChamados(); this.carregarClientes();
-    }catch(e){this.mostrarErro('Erro: '+e.message);}
-  },
+async salvarChamado(){
+await supabaseClient.from('clientes').upsert({nome:mCliente.value},{onConflict:'nome'});
+await supabaseClient.from('chamados').insert({
+cliente:mCliente.value, solicitante:mSolicitante.value,
+tecnico:mTecnico.value, descricao:mDescricao.value, status:'pendente'
+});
+this.fecharModal(); this.carregarChamados(); this.carregarClientes();
+},
 
-  async carregarClientes(){
-    try{
-      const {data,error} = await supabaseClient.from('clientes').select('*'); if(error) return;
-      const ul=document.getElementById('listaClientes'); ul.innerHTML='';
-      if(!data||data.length===0){ul.innerHTML='<li>Nenhum cliente</li>'; return;}
-      data.forEach(c=>{ul.innerHTML+=`<li>${c.nome} <button class="btn-danger" style="margin-left:5px;" onclick="app.excluirCliente('${c.nome}')">🗑️</button></li>`});
-    }catch(e){console.error(e);}
-  },
+async toggle(id,status){
+await supabaseClient.from('chamados').update({status:status==='pendente'?'resolvido':'pendente'}).eq('id',id);
+this.carregarChamados();
+},
 
-  async excluirCliente(nome){
-    try{
-      const {data: chamadosVinculados} = await supabaseClient.from('chamados').select('*').eq('cliente', nome).limit(1);
-      if(chamadosVinculados.length>0){alert('Não é possível excluir: existem chamados vinculados a este cliente.'); return;}
-      if(!confirm(`Excluir o cliente "${nome}"?`)) return;
-      const {error} = await supabaseClient.from('clientes').delete().eq('nome', nome);
-      if(error) return this.mostrarErro('Erro ao excluir cliente: '+error.message);
-      this.carregarClientes();
-    }catch(e){this.mostrarErro('Erro: '+e.message);}
-  },
+async excluirChamado(id){
+if(confirm('Excluir?')){
+await supabaseClient.from('chamados').delete().eq('id',id);
+this.carregarChamados();
+}
+},
 
-  async relatorio(){
-    try{
-      let q = supabaseClient.from('chamados').select('*');
-      if(fCliente.value) q = q.ilike('cliente','%'+fCliente.value+'%');
-      if(fSolicitante.value) q = q.ilike('solicitante','%'+fSolicitante.value+'%');
-      if(fTecnico.value) q = q.ilike('tecnico','%'+fTecnico.value+'%');
-      if(fStatus.value) q = q.eq('status',fStatus.value);
-      const {data,error} = await q; if(error) return this.mostrarErro('Erro no relatório: '+error.message);
-      const tbody=document.getElementById('resultadoRelatorio'); tbody.innerHTML='';
-      if(!data||data.length===0){tbody.innerHTML='<tr><td colspan="6">Nenhum resultado</td></tr>'; return;}
-      data.forEach(c=>{
-        tbody.innerHTML+=`<tr>
-          <td>${c.id}</td><td>${c.cliente}</td><td>${c.solicitante}</td>
-          <td>${c.tecnico}</td><td>${c.status}</td>
-          <td><button class="btn" onclick="app.abrirCronologia(${c.id})">Ver Cronologia</button></td>
-        </tr>`;
-      });
-    }catch(e){this.mostrarErro('Erro: '+e.message);}
-  },
+async carregarClientes(){
+const {data} = await supabaseClient.from('clientes').select('*').order('nome');
+listaClientes.innerHTML='';
+data.forEach(c=>{
+listaClientes.innerHTML+=`
+<li>${c.nome}
+<button class="btn-danger" onclick="app.excluirCliente('${c.nome}')">🗑️</button>
+</li>`;
+});
+},
 
-  abrirCronologia: async function(id){
-    document.getElementById('modalCronologia').classList.add('active');
-    document.getElementById('cronId').innerText=id;
-    this.carregarCronologia(id);
-  },
+async excluirCliente(nome){
+const {data} = await supabaseClient.from('chamados').select('id').eq('cliente',nome).limit(1);
+if(data.length){alert('Cliente possui chamados'); return;}
+await supabaseClient.from('clientes').delete().eq('nome',nome);
+this.carregarClientes();
+},
 
-  fecharModalCronologia: function(){
-    document.getElementById('modalCronologia').classList.remove('active');
-    document.getElementById('novaAtualizacao').value='';
-    document.getElementById('listaCronologia').innerHTML='';
-  },
+async relatorio(){
+let q = supabaseClient.from('chamados').select('*').order('created_at',{ascending:false});
+if(fCliente.value) q=q.ilike('cliente','%'+fCliente.value+'%');
+if(fSolicitante.value) q=q.ilike('solicitante','%'+fSolicitante.value+'%');
+if(fTecnico.value) q=q.ilike('tecnico','%'+fTecnico.value+'%');
+if(fStatus.value) q=q.eq('status',fStatus.value);
+const {data}=await q;
+resultadoRelatorio.innerHTML='';
+data.forEach(c=>{
+resultadoRelatorio.innerHTML+=`
+<tr>
+<td>${c.id}</td>
+<td>${new Date(c.created_at).toLocaleDateString()}</td>
+<td>${c.cliente}</td>
+<td>${c.solicitante}</td>
+<td>${c.tecnico}</td>
+<td>${c.status}</td>
+<td>—</td>
+</tr>`;
+});
+},
 
-  carregarCronologia: async function(chamado_id){
-    const {data,error} = await supabaseClient.from('cronologia_chamados').select('*').eq('chamado_id',chamado_id).order('data',{ascending:true});
-    const lista=document.getElementById('listaCronologia'); lista.innerHTML='';
-    if(error) return this.mostrarErro('Erro ao carregar cronologia: '+error.message);
-    if(!data||data.length===0){lista.innerHTML='Nenhuma atualização ainda.'; return;}
-    data.forEach((c,i)=>{lista.innerHTML+=`<div class="${i===data.length-1?'ultimo':''}"><span>[${new Date(c.data).toLocaleString()}]</span>${c.descricao}</div>`});
-  },
+async salvarConfig(){
+await supabaseClient.from('configuracoes').upsert({id:1,empresa:confEmpresa.value,logo_url:confLogo.value});
+this.carregarConfig();
+},
 
-  salvarAtualizacao: async function(){
-    const desc=document.getElementById('novaAtualizacao').value;
-    const id=document.getElementById('cronId').innerText;
-    if(!desc) return alert('Digite a atualização');
-    const {error}=await supabaseClient.from('cronologia_chamados').insert({chamado_id:id,descricao:desc});
-    if(error) return this.mostrarErro('Erro ao salvar atualização: '+error.message);
-    document.getElementById('novaAtualizacao').value='';
-    this.carregarCronologia(id);
-  },
+async carregarConfig(){
+const {data}=await supabaseClient.from('configuracoes').select('*').eq('id',1).single();
+if(!data) return;
+nomeEmpresa.innerText=data.empresa;
+if(data.logo_url){logoEmpresa.src=data.logo_url;logoEmpresa.classList.remove('hidden');}
+},
 
-  async salvarConfig(){
-    try{
-      let {error}=await supabaseClient.from('configuracoes').update({empresa:confEmpresa.value,logo_url:confLogo.value}).eq('id',1);
-      if(error && error.code==='PGRST116'){await supabaseClient.from('configuracoes').insert({id:1,empresa:confEmpresa.value,logo_url:confLogo.value});}
-      this.carregarConfig();
-    }catch(e){this.mostrarErro('Erro: '+e.message);}
-  },
+async init(){
+await this.carregarChamados();
+await this.carregarClientes();
+await this.carregarConfig();
+}
 
-  async carregarConfig(){
-    try{
-      const {data} = await supabaseClient.from('configuracoes').select('*').eq('id',1).single();
-      if(!data) return;
-      nomeEmpresa.innerText=data.empresa||'Sistema';
-      confEmpresa.value=data.empresa||'';
-      confLogo.value=data.logo_url||'';
-      if(data.logo_url){logoEmpresa.src=data.logo_url;logoEmpresa.classList.remove('hidden');}
-    }catch(e){console.error(e);}
-  },
-
-  async init(){
-    try{await supabaseClient.from('chamados').select('id').limit(1);}catch(e){this.mostrarErro('ERRO de conexão: '+e.message); return;}
-    this.carregarChamados(); this.carregarClientes(); this.carregarConfig();
-  }
 };
 
 app.init();
