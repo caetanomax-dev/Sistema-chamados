@@ -18,21 +18,35 @@ body{margin:0;font-family:Arial;background:#f4f6f8}
 .hidden{display:none}
 
 .btn{background:#2563eb;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
-.btn-danger{background:#dc2626;color:#fff;border:none;padding:6px 10px;border-radius:6px}
+.btn-danger{background:#dc2626;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;margin-left:5px}
+.btn-secondary{background:#6b7280;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;margin-left:5px}
 
 table{width:100%;border-collapse:collapse;background:#fff;margin-top:15px}
-th,td{padding:8px;border-bottom:1px solid #e5e7eb}
+th,td{padding:8px;border-bottom:1px solid #e5e7eb;text-align:left}
 th{background:#f9fafb}
 
-.status{padding:4px 10px;border-radius:999px;font-size:12px;cursor:pointer}
-.pendente{background:#fde68a}
-.resolvido{background:#bbf7d0}
+.status{padding:4px 10px;border-radius:999px;font-size:12px;cursor:pointer;display:inline-block}
+.pendente{background:#fde68a;color:#000}
+.resolvido{background:#bbf7d0;color:#000}
 
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:1000}
 .modal.active{display:flex}
 .modal-content{background:#fff;padding:20px;border-radius:10px;width:420px;max-height:90vh;overflow:auto}
-.modal-content input,textarea{width:100%;margin-bottom:8px;padding:6px}
+.modal-content input,textarea{width:100%;margin-bottom:8px;padding:8px;border:1px solid #d1d5db;border-radius:4px}
+.modal-content h4{margin-top:0}
 .readonly textarea{background:#f3f4f6}
+
+.cliente-item{background:#fff;padding:12px;margin-bottom:8px;border-radius:6px;display:flex;justify-content:space-between;align-items:center}
+.cliente-item span{font-weight:500}
+
+.filtro-container{background:#fff;padding:15px;border-radius:8px;margin-bottom:15px}
+.filtro-container input,.filtro-container select{padding:8px;margin-right:8px;margin-bottom:8px;border:1px solid #d1d5db;border-radius:4px}
+
+.cronologia-item{background:#f3f4f6;padding:10px;margin-bottom:8px;border-radius:4px;font-size:14px}
+.cronologia-item strong{color:#2563eb}
+
+.config-section{background:#fff;padding:20px;border-radius:8px;max-width:500px}
+.config-section input{width:100%;padding:10px;margin-bottom:12px;border:1px solid #d1d5db;border-radius:4px}
 </style>
 </head>
 
@@ -40,7 +54,7 @@ th{background:#f9fafb}
 
 <div class="layout">
 <aside class="sidebar">
-  <img id="logoEmpresa" class="hidden">
+  <img id="logoEmpresa" class="hidden" alt="Logo da Empresa">
   <h3 id="nomeEmpresa">Sistema</h3>
   <button class="active" onclick="app.aba('chamados',this)">📋 Chamados</button>
   <button onclick="app.aba('clientes',this)">👥 Clientes</button>
@@ -50,8 +64,8 @@ th{background:#f9fafb}
 
 <main class="content">
 
-<!-- CHAMADOS -->
 <section id="chamados">
+<h2>Chamados</h2>
 <button class="btn" onclick="app.abrirModal()">+ Novo Chamado</button>
 <table>
 <thead>
@@ -64,24 +78,27 @@ th{background:#f9fafb}
 </table>
 </section>
 
-<!-- CLIENTES -->
 <section id="clientes" class="hidden">
-<ul id="listaClientes"></ul>
+<h2>Clientes</h2>
+<div id="listaClientes"></div>
 </section>
 
-<!-- RELATÓRIOS -->
 <section id="relatorios" class="hidden">
+<h2>Relatórios</h2>
+<div class="filtro-container">
 <input id="fCliente" placeholder="Cliente">
 <input id="fSolicitante" placeholder="Solicitante">
 <input id="fTecnico" placeholder="Técnico">
 <input type="date" id="fDataInicio">
 <input type="date" id="fDataFim">
 <select id="fStatus">
-<option value="">Todos</option>
+<option value="">Todos Status</option>
 <option value="pendente">Pendente</option>
 <option value="resolvido">Resolvido</option>
 </select>
 <button class="btn" onclick="app.relatorio()">Filtrar</button>
+<button class="btn-secondary" onclick="app.limparFiltros()">Limpar</button>
+</div>
 
 <table>
 <thead>
@@ -94,35 +111,36 @@ th{background:#f9fafb}
 </table>
 </section>
 
-<!-- CONFIG -->
 <section id="config" class="hidden">
+<h2>Configurações</h2>
+<div class="config-section">
 <input id="confEmpresa" placeholder="Nome da empresa">
 <input id="confLogo" placeholder="URL da logo">
-<button class="btn" onclick="app.salvarConfig()">Salvar</button>
+<button class="btn" onclick="app.salvarConfig()">Salvar Configurações</button>
+</div>
 </section>
 
 </main>
 </div>
 
-<!-- MODAL CHAMADO -->
 <div id="modal" class="modal">
 <div class="modal-content">
+<h4>Novo Chamado</h4>
 <input id="mCliente" placeholder="Cliente">
 <input id="mSolicitante" placeholder="Solicitante">
 <input id="mTecnico" placeholder="Técnico">
-<textarea id="mDescricao" placeholder="Descrição"></textarea>
+<textarea id="mDescricao" placeholder="Descrição" rows="4"></textarea>
 <button class="btn" onclick="app.salvarChamado()">Salvar</button>
 <button class="btn-danger" onclick="app.fecharModal()">Cancelar</button>
 </div>
 </div>
 
-<!-- MODAL CRONOLOGIA -->
 <div id="modalCronologia" class="modal">
-<div class="modal-content" id="cronBox">
-<h4>Cronologia</h4>
+<div class="modal-content">
+<h4>Cronologia do Chamado</h4>
 <div id="listaCronologia"></div>
-<textarea id="novaAtualizacao" placeholder="Nova atualização"></textarea>
-<button id="btnSalvarCrono" class="btn" onclick="app.salvarAtualizacao()">Adicionar</button>
+<textarea id="novaAtualizacao" placeholder="Nova atualização" rows="3"></textarea>
+<button id="btnSalvarCrono" class="btn" onclick="app.salvarAtualizacao()">Adicionar Atualização</button>
 <button class="btn-danger" onclick="app.fecharCronologia()">Fechar</button>
 </div>
 </div>
@@ -143,47 +161,104 @@ document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
 document.getElementById(id).classList.remove('hidden');
 document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));
 btn.classList.add('active');
+
+// Recarrega dados ao mudar de aba
+if(id === 'clientes') this.carregarClientes();
+if(id === 'chamados') this.carregarChamados();
 },
 
-abrirModal(){modal.classList.add('active')},
-fecharModal(){modal.classList.remove('active')},
+abrirModal(){
+mCliente.value = '';
+mSolicitante.value = '';
+mTecnico.value = '';
+mDescricao.value = '';
+modal.classList.add('active');
+},
+
+fecharModal(){
+modal.classList.remove('active');
+},
 
 async carregarChamados(){
-const {data} = await supabaseClient.from('chamados').select('*').order('id',{ascending:false});
+try {
+const {data, error} = await supabaseClient
+.from('chamados')
+.select('*')
+.order('id',{ascending:false});
+
+if(error) throw error;
+
 listaChamados.innerHTML='';
+
+if(!data || data.length === 0){
+listaChamados.innerHTML='<tr><td colspan="7" style="text-align:center">Nenhum chamado encontrado</td></tr>';
+return;
+}
+
 data.forEach(c=>{
-if(c.status==='resolvido' && c.data!==hoje) return;
+const dataChamado = c.data?.slice(0,10) || '';
+// Mostra pendentes + resolvidos do dia atual
+if(c.status==='resolvido' && dataChamado!==hoje) return;
+
 listaChamados.innerHTML+=`
 <tr>
 <td>${c.id}</td>
-<td>${c.data}</td>
-<td>${c.cliente}</td>
-<td>${c.solicitante}</td>
-<td>${c.tecnico}</td>
-<td style="cursor:pointer;text-decoration:underline"
-onclick="app.abrirCronologia(${c.id},'${c.status}','chamados')">${c.descricao}</td>
+<td>${dataChamado}</td>
+<td>${c.cliente || ''}</td>
+<td>${c.solicitante || ''}</td>
+<td>${c.tecnico || ''}</td>
+<td style="cursor:pointer;text-decoration:underline;color:#2563eb"
+onclick="app.abrirCronologia(${c.id},'${c.status}','chamados')">${c.descricao || ''}</td>
 <td><span class="status ${c.status}"
 onclick="app.toggle(${c.id},'${c.status}')">${c.status}</span></td>
 </tr>`;
 });
+} catch(err) {
+console.error('Erro ao carregar chamados:', err);
+listaChamados.innerHTML='<tr><td colspan="7" style="text-align:center;color:#dc2626">Erro ao carregar chamados</td></tr>';
+}
 },
 
 async salvarChamado(){
-await supabaseClient.from('chamados').insert({
-cliente:mCliente.value,
-solicitante:mSolicitante.value,
-tecnico:mTecnico.value,
-descricao:mDescricao.value,
-status:'pendente'
+try {
+if(!mCliente.value || !mDescricao.value){
+alert('Preencha pelo menos Cliente e Descrição');
+return;
+}
+
+const {error} = await supabaseClient.from('chamados').insert({
+cliente: mCliente.value.trim(),
+solicitante: mSolicitante.value.trim(),
+tecnico: mTecnico.value.trim(),
+descricao: mDescricao.value.trim(),
+status: 'pendente',
+data: new Date().toISOString()
 });
+
+if(error) throw error;
+
 this.fecharModal();
 this.carregarChamados();
+} catch(err) {
+console.error('Erro ao salvar chamado:', err);
+alert('Erro ao salvar chamado');
+}
 },
 
 async toggle(id,status){
+try {
 const novo = status==='pendente'?'resolvido':'pendente';
-await supabaseClient.from('chamados').update({status:novo}).eq('id',id);
+const {error} = await supabaseClient
+.from('chamados')
+.update({status:novo})
+.eq('id',id);
+
+if(error) throw error;
+
 this.carregarChamados();
+} catch(err) {
+console.error('Erro ao atualizar status:', err);
+}
 },
 
 abrirCronologia(id,status,origem){
@@ -191,7 +266,7 @@ chamadoAtual=id;
 modoCronologia = origem==='relatorios' || status!=='pendente' ? 'leitura' : 'edicao';
 modalCronologia.classList.add('active');
 novaAtualizacao.style.display = modoCronologia==='edicao'?'block':'none';
-btnSalvarCrono.style.display = modoCronologia==='edicao'?'block':'none';
+btnSalvarCrono.style.display = modoCronologia==='edicao'?'inline-block':'none';
 this.carregarCronologia();
 },
 
@@ -202,23 +277,57 @@ novaAtualizacao.value='';
 },
 
 async carregarCronologia(){
-const {data} = await supabaseClient.from('cronologia_chamados')
-.select('*').eq('chamado_id',chamadoAtual).order('data');
+try {
+const {data, error} = await supabaseClient
+.from('cronologia_chamados')
+.select('*')
+.eq('chamado_id',chamadoAtual)
+.order('data');
+
+if(error) throw error;
+
 listaCronologia.innerHTML='';
+if(!data || data.length === 0){
+listaCronologia.innerHTML='<p style="color:#6b7280">Nenhuma atualização registrada</p>';
+return;
+}
+
 data.forEach(c=>{
-listaCronologia.innerHTML+=`<div>[${new Date(c.data).toLocaleString()}] ${c.descricao}</div>`;
+const dataFormatada = new Date(c.data).toLocaleString('pt-BR');
+listaCronologia.innerHTML+=`
+<div class="cronologia-item">
+<strong>${dataFormatada}</strong><br>${c.descricao}
+</div>`;
 });
+} catch(err) {
+console.error('Erro ao carregar cronologia:', err);
+}
 },
 
 async salvarAtualizacao(){
-if(modoCronologia!=='edicao') return;
-await supabaseClient.from('cronologia_chamados')
-.insert({chamado_id:chamadoAtual,descricao:novaAtualizacao.value});
+try {
+if(modoCronologia!=='edicao' || !novaAtualizacao.value.trim()) return;
+
+const {error} = await supabaseClient
+.from('cronologia_chamados')
+.insert({
+chamado_id: chamadoAtual,
+descricao: novaAtualizacao.value.trim(),
+data: new Date().toISOString()
+});
+
+if(error) throw error;
+
 novaAtualizacao.value='';
 this.carregarCronologia();
+} catch(err) {
+console.error('Erro ao salvar atualização:', err);
+alert('Erro ao salvar atualização');
+}
 },
 
 async relatorio(){
+try {
 let q = supabaseClient.from('chamados').select('*');
 if(fCliente.value) q=q.ilike('cliente','%'+fCliente.value+'%');
 if(fSolicitante.value) q=q.ilike('solicitante','%'+fSolicitante.value+'%');
@@ -227,41 +336,168 @@ if(fStatus.value) q=q.eq('status',fStatus.value);
 if(fDataInicio.value) q=q.gte('data',fDataInicio.value);
 if(fDataFim.value) q=q.lte('data',fDataFim.value);
 
-const {data} = await q.order('id',{ascending:false});
+const {data, error} = await q.order('id',{ascending:false});
+
+if(error) throw error;
+
 resultadoRelatorio.innerHTML='';
+if(!data || data.length === 0){
+resultadoRelatorio.innerHTML='<tr><td colspan="7" style="text-align:center">Nenhum resultado encontrado</td></tr>';
+return;
+}
+
 data.forEach(c=>{
 resultadoRelatorio.innerHTML+=`
 <tr>
-<td>${c.id}</td><td>${c.data}</td><td>${c.cliente}</td>
-<td>${c.solicitante}</td><td>${c.tecnico}</td>
-<td>${c.status}</td>
+<td>${c.id}</td>
+<td>${c.data?.slice(0,10) || ''}</td>
+<td>${c.cliente || ''}</td>
+<td>${c.solicitante || ''}</td>
+<td>${c.tecnico || ''}</td>
+<td><span class="status ${c.status}">${c.status}</span></td>
 <td><button class="btn"
-onclick="app.abrirCronologia(${c.id},'${c.status}','relatorios')">📜</button></td>
+onclick="app.abrirCronologia(${c.id},'${c.status}','relatorios')">📜 Ver</button></td>
 </tr>`;
 });
+} catch(err) {
+console.error('Erro ao gerar relatório:', err);
+resultadoRelatorio.innerHTML='<tr><td colspan="7" style="text-align:center;color:#dc2626">Erro ao gerar relatório</td></tr>';
+}
+},
+
+limparFiltros(){
+fCliente.value = '';
+fSolicitante.value = '';
+fTecnico.value = '';
+fDataInicio.value = '';
+fDataFim.value = '';
+fStatus.value = '';
+resultadoRelatorio.innerHTML='';
+},
+
+async carregarClientes(){
+try {
+// Busca todos os clientes únicos dos chamados
+const {data: chamados, error: errorChamados} = await supabaseClient
+.from('chamados')
+.select('cliente');
+
+if(errorChamados) throw errorChamados;
+
+// Extrai clientes únicos
+const clientesUnicos = [...new Set(chamados.map(c => c.cliente).filter(c => c && c.trim()))];
+clientesUnicos.sort();
+
+listaClientes.innerHTML='';
+if(clientesUnicos.length === 0){
+listaClientes.innerHTML='<p>Nenhum cliente cadastrado</p>';
+return;
+}
+
+for(const cliente of clientesUnicos){
+// Conta quantos chamados o cliente possui
+const {count} = await supabaseClient
+.from('chamados')
+.select('*', {count: 'exact', head: true})
+.eq('cliente', cliente);
+
+listaClientes.innerHTML+=`
+<div class="cliente-item">
+<div>
+<span>${cliente}</span>
+<small style="color:#6b7280;margin-left:10px">(${count} chamado${count !== 1 ? 's' : ''})</small>
+</div>
+<button class="btn-danger" onclick="app.excluirCliente('${cliente.replace(/'/g, "\\'")}', ${count})">
+🗑️ Excluir
+</button>
+</div>`;
+}
+} catch(err) {
+console.error('Erro ao carregar clientes:', err);
+listaClientes.innerHTML='<p style="color:#dc2626">Erro ao carregar clientes</p>';
+}
+},
+
+async excluirCliente(cliente, count){
+try {
+if(count > 0){
+alert(`Não é possível excluir o cliente "${cliente}" pois ele possui ${count} chamado(s) associado(s).`);
+return;
+}
+
+if(!confirm(`Tem certeza que deseja excluir o cliente "${cliente}"?`)){
+return;
+}
+
+// Como não há chamados associados, apenas recarrega a lista
+// (o cliente desaparecerá automaticamente)
+alert('Cliente removido com sucesso!');
+this.carregarClientes();
+
+} catch(err) {
+console.error('Erro ao excluir cliente:', err);
+alert('Erro ao excluir cliente');
+}
 },
 
 async salvarConfig(){
-await supabaseClient.from('configuracoes')
-.upsert({id:1,empresa:confEmpresa.value,logo_url:confLogo.value});
+try {
+if(!confEmpresa.value.trim()){
+alert('Digite o nome da empresa');
+return;
+}
+
+const {error} = await supabaseClient
+.from('configuracoes')
+.upsert({
+id: 1,
+empresa: confEmpresa.value.trim(),
+logo_url: confLogo.value.trim()
+});
+
+if(error) throw error;
+
+alert('Configurações salvas com sucesso!');
 this.carregarConfig();
+} catch(err) {
+console.error('Erro ao salvar configurações:', err);
+alert('Erro ao salvar configurações');
+}
 },
 
 async carregarConfig(){
-const {data} = await supabaseClient.from('configuracoes').select('*').eq('id',1).single();
-if(!data)return;
-nomeEmpresa.innerText=data.empresa;
-confEmpresa.value=data.empresa;
-confLogo.value=data.logo_url;
-if(data.logo_url){logoEmpresa.src=data.logo_url;logoEmpresa.classList.remove('hidden')}
+try {
+const {data, error} = await supabaseClient
+.from('configuracoes')
+.select('*')
+.eq('id',1)
+.single();
+
+if(error && error.code !== 'PGRST116') throw error;
+
+if(data){
+nomeEmpresa.innerText = data.empresa || 'Sistema';
+confEmpresa.value = data.empresa || '';
+confLogo.value = data.logo_url || '';
+if(data.logo_url){
+logoEmpresa.src = data.logo_url;
+logoEmpresa.classList.remove('hidden');
+} else {
+logoEmpresa.classList.add('hidden');
+}
+}
+} catch(err) {
+console.error('Erro ao carregar configurações:', err);
+}
 },
 
-init(){
-this.carregarChamados();
-this.carregarConfig();
+async init(){
+await this.carregarConfig();
+await this.carregarChamados();
 }
 };
 
+// Inicializa o app
 app.init();
 </script>
 
