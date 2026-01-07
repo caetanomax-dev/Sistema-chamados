@@ -19,12 +19,6 @@ body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;min-height:100vh}
 .content{flex:1;padding:30px;overflow-y:auto}
 .hidden{display:none}
 
-@media(max-width:768px){
-  .layout{flex-direction:column}
-  .sidebar{width:100%;padding:15px}
-  .content{padding:15px}
-}
-
 .btn{background:#2563eb;color:#fff;border:none;padding:10px 16px;border-radius:6px;cursor:pointer;transition:0.2s}
 .btn:hover{background:#1e40af}
 .btn-danger{background:#dc2626;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;transition:0.2s}
@@ -34,123 +28,31 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;marg
 th,td{padding:10px;border-bottom:1px solid #e5e7eb;font-size:13px}
 th{background:#f9fafb;font-size:12px;text-transform:uppercase}
 
-.status{padding:4px 10px;border-radius:999px;font-size:12px;cursor:pointer;transition:0.2s}
+.status{padding:4px 10px;border-radius:999px;font-size:12px;cursor:pointer}
 .pendente{background:#fef3c7;color:#92400e}
 .resolvido{background:#dcfce7;color:#166534}
 
-/* MODAL */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:1000;
-}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:1000}
 .modal.active{display:flex}
-.modal-content{
-  background:#fff;
-  padding:20px;
-  border-radius:10px;
-  width:400px;
-  max-height:90vh;
-  overflow-y:auto;
-}
-.modal-content input,
-.modal-content textarea{
-  width:100%;
-  margin-bottom:10px;
-  padding:8px;
-  border:1px solid #ddd;
-  border-radius:4px;
-}
+.modal-content{background:#fff;padding:20px;border-radius:10px;width:400px;max-height:90vh;overflow-y:auto}
+.modal-content input,.modal-content textarea{width:100%;margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:4px}
 .erro{color:#dc2626;padding:10px;background:#fee;border-radius:6px;margin:10px 0}
 
-/* Config */
-#config input{
-  display:block;
-  width:100%;
-  margin-bottom:10px;
-  padding:8px;
-  border:1px solid #ddd;
-  border-radius:6px;
-}
-#config button{margin-top:10px}
-
-/* Cronologia */
-#listaCronologia div{
-  padding:5px;
-  border-bottom:1px solid #eee;
-  border-radius:4px;
-  margin-bottom:4px;
-  background:#f9fafb;
-  transition:0.2s;
-}
-#listaCronologia div.ultimo{background:#dbeafe;}
-#listaCronologia div span{font-size:10px;color:#555;display:block;margin-bottom:2px;}
-
-/* Filtros Relatório */
-.filtros{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:15px}
-.filtros input, .filtros select{padding:8px;border:1px solid #ddd;border-radius:6px}
-
-/* Cards Clientes */
-.cliente-card{
-  background:#fff;
-  border-radius:8px;
-  padding:15px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.1);
-  transition:0.3s;
-}
-.cliente-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.15); transform:translateY(-2px)}
-.cliente-card h3{margin:0 0 10px 0; color:#1f2937; font-size:16px}
-.cliente-stats{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0}
-.stat-box{
-  background:#f0f4f8;
-  padding:10px;
-  border-radius:6px;
-  text-align:center;
-}
-.stat-box .numero{
-  font-size:24px;
-  font-weight:bold;
-  color:#2563eb;
-}
-.stat-box .label{
-  font-size:11px;
-  color:#666;
-  text-transform:uppercase;
-  margin-top:3px;
-}
-.stat-box.pendente .numero{color:#d97706}
-.stat-box.resolvido .numero{color:#16a34a}
-.cliente-actions{display:flex; gap:8px; margin-top:12px}
-.cliente-actions button{flex:1; font-size:12px; padding:8px}
-
-/* Autocomplete */
-.autocomplete-container{position:relative}
-.autocomplete-list{
-  position:absolute;
-  top:100%;
-  left:0;
-  right:0;
-  background:#fff;
-  border:1px solid #ddd;
-  border-top:none;
-  border-radius:0 0 4px 4px;
-  max-height:200px;
-  overflow-y:auto;
-  display:none;
-  z-index:100;
-}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 4px 4px;max-height:200px;overflow-y:auto;display:none;z-index:100}
 .autocomplete-list.active{display:block}
-.autocomplete-item{
-  padding:10px;
-  cursor:pointer;
-  border-bottom:1px solid #f0f0f0;
-  transition:0.2s;
-}
+.autocomplete-item{padding:10px;cursor:pointer;border-bottom:1px solid #f0f0f0}
 .autocomplete-item:hover{background:#f0f4f8}
+
+.cliente-card{background:#fff;border-radius:8px;padding:15px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.cliente-card h3{margin:0 0 10px 0;color:#1f2937}
+.cliente-actions{display:flex;gap:8px;margin-top:12px}
+.cliente-actions button{flex:1;font-size:12px;padding:8px}
+
+.acesso-item{padding:10px;background:#f0f4f8;border-radius:6px;margin-bottom:8px;border-left:4px solid #2563eb}
+.acesso-item strong{display:block;margin-bottom:5px}
+.acesso-item p{margin:5px 0;font-size:12px;color:#555}
+.acesso-item .botoes{display:flex;gap:5px;margin-top:8px}
+.acesso-item button{flex:1;font-size:11px;padding:4px 6px}
 </style>
 </head>
 
@@ -160,7 +62,6 @@ th{background:#f9fafb;font-size:12px;text-transform:uppercase}
   <aside class="sidebar">
     <img id="logoEmpresa" class="hidden">
     <h1 id="nomeEmpresa">Sistema</h1>
-
     <button class="active" onclick="app.aba('chamados',this)">📋 Chamados</button>
     <button onclick="app.aba('clientes',this)">👥 Clientes</button>
     <button onclick="app.aba('relatorios',this)">📊 Relatórios</button>
@@ -170,153 +71,223 @@ th{background:#f9fafb;font-size:12px;text-transform:uppercase}
   <main class="content">
     <div id="msgErro"></div>
 
-    <!-- Chamados -->
     <section id="chamados">
+      <h2>Chamados</h2>
       <button class="btn" onclick="app.abrirModal()">+ Abrir Chamado</button>
-      <table>
+      <table style="margin-top:10px;">
         <thead>
           <tr>
             <th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th>
-            <th>Técnico</th><th>Descrição</th><th>Status</th><th>Ações</th>
+            <th>Técnico</th><th>Descrição</th><th>Status</th><th>Ação</th>
           </tr>
         </thead>
         <tbody id="listaChamados"></tbody>
       </table>
     </section>
 
-    <!-- Clientes -->
     <section id="clientes" class="hidden">
-      <h2>Gestão de Clientes</h2>
-      <div id="listaClientes" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:15px;"></div>
+      <h2>Clientes</h2>
+      <button class="btn" onclick="app.abrirModalNovoCliente()" style="margin-bottom:20px;">+ Novo Cliente</button>
+      <div id="listaClientes" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px;"></div>
     </section>
 
-    <!-- Relatórios -->
     <section id="relatorios" class="hidden">
       <h2>Relatórios</h2>
-      <div class="filtros">
-        <input id="fCliente" placeholder="Cliente">
-        <input id="fSolicitante" placeholder="Solicitante">
-        <input id="fTecnico" placeholder="Técnico">
-        <select id="fStatus">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:15px;">
+        <input id="fCliente" placeholder="Filtrar por Cliente">
+        <input id="fSolicitante" placeholder="Filtrar por Solicitante">
+        <input id="fTecnico" placeholder="Filtrar por Técnico">
+        <input id="fCNPJ" placeholder="Filtrar por CNPJ/CPF">
+        <input id="fDataInicio" type="date" placeholder="Data Início">
+        <input id="fDataFim" type="date" placeholder="Data Fim">
+        <select id="fStatus" style="padding:8px;border:1px solid #ddd;border-radius:6px;">
           <option value="">Todos os Status</option>
           <option value="pendente">Pendente</option>
           <option value="resolvido">Resolvido</option>
         </select>
-        <input id="fDataInicio" type="date">
-        <input id="fDataFim" type="date">
-        <button class="btn" onclick="app.relatorio()">🔍 Filtrar</button>
+        <button class="btn" onclick="app.relatorio()" style="grid-column:1/-1;">🔍 Filtrar</button>
       </div>
-
       <table>
         <thead>
           <tr>
-            <th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th>
-            <th>Técnico</th><th>Status</th><th>Cronologia</th>
+            <th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Descrição</th><th>Status</th>
           </tr>
         </thead>
         <tbody id="resultadoRelatorio"></tbody>
       </table>
     </section>
 
-    <!-- Configurações -->
     <section id="config" class="hidden">
-      <input id="confEmpresa" placeholder="Nome da empresa">
-      <input id="confLogo" placeholder="URL da logo">
-      <button class="btn" onclick="app.salvarConfig()">Salvar</button>
+      <h2>Configurações</h2>
+      <div style="background:#fff;padding:20px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);max-width:600px;">
+        <h3 style="margin-top:0;">Informações da Empresa</h3>
+        <label style="display:block;margin-bottom:8px;font-weight:bold;">Nome da Empresa:</label>
+        <input id="confEmpresa" placeholder="Nome da empresa" style="width:100%;margin-bottom:15px;padding:8px;border:1px solid #ddd;border-radius:4px;">
+        
+        <label style="display:block;margin-bottom:8px;font-weight:bold;">URL da Logo:</label>
+        <input id="confLogo" placeholder="URL da logo" style="width:100%;margin-bottom:20px;padding:8px;border:1px solid #ddd;border-radius:4px;">
+        
+        <button class="btn" onclick="app.salvarConfig()" style="width:100%;padding:12px;font-size:16px;">💾 Salvar Configurações</button>
+      </div>
     </section>
-
   </main>
 </div>
 
-<!-- Modal Chamado -->
+<!-- MODAL NOVO CHAMADO -->
 <div id="modal" class="modal">
   <div class="modal-content">
-    <div class="autocomplete-container">
+    <h3 style="margin-top:0;margin-bottom:15px;">Novo Chamado</h3>
+    <div style="position:relative;">
       <input id="mCliente" placeholder="Cliente" oninput="app.filtrarClientes()">
       <div id="listaClientesDropdown" class="autocomplete-list"></div>
     </div>
     <input id="mSolicitante" placeholder="Solicitante">
     <input id="mTecnico" placeholder="Técnico">
-    <textarea id="mDescricao" placeholder="Descrição"></textarea>
-    <button class="btn" onclick="app.salvarChamado()">Salvar</button>
-    <button class="btn-danger" onclick="app.fecharModal()">Cancelar</button>
+    <textarea id="mDescricao" placeholder="Descrição" style="height:80px;"></textarea>
+    <button class="btn" onclick="app.salvarChamado()" style="width:100%;margin-bottom:8px;">Salvar</button>
+    <button class="btn-danger" onclick="app.fecharModal()" style="width:100%;">Cancelar</button>
   </div>
 </div>
 
-<!-- Modal Cronologia -->
-<div id="modalCronologia" class="modal">
+<!-- MODAL ACESSOS REMOTOS -->
+<div id="modalAcessos" class="modal">
+  <div class="modal-content" style="width:550px;">
+    <h3 style="margin-top:0;margin-bottom:15px;">🔐 Acessos Remotos - <span id="clienteAcessoNome"></span></h3>
+    
+    <label style="font-weight:bold;display:block;margin-bottom:6px;">Nome/Tipo *</label>
+    <input id="arNome" placeholder="Ex: Servidor 1, Caixa PDV">
+    
+    <label style="font-weight:bold;display:block;margin-bottom:6px;">Dados de Acesso</label>
+    <textarea id="arDescricao" placeholder="IP, Usuário, Senha, Porta..." style="height:80px;"></textarea>
+    
+    <button class="btn" onclick="app.salvarAcessoRemoto()" style="width:100%;margin-bottom:15px;">+ Adicionar Acesso</button>
+    
+    <h4 style="margin:10px 0;border-top:1px solid #ddd;padding-top:15px;">Acessos Cadastrados</h4>
+    <div id="listaAcessosRemoto" style="max-height:250px;overflow-y:auto;margin-bottom:15px;"></div>
+    
+    <button class="btn-danger" onclick="app.fecharAcessos()" style="width:100%;">Fechar</button>
+  </div>
+</div>
+
+<!-- MODAL EDITAR CHAMADO -->
+<div id="modalEditarChamado" class="modal">
   <div class="modal-content">
-    <h3>Cronologia do Chamado <span id="cronId"></span></h3>
-    <div id="descricaoChamado" style="display:none; padding:10px; background:#f0f4f8; border:1px solid #ddd; border-radius:6px; margin-bottom:10px;"></div>
-    <div id="listaCronologia" style="max-height:250px; overflow:auto; border:1px solid #ddd; padding:5px; margin-bottom:10px;"></div>
-    <textarea id="novaAtualizacao" placeholder="Nova atualização..."></textarea>
-    <div style="display:flex; gap:10px; margin-top:10px;">
-      <button id="btnAdicionarAtualizacao" class="btn" onclick="app.salvarAtualizacao()" style="flex:1;">Adicionar</button>
-      <button class="btn-danger" onclick="app.fecharModalCronologia()" style="flex:1;">Fechar</button>
+    <h3 style="margin-top:0;margin-bottom:15px;">✏️ Editar Chamado <span id="idChamadoEditar"></span></h3>
+    
+    <label style="font-weight:bold;display:block;margin-bottom:6px;">Cliente</label>
+    <input id="pCliente" style="margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:4px;width:100%;">
+    
+    <label style="font-weight:bold;display:block;margin-bottom:6px;">Solicitante</label>
+    <input id="pSolicitante" style="margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:4px;width:100%;">
+    
+    <label style="font-weight:bold;display:block;margin-bottom:6px;">Técnico</label>
+    <input id="pTecnico" style="margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:4px;width:100%;">
+    
+    <label style="font-weight:bold;display:block;margin-bottom:6px;">Descrição <span style="font-size:11px;color:#666;">(clique para adicionar atualização)</span></label>
+    <textarea id="pDescricao" placeholder="Clique aqui para adicionar uma atualização na cronologia..." onclick="app.adicionarAtualizacaoPrompt()" style="width:100%;margin-bottom:15px;padding:8px;border:1px solid #ddd;border-radius:4px;height:80px;font-family:inherit;cursor:pointer;background:#fffef0;"></textarea>
+    
+    <div style="display:flex;gap:10px;margin-bottom:15px;">
+      <button class="btn" onclick="app.salvarEdicaoChamado()" style="flex:1;">💾 Salvar Alterações</button>
+      <button class="btn-danger" onclick="app.fecharModalEditar()" style="flex:1;">Fechar</button>
+    </div>
+
+    <h4 style="margin:15px 0 10px 0;border-top:1px solid #ddd;padding-top:15px;">Cronologia</h4>
+    <div id="listaCronologia" style="max-height:250px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- MODAL CRONOLOGIA RÁPIDA -->
+<div id="modalCronologiaRapida" class="modal">
+  <div class="modal-content">
+    <h3 style="margin-top:0;margin-bottom:15px;">📋 Cronologia - Chamado <span id="idCronologiaRapida"></span></h3>
+    
+    <label style="font-weight:bold;display:block;margin-bottom:6px;">Adicionar Atualização</label>
+    <textarea id="descricaoCronologiaRapida" placeholder="Digite a atualização..." style="width:100%;margin-bottom:12px;padding:8px;border:1px solid #ddd;border-radius:4px;height:80px;font-family:inherit;"></textarea>
+    
+    <button class="btn" onclick="app.salvarCronologiaRapida()" style="width:100%;margin-bottom:15px;">➕ Adicionar</button>
+    
+    <h4 style="margin:10px 0;border-top:1px solid #ddd;padding-top:15px;">Histórico</h4>
+    <div id="listaCronologiaRapida" style="max-height:300px;overflow-y:auto;font-size:13px;"></div>
+    
+    <button class="btn-danger" onclick="app.fecharCronologiaRapida()" style="width:100%;margin-top:15px;">Fechar</button>
+  </div>
+</div>
+
+<!-- MODAL CRONOLOGIA VISUALIZAÇÃO (RELATÓRIO) -->
+<div id="modalCronologiaVisualizacao" class="modal">
+  <div class="modal-content">
+    <h3 style="margin-top:0;margin-bottom:15px;">📋 Cronologia - Chamado <span id="idCronologiaVis"></span></h3>
+    
+    <h4 style="margin:10px 0;">Histórico</h4>
+    <div id="listaCronologiaVis" style="max-height:400px;overflow-y:auto;font-size:13px;"></div>
+    
+    <button class="btn-danger" onclick="app.fecharCronologiaVisualizacao()" style="width:100%;margin-top:15px;">Fechar</button>
+  </div>
+</div>
+
+<!-- MODAL NOVO CLIENTE -->
+<div id="modalNovoCliente" class="modal">
+  <div class="modal-content" style="width:500px;">
+    <h3 style="margin-top:0;margin-bottom:15px;">➕ Novo Cliente</h3>
+    
+    <label style="font-weight:bold;display:block;margin-bottom:6px;">Nome do Cliente *</label>
+    <input id="ncNome" placeholder="Nome (obrigatório)" style="width:100%;margin-bottom:12px;padding:8px;border:1px solid #ddd;border-radius:4px;">
+    
+    <label style="font-weight:bold;display:block;margin-bottom:6px;">Razão Social</label>
+    <input id="ncRazao" placeholder="Razão Social (opcional)" style="width:100%;margin-bottom:12px;padding:8px;border:1px solid #ddd;border-radius:4px;">
+    
+    <label style="font-weight:bold;display:block;margin-bottom:6px;">CNPJ ou CPF</label>
+    <input id="ncCNPJ" placeholder="CNPJ ou CPF (opcional)" style="width:100%;margin-bottom:12px;padding:8px;border:1px solid #ddd;border-radius:4px;">
+    
+    <label style="font-weight:bold;display:block;margin-bottom:6px;">Endereço</label>
+    <input id="ncEndereco" placeholder="Endereço (opcional)" style="width:100%;margin-bottom:12px;padding:8px;border:1px solid #ddd;border-radius:4px;">
+    
+    <label style="font-weight:bold;display:block;margin-bottom:6px;">Dados do Cliente</label>
+    <textarea id="ncObservacoes" placeholder="Observações e dados do cliente..." style="width:100%;margin-bottom:15px;padding:8px;border:1px solid #ddd;border-radius:4px;height:80px;font-family:inherit;"></textarea>
+    
+    <div style="display:flex;gap:10px;">
+      <button class="btn" id="btnSalvarCliente" onclick="app.salvarNovoCliente()" style="flex:1;">💾 Salvar Cliente</button>
+      <button class="btn-danger" onclick="app.fecharModalNovoCliente()" style="flex:1;">Cancelar</button>
     </div>
   </div>
 </div>
 
-<!-- Modal Editar Chamado -->
-<div id="modalEditar" class="modal">
-  <div class="modal-content">
-    <h3>Editar Chamado <span id="editId"></span></h3>
-    <label>Cliente:</label>
-    <input id="editCliente" placeholder="Cliente">
-    <label>Solicitante:</label>
-    <input id="editSolicitante" placeholder="Solicitante">
-    <label>Técnico:</label>
-    <input id="editTecnico" placeholder="Técnico">
-    <label>Descrição:</label>
-    <textarea id="editDescricao" placeholder="Descrição" style="margin-bottom:10px;"></textarea>
-    <h4>Atualizações da Cronologia:</h4>
-    <div id="listaCronologiaEditar" style="max-height:250px; overflow:auto; border:1px solid #ddd; padding:5px; margin-bottom:10px;"></div>
-    <button class="btn" onclick="app.salvarEdicaoChamado()">Salvar Alterações</button>
-    <button class="btn-danger" onclick="app.fecharModalEditar()">Cancelar</button>
-  </div>
-</div>
-
 <script>
-// ============================
-// COLOQUE AQUI SUA URL E CHAVE
-// ============================
 const SUPABASE_URL = 'https://boendmrotsttljydigld.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvZW5kbXJvdHN0dGxqeWRpZ2xkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1OTI5NTksImV4cCI6MjA4MjE2ODk1OX0.k6vVvD6kNV8r-a9lR6jaTcAm1wz5c_jbTDnjKlpo0cE';
-
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const app = {
-  formatarData(dataString){
-    if(!dataString) return '--/--/----';
-    const data = new Date(dataString);
-    return data.toLocaleDateString('pt-BR');
-  },
+  clienteAcessoAtual: null,
+  acessoEditandoId: null,
+  chamadoEditandoId: null,
+  chamadoCronologiaRapidaId: null,
 
   mostrarErro(msg){
     const div = document.getElementById('msgErro');
     div.innerHTML = `<div class="erro">❌ ${msg}</div>`;
     setTimeout(() => div.innerHTML = '', 5000);
-    console.error(msg);
   },
   
-  aba(id,btn){
-    document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
+  aba(id, btn){
+    document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
     document.getElementById(id).classList.remove('hidden');
-    document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    if(id === 'clientes') this.carregarClientes();
   },
   
   abrirModal(){ 
     document.getElementById('modal').classList.add('active');
-    mCliente.value = '';
-    mSolicitante.value = '';
-    mTecnico.value = '';
-    mDescricao.value = '';
-    document.getElementById('listaClientesDropdown').innerHTML = '';
-    document.getElementById('listaClientesDropdown').classList.remove('active');
+    document.getElementById('mCliente').value = '';
+    document.getElementById('mSolicitante').value = '';
+    document.getElementById('mTecnico').value = '';
+    document.getElementById('mDescricao').value = '';
   },
   
-  fecharModal(){ document.getElementById('modal').classList.remove('active'); },
+  fecharModal(){ 
+    document.getElementById('modal').classList.remove('active');
+  },
 
   filtrarClientes(){
     const input = document.getElementById('mCliente').value.toLowerCase();
@@ -327,21 +298,11 @@ const app = {
       return;
     }
     
-    supabaseClient.from('clientes').select('nome').then(({data}) => {
+    sb.from('clientes').select('nome').then(({data}) => {
       dropdown.innerHTML = '';
-      
-      if(!data || data.length === 0){
-        dropdown.classList.remove('active');
-        return;
-      }
-      
+      if(!data || data.length === 0){dropdown.classList.remove('active'); return;}
       const filtrados = data.filter(c => c.nome.toLowerCase().includes(input));
-      
-      if(filtrados.length === 0){
-        dropdown.classList.remove('active');
-        return;
-      }
-      
+      if(filtrados.length === 0){dropdown.classList.remove('active'); return;}
       filtrados.forEach(cliente => {
         const item = document.createElement('div');
         item.className = 'autocomplete-item';
@@ -352,336 +313,607 @@ const app = {
         };
         dropdown.appendChild(item);
       });
-      
       dropdown.classList.add('active');
     });
   },
 
-  ehDataAtual(dataString){
-    if(!dataString) return false;
-    const data = new Date(dataString);
-    const hoje = new Date();
-    return data.toLocaleDateString('pt-BR') === hoje.toLocaleDateString('pt-BR');
-  },
-
   async carregarChamados(){
     try {
-      const {data, error} = await supabaseClient.from('chamados').select('*').order('id',{ascending:false});
-      if(error) return this.mostrarErro('Erro ao carregar chamados: ' + error.message);
-      const tbody = document.getElementById('listaChamados'); tbody.innerHTML='';
-      if(!data || data.length===0){tbody.innerHTML='<tr><td colspan="8">Nenhum chamado</td></tr>'; return;}
+      const {data, error} = await sb.from('chamados').select('*').order('id',{ascending:false});
+      if(error) return this.mostrarErro('Erro ao carregar chamados');
+      const tbody = document.getElementById('listaChamados');
+      tbody.innerHTML='';
+      if(!data || data.length===0){tbody.innerHTML='<tr><td colspan="8">Nenhum chamado</td></tr>';return;}
       
-      // Filtrar: pendentes OU resolvidos de hoje
-      const chamadosFiltrados = data.filter(c => 
-        c.status === 'pendente' || this.ehDataAtual(c.created_at)
-      );
+      const hoje = new Date();
+      const dataHojeFormatada = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0');
       
-      if(chamadosFiltrados.length===0){tbody.innerHTML='<tr><td colspan="8">Nenhum chamado pendente ou de hoje</td></tr>'; return;}
+      const chamadosFiltrados = data.filter(c => {
+        const dataChamado = c.created_at.substring(0, 10);
+        const ehDeHoje = dataChamado === dataHojeFormatada;
+        const ehPendente = c.status === 'pendente';
+        
+        if(ehDeHoje) return true;
+        if(ehPendente) return true;
+        return false;
+      });
+      
+      if(chamadosFiltrados.length === 0){
+        tbody.innerHTML='<tr><td colspan="8">Nenhum chamado pendente ou de hoje</td></tr>';
+        return;
+      }
       
       chamadosFiltrados.forEach(c=>{
         tbody.innerHTML+=`<tr>
           <td>${c.id}</td>
-          <td>${this.formatarData(c.created_at)}</td>
+          <td>${c.created_at ? new Date(c.created_at).toLocaleDateString('pt-BR') : '--'}</td>
           <td>${c.cliente}</td>
           <td>${c.solicitante}</td>
           <td>${c.tecnico}</td>
-          <td style="cursor:pointer; text-decoration:underline;" onclick="app.abrirCronologia(${c.id})">${c.descricao}</td>
-          <td><span class="status ${c.status}" onclick="app.toggle(${c.id},'${c.status}')">${c.status}</span></td>
-          <td><button class="btn" onclick="app.abrirModalEditar(${c.id})">✏️ Editar</button></td>
+          <td style="cursor:pointer;text-decoration:underline;color:#2563eb;" onclick="app.abrirCronologiaRapida(${c.id})">${c.descricao}</td>
+          <td><span class="status ${c.status}">${c.status}</span></td>
+          <td><button class="btn" onclick="app.abrirModalEditar(${c.id})" style="font-size:11px;padding:4px 6px;">✏️</button></td>
         </tr>`;
       });
     } catch(e){ this.mostrarErro('Erro: '+e.message); }
   },
 
   async salvarChamado(){
-    if(!mCliente.value||!mSolicitante.value||!mTecnico.value||!mDescricao.value){alert('Preencha todos os campos!'); return;}
+    if(!document.getElementById('mCliente').value||!document.getElementById('mSolicitante').value||!document.getElementById('mTecnico').value||!document.getElementById('mDescricao').value){
+      alert('Preencha todos os campos!');
+      return;
+    }
     try{
-      const {data: clienteExistente} = await supabaseClient.from('clientes').select('*').eq('nome', mCliente.value).single();
-      if(!clienteExistente){ await supabaseClient.from('clientes').insert({nome:mCliente.value}); }
-      const {error} = await supabaseClient.from('chamados').insert({cliente:mCliente.value, solicitante:mSolicitante.value, tecnico:mTecnico.value, descricao:mDescricao.value, status:'pendente', created_at: new Date().toISOString()});
-      if(error) return this.mostrarErro('Erro ao salvar: '+error.message);
-      this.fecharModal(); this.carregarChamados(); this.carregarClientes();
+      const {error} = await sb.from('chamados').insert({
+        cliente: document.getElementById('mCliente').value,
+        solicitante: document.getElementById('mSolicitante').value,
+        tecnico: document.getElementById('mTecnico').value,
+        descricao: document.getElementById('mDescricao').value,
+        status: 'pendente',
+        created_at: new Date().toISOString()
+      });
+      if(error) return this.mostrarErro('Erro ao salvar');
+      this.fecharModal();
+      this.carregarChamados();
+      this.carregarClientes();
     }catch(e){ this.mostrarErro('Erro: '+e.message); }
-  },
-
-  async toggle(id,status){
-    try{
-      const novoStatus = status==='pendente'?'resolvido':'pendente';
-      const {error} = await supabaseClient.from('chamados').update({status:novoStatus}).eq('id',id);
-      if(error) return this.mostrarErro('Erro ao atualizar: '+error.message);
-      this.carregarChamados(); this.relatorio();
-    }catch(e){ this.mostrarErro('Erro: '+e.message); }
-  },
-
-  async excluirChamado(id){if(!confirm('Excluir este chamado?'))return;
-    try{const {error} = await supabaseClient.from('chamados').delete().eq('id',id);
-      if(error) return this.mostrarErro('Erro ao excluir: '+error.message);
-      this.carregarChamados(); this.carregarClientes();
-    }catch(e){this.mostrarErro('Erro: '+e.message);}
   },
 
   async carregarClientes(){
     try{
-      const {data,error} = await supabaseClient.from('clientes').select('*'); if(error) return;
-      const div=document.getElementById('listaClientes'); div.innerHTML='';
-      if(!data||data.length===0){div.innerHTML='<p style="grid-column:1/-1; text-align:center; color:#999;">Nenhum cliente cadastrado</p>'; return;}
-      
-      for(let c of data){
-        // Contar chamados
-        const {data: chamados} = await supabaseClient.from('chamados').select('status').eq('cliente', c.nome);
-        const pendentes = chamados?.filter(ch => ch.status === 'pendente').length || 0;
-        const resolvidos = chamados?.filter(ch => ch.status === 'resolvido').length || 0;
-        const total = pendentes + resolvidos;
-        
+      const {data} = await sb.from('clientes').select('*');
+      const div = document.getElementById('listaClientes');
+      div.innerHTML = '';
+      if(!data || data.length === 0){
+        div.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#999;">Nenhum cliente</p>';
+        return;
+      }
+      data.forEach(c=>{
         div.innerHTML+=`
           <div class="cliente-card">
             <h3>👤 ${c.nome}</h3>
-            <div class="cliente-stats">
-              <div class="stat-box pendente">
-                <div class="numero">${pendentes}</div>
-                <div class="label">Pendentes</div>
-              </div>
-              <div class="stat-box resolvido">
-                <div class="numero">${resolvidos}</div>
-                <div class="label">Resolvidos</div>
-              </div>
-            </div>
-            <div style="font-size:12px; color:#666; text-align:center; margin:8px 0;">Total: <strong>${total}</strong> chamado${total!==1?'s':''}</div>
+            ${c.razao_social ? `<p style="font-size:12px;color:#666;"><strong>Razão:</strong> ${c.razao_social}</p>` : ''}
+            ${c.cnpj ? `<p style="font-size:12px;color:#666;"><strong>CNPJ/CPF:</strong> ${c.cnpj}</p>` : ''}
+            ${c.endereco ? `<p style="font-size:12px;color:#666;"><strong>Endereço:</strong> ${c.endereco}</p>` : ''}
+            ${c.observacoes ? `<p style="font-size:12px;color:#888;font-style:italic;margin-top:8px;">${c.observacoes}</p>` : ''}
             <div class="cliente-actions">
-              <button class="btn-danger" onclick="app.excluirCliente('${c.nome}')" style="flex:1;">🗑️ Deletar</button>
+              <button class="btn" onclick="app.abrirModalEditarCliente('${c.nome.replace(/'/g, "\\'")}')" style="flex:1;">✏️ Alterar</button>
+              <button class="btn" onclick="app.abrirAcessos('${c.nome.replace(/'/g, "\\'")}')" style="flex:1;">🔐 Acessos</button>
+              <button class="btn-danger" onclick="app.excluirCliente('${c.nome.replace(/'/g, "\\'")}')" style="flex:1;">🗑️ Excluir</button>
             </div>
           </div>
         `;
-      }
+      });
     }catch(e){console.error(e);}
   },
 
-  async excluirCliente(nome){
+  abrirAcessos(cliente){
+    this.clienteAcessoAtual = cliente;
+    this.acessoEditandoId = null;
+    document.getElementById('clienteAcessoNome').innerText = cliente;
+    document.getElementById('arNome').value = '';
+    document.getElementById('arDescricao').value = '';
+    document.getElementById('modalAcessos').classList.add('active');
+    this.carregarAcessosRemoto(cliente);
+  },
+
+  fecharAcessos(){
+    document.getElementById('modalAcessos').classList.remove('active');
+  },
+
+  async carregarAcessosRemoto(cliente){
     try{
-      const {data: chamadosVinculados} = await supabaseClient.from('chamados').select('*').eq('cliente', nome).limit(1);
-      if(chamadosVinculados.length>0){alert('Não é possível excluir: existem chamados vinculados a este cliente.'); return;}
-      if(!confirm(`Excluir o cliente "${nome}"?`)) return;
-      const {error} = await supabaseClient.from('clientes').delete().eq('nome', nome);
-      if(error) return this.mostrarErro('Erro ao excluir cliente: '+error.message);
-      this.carregarClientes();
+      const {data} = await sb.from('acessos_remotos').select('*').eq('cliente_nome', cliente).order('id',{ascending:false});
+      const lista = document.getElementById('listaAcessosRemoto');
+      lista.innerHTML = '';
+      if(!data || data.length === 0){
+        lista.innerHTML = '<p style="text-align:center;color:#999;">Nenhum acesso cadastrado</p>';
+        return;
+      }
+      data.forEach(a => {
+        lista.innerHTML += `
+          <div class="acesso-item">
+            <strong>${a.nome}</strong>
+            <p>${a.descricao || '(sem dados)'}</p>
+            <div class="botoes">
+              <button class="btn" onclick="app.editarAcesso(${a.id},'${a.nome.replace(/'/g, "\\'")}','${(a.descricao || '').replace(/'/g, "\\'").replace(/\n/g, '\\n')}')" style="flex:1;">✏️ Editar</button>
+              <button class="btn-danger" onclick="app.excluirAcesso(${a.id})" style="flex:1;">🗑️ Deletar</button>
+            </div>
+          </div>
+        `;
+      });
+    }catch(e){console.error(e);}
+  },
+
+  async salvarAcessoRemoto(){
+    const nome = document.getElementById('arNome').value.trim();
+    const desc = document.getElementById('arDescricao').value.trim();
+    if(!nome){alert('Nome é obrigatório!');return;}
+    try{
+      const {error} = await sb.from('acessos_remotos').insert({
+        cliente_nome: this.clienteAcessoAtual,
+        nome: nome,
+        descricao: desc || null
+      });
+      if(error) return this.mostrarErro('Erro ao salvar');
+      document.getElementById('arNome').value = '';
+      document.getElementById('arDescricao').value = '';
+      this.carregarAcessosRemoto(this.clienteAcessoAtual);
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
+  editarAcesso(id, nome, descricao){
+    const novaDesc = prompt(`Editar acesso: ${nome}\n\nDados de acesso:`, descricao);
+    if(novaDesc !== null){
+      this.salvarEditacaoAcesso(id, novaDesc);
+    }
+  },
+
+  async salvarEditacaoAcesso(id, descricao){
+    try{
+      const {error} = await sb.from('acessos_remotos').update({descricao: descricao || null}).eq('id', id);
+      if(error) return this.mostrarErro('Erro ao atualizar');
+      this.carregarAcessosRemoto(this.clienteAcessoAtual);
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
+  async excluirAcesso(id){
+    if(!confirm('Excluir este acesso?')) return;
+    try{
+      const {error} = await sb.from('acessos_remotos').delete().eq('id', id);
+      if(error) return this.mostrarErro('Erro ao excluir');
+      this.carregarAcessosRemoto(this.clienteAcessoAtual);
     }catch(e){this.mostrarErro('Erro: '+e.message);}
   },
 
   async relatorio(){
     try{
-      let q = supabaseClient.from('chamados').select('*');
-      if(fCliente.value) q = q.ilike('cliente','%'+fCliente.value+'%');
-      if(fSolicitante.value) q = q.ilike('solicitante','%'+fSolicitante.value+'%');
-      if(fTecnico.value) q = q.ilike('tecnico','%'+fTecnico.value+'%');
-      if(fStatus.value) q = q.eq('status',fStatus.value);
+      let q = sb.from('chamados').select('*');
+      if(document.getElementById('fCliente').value) q = q.ilike('cliente','%'+document.getElementById('fCliente').value+'%');
+      if(document.getElementById('fSolicitante').value) q = q.ilike('solicitante','%'+document.getElementById('fSolicitante').value+'%');
+      if(document.getElementById('fTecnico').value) q = q.ilike('tecnico','%'+document.getElementById('fTecnico').value+'%');
+      if(document.getElementById('fStatus').value) q = q.eq('status',document.getElementById('fStatus').value);
       
       const {data,error} = await q.order('created_at',{ascending:false});
-      if(error) return this.mostrarErro('Erro no relatório: '+error.message);
+      if(error) return this.mostrarErro('Erro no relatório: ' + error.message);
       
-      // Filtrar localmente por data
       let resultados = data || [];
       
-      if(fDataInicio.value || fDataFim.value){
+      // Filtro por CNPJ
+      const cnpjFiltro = document.getElementById('fCNPJ').value.trim();
+      if(cnpjFiltro){
+        const {data: clientes} = await sb.from('clientes').select('nome, cnpj').ilike('cnpj', '%'+cnpjFiltro+'%');
+        const nomesClientes = clientes ? clientes.map(c => c.nome) : [];
+        resultados = resultados.filter(c => nomesClientes.includes(c.cliente));
+      }
+      
+      // Filtro por período
+      const dataInicio = document.getElementById('fDataInicio').value;
+      const dataFim = document.getElementById('fDataFim').value;
+      
+      if(dataInicio || dataFim){
         resultados = resultados.filter(c => {
-          const dataChamado = c.created_at; // Pega a data bruta do banco
+          const dataChamado = c.created_at.substring(0, 10);
           
-          if(fDataInicio.value){
-            // Data inicial: 2025-12-29 vira 2025-12-29T00:00:00
-            const dataInicio = new Date(fDataInicio.value + 'T00:00:00').getTime();
-            const chamadoTime = new Date(dataChamado).getTime();
-            if(chamadoTime < dataInicio) return false;
-          }
-          
-          if(fDataFim.value){
-            // Data final: 2025-12-29 vira 2025-12-29T23:59:59
-            const dataFim = new Date(fDataFim.value + 'T23:59:59').getTime();
-            const chamadoTime = new Date(dataChamado).getTime();
-            if(chamadoTime > dataFim) return false;
-          }
+          if(dataInicio && dataChamado < dataInicio) return false;
+          if(dataFim && dataChamado > dataFim) return false;
           
           return true;
         });
       }
       
-      const tbody=document.getElementById('resultadoRelatorio'); tbody.innerHTML='';
-      if(!resultados||resultados.length===0){tbody.innerHTML='<tr><td colspan="7">Nenhum resultado</td></tr>'; return;}
+      const tbody = document.getElementById('resultadoRelatorio');
+      tbody.innerHTML = '';
+      if(!resultados || resultados.length === 0){
+        tbody.innerHTML = '<tr><td colspan="6">Nenhum resultado</td></tr>';
+        return;
+      }
       resultados.forEach(c=>{
         tbody.innerHTML+=`<tr>
           <td>${c.id}</td>
-          <td>${this.formatarData(c.created_at)}</td>
+          <td>${c.created_at ? new Date(c.created_at).toLocaleDateString('pt-BR') : '--'}</td>
           <td>${c.cliente}</td>
           <td>${c.solicitante}</td>
           <td>${c.tecnico}</td>
+          <td style="cursor:pointer;color:#2563eb;text-decoration:underline;" onclick="app.abrirCronologiaRelatorio(${c.id})">${c.descricao}</td>
           <td><span class="status ${c.status}">${c.status}</span></td>
-          <td><button class="btn" onclick="app.abrirCronologia(${c.id}, true)">Ver</button></td>
         </tr>`;
       });
     }catch(e){this.mostrarErro('Erro: '+e.message);}
   },
 
-  abrirCronologia: async function(id, apenasVer=false){
-    document.getElementById('modalCronologia').classList.add('active');
-    document.getElementById('cronId').innerText=id;
-    document.getElementById('novaAtualizacao').style.display = apenasVer ? 'none' : 'block';
-    document.getElementById('btnAdicionarAtualizacao').style.display = apenasVer ? 'none' : 'block';
-    document.getElementById('descricaoChamado').style.display = 'none';
-    document.getElementById('descricaoChamado').innerHTML = '';
-    
-    // Buscar descrição do chamado apenas se for visualização (relatório)
-    if(apenasVer){
-      const {data} = await supabaseClient.from('chamados').select('descricao').eq('id', id).single();
-      if(data){
-        const descDiv = document.getElementById('descricaoChamado');
-        descDiv.innerHTML = `<strong style="display:block; margin-bottom:5px; color:#1f2937;">Descrição do Chamado:</strong><p style="margin:0; color:#555;">${data.descricao}</p>`;
-        descDiv.style.display = 'block';
-      }
-    }
-    
-    this.carregarCronologia(id);
-  },
-
-  fecharModalCronologia: function(){
-    document.getElementById('modalCronologia').classList.remove('active');
-    document.getElementById('novaAtualizacao').value='';
-    document.getElementById('listaCronologia').innerHTML='';
-    document.getElementById('descricaoChamado').innerHTML='';
-    document.getElementById('descricaoChamado').style.display='none';
-  },
-
-  abrirModalEditar: async function(id){
-    try{
-      const {data} = await supabaseClient.from('chamados').select('*').eq('id', id).single();
-      if(!data) return this.mostrarErro('Chamado não encontrado');
-      
-      document.getElementById('modalEditar').classList.add('active');
-      document.getElementById('editId').innerText = id;
-      document.getElementById('editCliente').value = data.cliente;
-      document.getElementById('editSolicitante').value = data.solicitante;
-      document.getElementById('editTecnico').value = data.tecnico;
-      document.getElementById('editDescricao').value = data.descricao;
-      
-      // Carregar cronologia para edição
-      await this.carregarCronologiaParaEditar(id);
-    }catch(e){ this.mostrarErro('Erro: '+e.message); }
-  },
-
-  fecharModalEditar: function(){
-    document.getElementById('modalEditar').classList.remove('active');
-  },
-
-  carregarCronologiaParaEditar: async function(chamado_id){
-    const {data} = await supabaseClient.from('cronologia_chamados').select('*').eq('chamado_id', chamado_id).order('data', {ascending:true});
-    const lista = document.getElementById('listaCronologiaEditar');
-    lista.innerHTML = '';
-    
-    if(!data || data.length === 0){
-      lista.innerHTML = '<p style="color:#999;">Nenhuma atualização</p>';
-      return;
-    }
-    
-    data.forEach(c => {
-      lista.innerHTML += `
-        <div style="padding:8px; background:#f0f0f0; border-radius:4px; margin-bottom:8px;">
-          <span style="font-size:10px; color:#555;">[${new Date(c.data).toLocaleString('pt-BR')}]</span>
-          <textarea id="cron-${c.id}" style="width:100%; margin:5px 0; padding:5px; border:1px solid #ddd; border-radius:3px; font-size:12px;" rows="2">${c.descricao}</textarea>
-          <button class="btn-danger" onclick="app.excluirAtualizacao(${c.id})" style="padding:4px 8px; font-size:11px;">Excluir</button>
-        </div>
-      `;
-    });
-  },
-
-  salvarEdicaoChamado: async function(){
-    const id = document.getElementById('editId').innerText;
-    const cliente = document.getElementById('editCliente').value;
-    const solicitante = document.getElementById('editSolicitante').value;
-    const tecnico = document.getElementById('editTecnico').value;
-    const descricao = document.getElementById('editDescricao').value;
-    
-    if(!cliente || !solicitante || !tecnico || !descricao){
-      alert('Preencha todos os campos!');
-      return;
-    }
-    
-    try{
-      // Atualizar chamado
-      const {error} = await supabaseClient.from('chamados').update({
-        cliente, solicitante, tecnico, descricao
-      }).eq('id', id);
-      
-      if(error) return this.mostrarErro('Erro ao atualizar: '+error.message);
-      
-      // Atualizar atualizações da cronologia
-      const textareas = document.querySelectorAll('[id^="cron-"]');
-      for(let textarea of textareas){
-        const cronId = textarea.id.replace('cron-', '');
-        const novoTexto = textarea.value;
-        await supabaseClient.from('cronologia_chamados').update({
-          descricao: novoTexto
-        }).eq('id', cronId);
-      }
-      
-      this.fecharModalEditar();
-      this.carregarChamados();
-      this.relatorio();
-    }catch(e){ this.mostrarErro('Erro: '+e.message); }
-  },
-
-  excluirAtualizacao: async function(cronId){
-    if(!confirm('Excluir esta atualização?')) return;
-    try{
-      const {error} = await supabaseClient.from('cronologia_chamados').delete().eq('id', cronId);
-      if(error) return this.mostrarErro('Erro ao excluir: '+error.message);
-      const chamadoId = document.getElementById('editId').innerText;
-      await this.carregarCronologiaParaEditar(chamadoId);
-    }catch(e){ this.mostrarErro('Erro: '+e.message); }
-  },
-
-  carregarCronologia: async function(chamado_id){
-    const {data,error} = await supabaseClient.from('cronologia_chamados').select('*').eq('chamado_id',chamado_id).order('data',{ascending:true});
-    const lista=document.getElementById('listaCronologia'); lista.innerHTML='';
-    if(error) return this.mostrarErro('Erro ao carregar cronologia: '+error.message);
-    if(!data||data.length===0){lista.innerHTML='Nenhuma atualização ainda.'; return;}
-    data.forEach((c,i)=>{lista.innerHTML+=`<div class="${i===data.length-1?'ultimo':''}"><span>[${new Date(c.data).toLocaleString('pt-BR')}]</span>${c.descricao}</div>`});
-  },
-
-  salvarAtualizacao: async function(){
-    const desc=document.getElementById('novaAtualizacao').value;
-    const id=document.getElementById('cronId').innerText;
-    if(!desc) return alert('Digite a atualização');
-    
-    // Ajustar a data para o fuso horário local
-    const agora = new Date();
-    const offset = agora.getTimezoneOffset() * 60000;
-    const dataLocal = new Date(agora.getTime() - offset).toISOString();
-    
-    const {error}=await supabaseClient.from('cronologia_chamados').insert({chamado_id:id,descricao:desc,data:dataLocal});
-    if(error) return this.mostrarErro('Erro ao salvar atualização: '+error.message);
-    document.getElementById('novaAtualizacao').value='';
-    this.carregarCronologia(id);
-  },
-
   async salvarConfig(){
-    try{
-      let {error}=await supabaseClient.from('configuracoes').update({empresa:confEmpresa.value,logo_url:confLogo.value}).eq('id',1);
-      if(error && error.code==='PGRST116'){await supabaseClient.from('configuracoes').insert({id:1,empresa:confEmpresa.value,logo_url:confLogo.value});}
-      this.carregarConfig();
-    }catch(e){this.mostrarErro('Erro: '+e.message);}
+    const nome = document.getElementById('confEmpresa').value;
+    const logo = document.getElementById('confLogo').value;
+    if(nome) document.getElementById('nomeEmpresa').innerText = nome;
+    if(logo){
+      document.getElementById('logoEmpresa').src = logo;
+      document.getElementById('logoEmpresa').classList.remove('hidden');
+    }
+    alert('✅ Configurações salvas!');
   },
 
   async carregarConfig(){
     try{
-      const {data} = await supabaseClient.from('configuracoes').select('*').eq('id',1).single();
+      const {data} = await sb.from('configuracoes').select('*').eq('id',1).single();
       if(!data) return;
-      nomeEmpresa.innerText=data.empresa||'Sistema';
-      confEmpresa.value=data.empresa||'';
-      confLogo.value=data.logo_url||'';
-      if(data.logo_url){logoEmpresa.src=data.logo_url;logoEmpresa.classList.remove('hidden');}
+      document.getElementById('confEmpresa').value = data.empresa || '';
+      document.getElementById('confLogo').value = data.logo_url || '';
+      if(data.empresa) document.getElementById('nomeEmpresa').innerText = data.empresa;
+      if(data.logo_url){
+        document.getElementById('logoEmpresa').src = data.logo_url;
+        document.getElementById('logoEmpresa').classList.remove('hidden');
+      }
     }catch(e){console.error(e);}
   },
 
+  async abrirModalEditar(chamadoId){
+    try{
+      const {data: chamado} = await sb.from('chamados').select('*').eq('id', chamadoId).single();
+      if(!chamado) return this.mostrarErro('Chamado não encontrado');
+      
+      const {data: cronologia} = await sb.from('cronologia_chamados').select('*').eq('chamado_id', chamadoId).order('data',{ascending:true});
+      
+      document.getElementById('idChamadoEditar').innerText = chamadoId;
+      document.getElementById('pCliente').value = chamado.cliente;
+      document.getElementById('pSolicitante').value = chamado.solicitante;
+      document.getElementById('pTecnico').value = chamado.tecnico;
+      document.getElementById('pDescricao').value = chamado.descricao;
+      document.getElementById('pDescricao').placeholder = `Descrição: ${chamado.descricao}\n\nClique para adicionar atualização na cronologia...`;
+      
+      let cronHtml = '';
+      if(cronologia && cronologia.length > 0){
+        cronHtml = cronologia.map(c => `
+          <div style="padding:10px;background:#f0f0f0;border-radius:4px;margin-bottom:8px;border-left:3px solid #2563eb;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px;">
+              <span style="font-weight:bold;font-size:12px;">${new Date(c.data).toLocaleString('pt-BR')}</span>
+              <div style="display:flex;gap:5px;">
+                <button class="btn" onclick="app.editarCronologia(${c.id},'${(c.descricao || '').replace(/'/g, "\\'").replace(/\n/g, '\\n')}')" style="padding:3px 8px;font-size:10px;background:#16a34a;">✏️</button>
+                <button class="btn-danger" onclick="app.excluirCronologia(${c.id})" style="padding:3px 8px;font-size:10px;">🗑️</button>
+              </div>
+            </div>
+            <p style="margin:0;word-break:break-word;white-space:pre-wrap;font-size:12px;">${c.descricao}</p>
+          </div>
+        `).join('');
+      } else {
+        cronHtml = '<p style="color:#999;text-align:center;padding:20px;">Nenhuma atualização</p>';
+      }
+      document.getElementById('listaCronologia').innerHTML = cronHtml;
+      
+      this.chamadoEditandoId = chamadoId;
+      document.getElementById('modalEditarChamado').classList.add('active');
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
+  fecharModalEditar(){
+    document.getElementById('modalEditarChamado').classList.remove('active');
+  },
+
+  async salvarEdicaoChamado(){
+    try{
+      const {error} = await sb.from('chamados').update({
+        cliente: document.getElementById('pCliente').value,
+        solicitante: document.getElementById('pSolicitante').value,
+        tecnico: document.getElementById('pTecnico').value
+      }).eq('id', this.chamadoEditandoId);
+      
+      if(error) return this.mostrarErro('Erro ao salvar');
+      alert('✅ Chamado atualizado!');
+      this.fecharModalEditar();
+      this.carregarChamados();
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
+  async adicionarAtualizacaoPrompt(){
+    const desc = prompt('Adicionar atualização na cronologia:');
+    if(desc !== null && desc.trim()){
+      try{
+        const {error} = await sb.from('cronologia_chamados').insert({
+          chamado_id: this.chamadoEditandoId,
+          descricao: desc.trim(),
+          data: new Date().toISOString()
+        });
+        if(error) return this.mostrarErro('Erro ao salvar');
+        this.abrirModalEditar(this.chamadoEditandoId);
+      }catch(e){this.mostrarErro('Erro: '+e.message);}
+    }
+  },
+
+  async salvarAtualizacaoChamado(){
+    const desc = document.getElementById('pDescricao').value.trim();
+    if(!desc){alert('Digite uma atualização!');return;}
+    try{
+      const {error} = await sb.from('cronologia_chamados').insert({
+        chamado_id: this.chamadoEditandoId,
+        descricao: desc,
+        data: new Date().toISOString()
+      });
+      if(error) return this.mostrarErro('Erro ao salvar atualização');
+      document.getElementById('pDescricao').value = '';
+      this.abrirModalEditar(this.chamadoEditandoId);
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
+  async editarCronologia(cronId, descricao){
+    const novaDesc = prompt('Editar atualização:', descricao);
+    if(novaDesc !== null && novaDesc.trim()){
+      try{
+        const {error} = await sb.from('cronologia_chamados').update({
+          descricao: novaDesc.trim()
+        }).eq('id', cronId);
+        if(error) return this.mostrarErro('Erro ao atualizar');
+        this.abrirModalEditar(this.chamadoEditandoId);
+      }catch(e){this.mostrarErro('Erro: '+e.message);}
+    }
+  },
+
+  async excluirCronologia(cronId){
+    if(!confirm('Excluir esta atualização?')) return;
+    try{
+      const {error} = await sb.from('cronologia_chamados').delete().eq('id', cronId);
+      if(error) return this.mostrarErro('Erro ao excluir');
+      this.abrirModalEditar(this.chamadoEditandoId);
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
+  async abrirCronologiaRapida(chamadoId){
+    try{
+      const {data: cronologia} = await sb.from('cronologia_chamados').select('*').eq('chamado_id', chamadoId).order('data',{ascending:true});
+      
+      let cronHtml = '';
+      if(cronologia && cronologia.length > 0){
+        cronHtml = cronologia.map(c => `
+          <div style="padding:10px;background:#f0f0f0;border-radius:4px;margin-bottom:8px;border-left:3px solid #2563eb;">
+            <span style="font-weight:bold;font-size:12px;">${new Date(c.data).toLocaleString('pt-BR')}</span>
+            <p style="margin:6px 0 0 0;word-break:break-word;white-space:pre-wrap;font-size:12px;">${c.descricao}</p>
+          </div>
+        `).join('');
+      } else {
+        cronHtml = '<p style="color:#999;text-align:center;padding:20px;">Nenhuma atualização</p>';
+      }
+      
+      document.getElementById('idCronologiaRapida').innerText = chamadoId;
+      document.getElementById('listaCronologiaRapida').innerHTML = cronHtml;
+      document.getElementById('descricaoCronologiaRapida').value = '';
+      this.chamadoCronologiaRapidaId = chamadoId;
+      document.getElementById('modalCronologiaRapida').classList.add('active');
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
+  fecharCronologiaRapida(){
+    document.getElementById('modalCronologiaRapida').classList.remove('active');
+  },
+
+  async salvarCronologiaRapida(){
+    const desc = document.getElementById('descricaoCronologiaRapida').value.trim();
+    if(!desc){alert('Digite uma atualização!');return;}
+    try{
+      const {error} = await sb.from('cronologia_chamados').insert({
+        chamado_id: this.chamadoCronologiaRapidaId,
+        descricao: desc,
+        data: new Date().toISOString()
+      });
+      if(error) return this.mostrarErro('Erro ao salvar');
+      this.abrirCronologiaRapida(this.chamadoCronologiaRapidaId);
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
+  abrirModalNovoCliente(){
+    document.getElementById('modalNovoCliente').classList.add('active');
+    document.getElementById('modalNovoCliente').dataset.nomeOriginal = '';
+    document.querySelector('#modalNovoCliente h3').innerText = '➕ Novo Cliente';
+    document.getElementById('btnSalvarCliente').onclick = function() { app.salvarNovoCliente(); };
+    document.getElementById('ncNome').value = '';
+    document.getElementById('ncRazao').value = '';
+    document.getElementById('ncCNPJ').value = '';
+    document.getElementById('ncEndereco').value = '';
+    document.getElementById('ncObservacoes').value = '';
+  },
+
+  fecharModalNovoCliente(){
+    document.getElementById('modalNovoCliente').classList.remove('active');
+    document.getElementById('modalNovoCliente').dataset.nomeOriginal = '';
+    document.querySelector('#modalNovoCliente h3').innerText = '➕ Novo Cliente';
+    document.getElementById('ncNome').value = '';
+    document.getElementById('ncRazao').value = '';
+    document.getElementById('ncCNPJ').value = '';
+    document.getElementById('ncEndereco').value = '';
+    document.getElementById('ncObservacoes').value = '';
+  },
+
+  async salvarNovoCliente(){
+    const nome = document.getElementById('ncNome').value.trim();
+    if(!nome){
+      alert('Nome do cliente é obrigatório!');
+      return;
+    }
+    try{
+      const {error} = await sb.from('clientes').insert({
+        nome: nome,
+        razao_social: document.getElementById('ncRazao').value.trim() || null,
+        cnpj: document.getElementById('ncCNPJ').value.trim() || null,
+        endereco: document.getElementById('ncEndereco').value.trim() || null,
+        observacoes: document.getElementById('ncObservacoes').value.trim() || null
+      });
+      if(error) return this.mostrarErro('Erro ao salvar cliente');
+      alert('✅ Cliente cadastrado com sucesso!');
+      this.fecharModalNovoCliente();
+      this.carregarClientes();
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
+  async abrirModalEditarCliente(nomeCliente){
+    try{
+      const {data} = await sb.from('clientes').select('*').eq('nome', nomeCliente).single();
+      if(!data) return this.mostrarErro('Cliente não encontrado');
+      
+      document.getElementById('ncNome').value = data.nome || '';
+      document.getElementById('ncRazao').value = data.razao_social || '';
+      document.getElementById('ncCNPJ').value = data.cnpj || '';
+      document.getElementById('ncEndereco').value = data.endereco || '';
+      document.getElementById('ncObservacoes').value = data.observacoes || '';
+      
+      document.getElementById('modalNovoCliente').dataset.nomeOriginal = nomeCliente;
+      document.querySelector('#modalNovoCliente h3').innerText = '✏️ Editar Cliente';
+      document.getElementById('btnSalvarCliente').onclick = function() { app.salvarEdicaoCliente(); };
+      document.getElementById('modalNovoCliente').classList.add('active');
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
+  async salvarEdicaoCliente(){
+    const nomeOriginal = document.getElementById('modalNovoCliente').dataset.nomeOriginal;
+    const novoNome = document.getElementById('ncNome').value.trim();
+    
+    if(!novoNome){
+      alert('Nome do cliente é obrigatório!');
+      return;
+    }
+    
+    try{
+      const {error} = await sb.from('clientes').update({
+        nome: novoNome,
+        razao_social: document.getElementById('ncRazao').value.trim() || null,
+        cnpj: document.getElementById('ncCNPJ').value.trim() || null,
+        endereco: document.getElementById('ncEndereco').value.trim() || null,
+        observacoes: document.getElementById('ncObservacoes').value.trim() || null
+      }).eq('nome', nomeOriginal);
+      
+      if(error) return this.mostrarErro('Erro ao atualizar cliente');
+      alert('✅ Cliente atualizado com sucesso!');
+      this.fecharModalNovoCliente();
+      this.carregarClientes();
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
+  async excluirCliente(nomeCliente){
+    try{
+      const {data: chamados} = await sb.from('chamados').select('id').eq('cliente', nomeCliente).limit(1);
+      
+      if(chamados && chamados.length > 0){
+        alert('❌ Não é possível excluir!\n\nEste cliente possui chamados associados.');
+        return;
+      }
+      
+      if(!confirm(`Tem certeza que deseja excluir o cliente "${nomeCliente}"?`)){
+        return;
+      }
+      
+      const {error} = await sb.from('clientes').delete().eq('nome', nomeCliente);
+      if(error) return this.mostrarErro('Erro ao excluir cliente');
+      
+      alert('✅ Cliente excluído com sucesso!');
+      this.carregarClientes();
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
+  async abrirCronologiaRelatorio(chamadoId){
+    try{
+      const {data: cronologia} = await sb.from('cronologia_chamados').select('*').eq('chamado_id', chamadoId).order('data',{ascending:true});
+      
+      let cronHtml = '';
+      if(cronologia && cronologia.length > 0){
+        cronHtml = cronologia.map(c => `
+          <div style="padding:10px;background:#f0f0f0;border-radius:4px;margin-bottom:8px;border-left:3px solid #2563eb;">
+            <span style="font-weight:bold;font-size:12px;">${new Date(c.data).toLocaleString('pt-BR')}</span>
+            <p style="margin:6px 0 0 0;word-break:break-word;white-space:pre-wrap;font-size:12px;">${c.descricao}</p>
+          </div>
+        `).join('');
+      } else {
+        cronHtml = '<p style="color:#999;text-align:center;padding:20px;">Nenhuma atualização</p>';
+      }
+      
+      document.getElementById('idCronologiaVis').innerText = chamadoId;
+      document.getElementById('listaCronologiaVis').innerHTML = cronHtml;
+      document.getElementById('modalCronologiaVisualizacao').classList.add('active');
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
+  fecharCronologiaVisualizacao(){
+    document.getElementById('modalCronologiaVisualizacao').classList.remove('active');
+  },
+
+
+
+  async abrirPainel(chamadoId){
+    try{
+      const {data: chamado} = await sb.from('chamados').select('*').eq('id', chamadoId).single();
+      if(!chamado) return this.mostrarErro('Chamado não encontrado');
+      
+      const {data: cronologia} = await sb.from('cronologia_chamados').select('*').eq('chamado_id', chamadoId).order('data',{ascending:true});
+      
+      let cronHtml = '';
+      if(cronologia && cronologia.length > 0){
+        cronHtml = cronologia.map(c => `
+          <div style="padding:8px;background:#f0f0f0;border-radius:4px;margin-bottom:6px;font-size:12px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-weight:bold;">${new Date(c.data).toLocaleString('pt-BR')}</span>
+              <button class="btn-danger" onclick="app.excluirCronologia(${c.id})" style="padding:2px 6px;font-size:10px;">🗑️</button>
+            </div>
+            <p style="margin:0;word-break:break-word;white-space:pre-wrap;">${c.descricao}</p>
+          </div>
+        `).join('');
+      } else {
+        cronHtml = '<p style="color:#999;text-align:center;">Nenhuma atualização</p>';
+      }
+      
+      const painel = document.getElementById('painel');
+      const conteudo = document.getElementById('painelConteudo');
+      
+      conteudo.innerHTML = `
+        <label style="font-weight:bold;display:block;margin-bottom:6px;">Cliente</label>
+        <input id="pCliente" value="${chamado.cliente}" style="width:100%;margin-bottom:10px;padding:6px;border:1px solid #ddd;border-radius:4px;">
+        
+        <label style="font-weight:bold;display:block;margin-bottom:6px;">Solicitante</label>
+        <input id="pSolicitante" value="${chamado.solicitante}" style="width:100%;margin-bottom:10px;padding:6px;border:1px solid #ddd;border-radius:4px;">
+        
+        <label style="font-weight:bold;display:block;margin-bottom:6px;">Técnico</label>
+        <input id="pTecnico" value="${chamado.tecnico}" style="width:100%;margin-bottom:10px;padding:6px;border:1px solid #ddd;border-radius:4px;">
+        
+        <label style="font-weight:bold;display:block;margin-bottom:6px;">Descrição</label>
+        <textarea id="pDescricao" style="width:100%;margin-bottom:10px;padding:6px;border:1px solid #ddd;border-radius:4px;height:80px;font-family:inherit;">${chamado.descricao}</textarea>
+        
+        <button class="btn" onclick="app.salvarEdicaoChamado(${chamadoId})" style="width:100%;margin-bottom:8px;font-size:13px;">💾 Salvar</button>
+        
+        <h4 style="margin:15px 0 8px 0;border-top:1px solid #ddd;padding-top:10px;">Cronologia</h4>
+        <div style="max-height:200px;overflow-y:auto;margin-bottom:10px;">
+          ${cronHtml}
+        </div>
+        
+        <label style="font-weight:bold;display:block;margin-bottom:6px;font-size:13px;">Adicionar Atualização</label>
+        <textarea id="pAtualizacao" placeholder="Descrição..." style="width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;height:60px;margin-bottom:8px;font-family:inherit;font-size:12px;"></textarea>
+        
+        <button class="btn" onclick="app.adicionarAtualizacao(${chamadoId})" style="width:100%;font-size:13px;">➕ Adicionar</button>
+      `;
+      
+      document.getElementById('painelTitulo').innerText = `Chamado #${chamadoId}`;
+      painel.style.display = 'block';
+      painel.scrollTop = 0;
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
+  },
+
   async init(){
-    try{await supabaseClient.from('chamados').select('id').limit(1);}catch(e){this.mostrarErro('ERRO de conexão: '+e.message); return;}
-    this.carregarChamados(); this.carregarClientes(); this.carregarConfig();
+    await this.carregarConfig();
+    this.carregarChamados();
   }
 };
 
