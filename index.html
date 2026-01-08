@@ -351,11 +351,20 @@ const app = {
           <td>${c.solicitante}</td>
           <td>${c.tecnico}</td>
           <td style="cursor:pointer;text-decoration:underline;color:#2563eb;" onclick="app.abrirCronologiaRapida(${c.id})">${c.descricao}</td>
-          <td><span class="status ${c.status}">${c.status}</span></td>
+          <td><span class="status ${c.status}" onclick="app.alterarStatus(${c.id}, '${c.status}')">${c.status}</span></td>
           <td><button class="btn" onclick="app.abrirModalEditar(${c.id})" style="font-size:11px;padding:4px 6px;">✏️</button></td>
         </tr>`;
       });
     } catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  async alterarStatus(chamadoId, statusAtual){
+    const novoStatus = statusAtual === 'pendente' ? 'resolvido' : 'pendente';
+    try{
+      const {error} = await sb.from('chamados').update({status: novoStatus}).eq('id', chamadoId);
+      if(error) return this.mostrarErro('Erro ao alterar status');
+      this.carregarChamados();
+    }catch(e){this.mostrarErro('Erro: '+e.message);}
   },
 
   async salvarChamado(){
@@ -850,65 +859,6 @@ const app = {
 
   fecharCronologiaVisualizacao(){
     document.getElementById('modalCronologiaVisualizacao').classList.remove('active');
-  },
-
-
-
-  async abrirPainel(chamadoId){
-    try{
-      const {data: chamado} = await sb.from('chamados').select('*').eq('id', chamadoId).single();
-      if(!chamado) return this.mostrarErro('Chamado não encontrado');
-      
-      const {data: cronologia} = await sb.from('cronologia_chamados').select('*').eq('chamado_id', chamadoId).order('data',{ascending:true});
-      
-      let cronHtml = '';
-      if(cronologia && cronologia.length > 0){
-        cronHtml = cronologia.map(c => `
-          <div style="padding:8px;background:#f0f0f0;border-radius:4px;margin-bottom:6px;font-size:12px;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-              <span style="font-weight:bold;">${new Date(c.data).toLocaleString('pt-BR')}</span>
-              <button class="btn-danger" onclick="app.excluirCronologia(${c.id})" style="padding:2px 6px;font-size:10px;">🗑️</button>
-            </div>
-            <p style="margin:0;word-break:break-word;white-space:pre-wrap;">${c.descricao}</p>
-          </div>
-        `).join('');
-      } else {
-        cronHtml = '<p style="color:#999;text-align:center;">Nenhuma atualização</p>';
-      }
-      
-      const painel = document.getElementById('painel');
-      const conteudo = document.getElementById('painelConteudo');
-      
-      conteudo.innerHTML = `
-        <label style="font-weight:bold;display:block;margin-bottom:6px;">Cliente</label>
-        <input id="pCliente" value="${chamado.cliente}" style="width:100%;margin-bottom:10px;padding:6px;border:1px solid #ddd;border-radius:4px;">
-        
-        <label style="font-weight:bold;display:block;margin-bottom:6px;">Solicitante</label>
-        <input id="pSolicitante" value="${chamado.solicitante}" style="width:100%;margin-bottom:10px;padding:6px;border:1px solid #ddd;border-radius:4px;">
-        
-        <label style="font-weight:bold;display:block;margin-bottom:6px;">Técnico</label>
-        <input id="pTecnico" value="${chamado.tecnico}" style="width:100%;margin-bottom:10px;padding:6px;border:1px solid #ddd;border-radius:4px;">
-        
-        <label style="font-weight:bold;display:block;margin-bottom:6px;">Descrição</label>
-        <textarea id="pDescricao" style="width:100%;margin-bottom:10px;padding:6px;border:1px solid #ddd;border-radius:4px;height:80px;font-family:inherit;">${chamado.descricao}</textarea>
-        
-        <button class="btn" onclick="app.salvarEdicaoChamado(${chamadoId})" style="width:100%;margin-bottom:8px;font-size:13px;">💾 Salvar</button>
-        
-        <h4 style="margin:15px 0 8px 0;border-top:1px solid #ddd;padding-top:10px;">Cronologia</h4>
-        <div style="max-height:200px;overflow-y:auto;margin-bottom:10px;">
-          ${cronHtml}
-        </div>
-        
-        <label style="font-weight:bold;display:block;margin-bottom:6px;font-size:13px;">Adicionar Atualização</label>
-        <textarea id="pAtualizacao" placeholder="Descrição..." style="width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;height:60px;margin-bottom:8px;font-family:inherit;font-size:12px;"></textarea>
-        
-        <button class="btn" onclick="app.adicionarAtualizacao(${chamadoId})" style="width:100%;font-size:13px;">➕ Adicionar</button>
-      `;
-      
-      document.getElementById('painelTitulo').innerText = `Chamado #${chamadoId}`;
-      painel.style.display = 'block';
-      painel.scrollTop = 0;
-    }catch(e){this.mostrarErro('Erro: '+e.message);}
   },
 
   async init(){
