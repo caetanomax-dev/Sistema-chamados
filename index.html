@@ -154,9 +154,12 @@
               <label style="font-weight:bold;display:block;margin-bottom:6px;">Data Fim</label>
               <input id="fDataFim" type="date" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
             </div>
-          </div>
-          <button class="btn" onclick="app.relatorio()" style="width:100%;padding:12px;font-size:16px;">🔍 Filtrar</button>
-        </div>
+         
+          <div style="display:flex;gap:10px;margin-top:10px;">
+  <button class="btn" onclick="app.relatorio()" style="flex:1;padding:12px;font-size:16px;">🔍 Filtrar</button>
+  <button class="btn" onclick="app.imprimirRelatorio()" style="flex:1;padding:12px;font-size:16px;background:#16a34a;">🖨️ Imprimir</button>
+</div>
+        
        <table><thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Tipo</th><th>Status</th><th>Descrição</th></tr></thead><tbody id="resultadoRelatorio"></tbody></table>
       </section>
       <section id="usuarios" class="hidden">
@@ -302,6 +305,129 @@ const app = {
   async carregarAuditoria(){ try{ const tbody = document.getElementById('listaAuditoria'); tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#999;">Use a pesquisa para filtrar registros</td></tr>'; }catch(e){console.error(e);} },
   async filtrarAuditoria(){ try{ const {data, error} = await sb.from('auditoria').select('*').order('data_acao',{ascending:false}).limit(1000); if(error) return this.mostrarErro('Erro: '+error.message); let resultados = data || []; const usuarioFiltro = document.getElementById('auditFiltroUsuario').value.trim().toLowerCase(); if(usuarioFiltro){ resultados = resultados.filter(a => a.usuario_nome.toLowerCase().includes(usuarioFiltro)); } const acaoFiltro = document.getElementById('auditFiltroAcao').value.trim().toLowerCase(); if(acaoFiltro){ resultados = resultados.filter(a => a.acao.toLowerCase().includes(acaoFiltro)); } const dataInicio = document.getElementById('auditFiltroDataInicio').value; const dataFim = document.getElementById('auditFiltroDataFim').value; if(dataInicio || dataFim){ resultados = resultados.filter(a => { const dataAcao = a.data_acao.substring(0, 10); if(dataInicio && dataAcao < dataInicio) return false; if(dataFim && dataAcao > dataFim) return false; return true; }); } const tbody = document.getElementById('listaAuditoria'); tbody.innerHTML = ''; if(!resultados.length) return tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;">Nenhum resultado encontrado</td></tr>'; resultados.forEach(a => { const dataFormatada = new Date(a.data_acao).toLocaleString('pt-BR'); tbody.innerHTML += `<tr><td>${dataFormatada}</td><td><strong>${a.usuario_nome}</strong></td><td>${a.acao}</td><td style="font-size:12px;color:#666;">${a.detalhes || '--'}</td></tr>`; }); }catch(e){this.mostrarErro('Erro: '+e.message);} },
   limparAuditoria(){ document.getElementById('auditFiltroUsuario').value = ''; document.getElementById('auditFiltroAcao').value = ''; document.getElementById('auditFiltroDataInicio').value = ''; document.getElementById('auditFiltroDataFim').value = ''; const tbody = document.getElementById('listaAuditoria'); tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#999;">Use a pesquisa para filtrar registros</td></tr>'; },
+  // ADICIONE ESTA FUNÇÃO NO OBJETO "app"
+
+imprimirRelatorio(){
+  const nomeEmpresa = document.getElementById('nomeEmpresa').innerText;
+  const dataAtual = new Date().toLocaleDateString('pt-BR');
+  const resultados = document.getElementById('resultadoRelatorio').getElementsByTagName('tr');
+  
+  if(resultados.length === 0){
+    alert('❌ Nenhum dado para imprimir! Faça uma busca primeiro.');
+    return;
+  }
+
+  let html = `
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8">
+      <title>Relatório de Chamados</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; color: #333; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #2563eb; padding-bottom: 20px; }
+        .header h1 { font-size: 24px; color: #1f2937; margin-bottom: 5px; }
+        .header p { font-size: 13px; color: #666; }
+        .filtros { background: #f3f4f6; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 12px; }
+        .filtros h3 { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #1f2937; }
+        .filtro-item { display: inline-block; margin-right: 15px; margin-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; font-size: 12px; }
+        th { background: #2563eb; color: #fff; font-weight: bold; }
+        tr:nth-child(even) { background: #f9fafb; }
+        .status-pendente { background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
+        .status-resolvido { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
+        .footer { margin-top: 30px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #ddd; padding-top: 15px; }
+        @media print {
+          body { background: white; }
+          .no-print { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>${nomeEmpresa}</h1>
+        <p>Relatório de Chamados</p>
+        <p>Gerado em ${dataAtual}</p>
+      </div>
+
+      <div class="filtros">
+        <h3>📋 Filtros Aplicados:</h3>
+        <div class="filtro-item"><strong>Cliente:</strong> ${document.getElementById('fCliente').value || 'Todos'}</div>
+        <div class="filtro-item"><strong>Técnico:</strong> ${document.getElementById('fTecnico').value || 'Todos'}</div>
+        <div class="filtro-item"><strong>Categoria:</strong> ${document.getElementById('fCategoria').value || 'Todas'}</div>
+        <div class="filtro-item"><strong>Status:</strong> ${document.getElementById('fStatus').value || 'Todos'}</div>
+        <div class="filtro-item"><strong>Tipo:</strong> ${document.getElementById('fTipoAtendimento').value || 'Todos'}</div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Data</th>
+            <th>Cliente</th>
+            <th>Solicitante</th>
+            <th>Técnico</th>
+            <th>Categoria</th>
+            <th>Tipo</th>
+            <th>Status</th>
+            <th>Descrição</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  // Adiciona linhas da tabela
+  for(let i = 1; i < resultados.length; i++){
+    const cells = resultados[i].getElementsByTagName('td');
+    if(cells.length === 0) continue;
+    
+    const id = cells[0]?.innerText || '';
+    const data = cells[1]?.innerText || '';
+    const cliente = cells[2]?.innerText || '';
+    const solicitante = cells[3]?.innerText || '';
+    const tecnico = cells[4]?.innerText || '';
+    const categoria = cells[5]?.innerText || '';
+    const tipo = cells[6]?.innerText || '';
+    const status = cells[7]?.innerText?.trim().toLowerCase() || '';
+    const descricao = cells[8]?.innerText?.split('\n')[0] || '';
+    
+    const statusClass = status === 'pendente' ? 'status-pendente' : 'status-resolvido';
+    const statusLabel = status === 'pendente' ? 'Pendente' : 'Resolvido';
+
+    html += `
+      <tr>
+        <td>${id}</td>
+        <td>${data}</td>
+        <td>${cliente}</td>
+        <td>${solicitante}</td>
+        <td>${tecnico}</td>
+        <td>${categoria}</td>
+        <td>${tipo}</td>
+        <td><span class="${statusClass}">${statusLabel}</span></td>
+        <td>${descricao.substring(0, 50)}...</td>
+      </tr>
+    `;
+  }
+
+  html += `
+        </tbody>
+      </table>
+
+      <div class="footer">
+        <p>Total de registros: ${resultados.length - 1}</p>
+        <p>Sistema de Chamados - Impressão em ${dataAtual}</p>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const janelaImpressao = window.open('', '', 'width=1200,height=800');
+  janelaImpressao.document.write(html);
+  janelaImpressao.document.close();
+  janelaImpressao.print();
+},
   async carregarChamadoDescricao(){
   try{
     const {data} = await sb.from('chamados').select('descricao').eq('id', this.chamadoCronologiaId).single();
