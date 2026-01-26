@@ -46,10 +46,10 @@
     @media (max-width: 768px) {
       .layout { flex-direction: column; }
       .sidebar { position: sticky; top: 0; width: 100%; padding: 14px 12px; z-index: 1000; display: flex; flex-direction: column; align-items: center; }
-      .user-info { width: 100%; text-align: center; border: none !important; padding: 0 !important; margin-bottom: 10px; }
       .user-info #usuarioNome { font-size: 14px; font-weight: bold; color: #fff; display: block; }
       .user-info #usuarioEmail { font-size: 11px; color: #9ca3af; display: block; margin-top: 2px; }
-      .user-info button { display: none; }
+      .user-info { width: 100%; text-align: center; border: none !important; padding: 0 !important; margin-bottom: 10px; display: flex; flex-direction: column; }
+      .user-info button { display: block !important; width: auto; margin-top: 15px; padding: 8px; font-size: 12px; }
       .sidebar img { height: 40px; margin: 6px 0; }
       .sidebar h1 { font-size: 14px; text-align: center; margin: 4px 0 10px 0; white-space: nowrap; }
       .menu-toggle { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 22px; background: none; border: none; color: #fff; cursor: pointer; margin: 6px 0 10px 0; }
