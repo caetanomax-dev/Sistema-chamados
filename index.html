@@ -161,7 +161,8 @@
             </div>
             <div>
               <label style="font-weight:bold;display:block;margin-bottom:6px;">Categoria</label>
-              <select id="fCategoria" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Todas as Categorias</option><option value="Caixa">Caixa</option><option value="Equipamento">Equipamento</option><option value="Retaguarda">Retaguarda</option><option value="Treinamento">Treinamento</option><option value="Apresentação">Apresentação</option><option value="Instalação">Instalação</option></select>
+              <select id="fCategoria" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Todas as Categorias</option><option value="Caixa">Caixa</option><option value="Equipamento">Equipamento</option><option value="Retaguarda">Retaguarda</option><option value="Treinamento">Treinamento</option><option value="Apresentação">Apresentação</option><option value="Instalação">Instalação</option><option value="Sitef">Sitef</option>
+<option value="Outros">Outros</option></select>
             </div>
             <div>
               <label style="font-weight:bold;display:block;margin-bottom:6px;">Tipo de Atendimento</label>
@@ -184,6 +185,7 @@
           <div style="display:flex;gap:10px;justify-content:center;margin-bottom:30px;width:100%;margin-top:20px;">
   <button class="btn" onclick="app.relatorio()" style="padding:12px 24px;font-size:16px;">🔍 Filtrar</button>
   <button class="btn" onclick="app.imprimirRelatorio()" style="padding:12px 24px;font-size:16px;background:#16a34a;">🖨️ Imprimir</button>
+  <button class="btn" onclick="app.limparFiltrosRelatorio()" style="padding:12px 24px;font-size:16px;background:#e5e7eb;color:#111;">🧹 Limpar </button>
 </div>
 
 <hr style="margin:30px 0;border:0;border-top:1px solid #e5e7eb;">
@@ -227,7 +229,8 @@
   </div>
 </div>
 
-<div id="modal" class="modal"><div class="modal-content" style="width:400px;"><h3 style="margin-top:0;">Novo Chamado</h3><label style="font-weight:bold;display:block;margin-bottom:6px;">Cliente *</label><div style="position:relative;margin-bottom:10px;"><input id="mCliente" placeholder="Digite o cliente" autocomplete="off" oninput="app.buscarClientes()" onblur="setTimeout(() => { document.getElementById('listaClientesAutoComplete').style.display = 'none'; }, 200)"><div id="listaClientesAutoComplete" style="position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ddd;border-radius:4px;max-height:150px;overflow-y:auto;z-index:10;display:none;"></div></div><input id="mSolicitante" placeholder="Solicitante"><label style="font-weight:bold;display:block;margin-bottom:6px;">Técnico *</label><select id="mTecnico" style="width:100%;margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Selecione um técnico</option></select><label style="font-weight:bold;display:block;margin-bottom:6px;">Categoria *</label><select id="mCategoria" style="width:100%;margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Selecione uma categoria</option><option value="Caixa">Caixa</option><option value="Equipamento">Equipamento</option><option value="Retaguarda">Retaguarda</option><option value="Treinamento">Treinamento</option><option value="Apresentação">Apresentação</option><option value="Instalação">Instalação</option></select><label style="font-weight:bold;display:block;margin-bottom:6px;">Tipo de Atendimento *</label><select id="mTipoAtendimento" style="width:100%;margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Selecione o tipo</option><option value="Remoto">Remoto</option><option value="Presencial">Presencial</option></select><textarea id="mDescricao" placeholder="Descrição" style="height:80px;"></textarea><button class="btn" onclick="app.salvarChamado()" style="width:100%;margin-bottom:8px;">Salvar</button><button class="btn-danger" onclick="app.fecharModal()" style="width:100%;">Cancelar</button></div></div>
+<div id="modal" class="modal"><div class="modal-content" style="width:400px;"><h3 style="margin-top:0;">Novo Chamado</h3><label style="font-weight:bold;display:block;margin-bottom:6px;">Cliente *</label><div style="position:relative;margin-bottom:10px;"><input id="mCliente" placeholder="Digite o cliente" autocomplete="off" oninput="app.buscarClientes()" onblur="setTimeout(() => { document.getElementById('listaClientesAutoComplete').style.display = 'none'; }, 200)"><div id="listaClientesAutoComplete" style="position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ddd;border-radius:4px;max-height:150px;overflow-y:auto;z-index:10;display:none;"></div></div><input id="mSolicitante" placeholder="Solicitante"><label style="font-weight:bold;display:block;margin-bottom:6px;">Técnico *</label><select id="mTecnico" style="width:100%;margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Selecione um técnico</option></select><label style="font-weight:bold;display:block;margin-bottom:6px;">Categoria *</label><select id="mCategoria" style="width:100%;margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Selecione uma categoria</option><option value="Caixa">Caixa</option><option value="Equipamento">Equipamento</option><option value="Retaguarda">Retaguarda</option><option value="Treinamento">Treinamento</option><option value="Apresentação">Apresentação</option><option value="Instalação">Instalação</option><option value="Sitef">Sitef</option>
+<option value="Outros">Outros</option></select><label style="font-weight:bold;display:block;margin-bottom:6px;">Tipo de Atendimento *</label><select id="mTipoAtendimento" style="width:100%;margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Selecione o tipo</option><option value="Remoto">Remoto</option><option value="Presencial">Presencial</option></select><textarea id="mDescricao" placeholder="Descrição" style="height:80px;"></textarea><button class="btn" onclick="app.salvarChamado()" style="width:100%;margin-bottom:8px;">Salvar</button><button class="btn-danger" onclick="app.fecharModal()" style="width:100%;">Cancelar</button></div></div>
 
 <div id="modalNovoUsuario" class="modal"><div class="modal-content" style="width:500px;"><h3>➕ Novo Usuário</h3><div id="msgNovoUsuario"></div><label style="font-weight:bold;display:block;margin-bottom:6px;">Nome *</label><input id="novoUsuarioNome" type="text" placeholder="Nome completo"><label style="font-weight:bold;display:block;margin-bottom:6px;">Email *</label><input id="novoUsuarioEmail" type="email" placeholder="Email"><label style="font-weight:bold;display:block;margin-bottom:6px;">Senha *</label><input id="novoUsuarioSenha" type="password" placeholder="Mín. 6 caracteres"><label style="font-weight:bold;display:block;margin-bottom:6px;">Confirmar *</label><input id="novoUsuarioConfirma" type="password" placeholder="Confirmar senha"><label style="font-weight:bold;display:block;margin-bottom:10px;">Permissões:</label><div style="background:#f0f4f8;padding:15px;border-radius:6px;margin-bottom:20px;border:1px solid #ddd;"><div style="display:flex;align-items:center;margin-bottom:10px;"><input type="checkbox" id="permChamados" checked style="margin-right:10px;"><label for="permChamados" style="cursor:pointer;margin:0;">📋 Chamados</label></div><div style="display:flex;align-items:center;margin-bottom:10px;"><input type="checkbox" id="permClientes" checked style="margin-right:10px;"><label for="permClientes" style="cursor:pointer;margin:0;">👥 Clientes</label></div><div style="display:flex;align-items:center;margin-bottom:10px;"><input type="checkbox" id="permRelatorios" checked style="margin-right:10px;"><label for="permRelatorios" style="cursor:pointer;margin:0;">📊 Relatórios</label></div><div style="display:flex;align-items:center;"><input type="checkbox" id="permUsuarios" style="margin-right:10px;"><label for="permUsuarios" style="cursor:pointer;margin:0;">👨‍💼 Admin</label></div></div><div style="display:flex;gap:10px;"><button class="btn" id="btnSalvarUsuario" onclick="app.criarNovoUsuario()" style="flex:1;">💾 Criar</button><button class="btn-danger" onclick="app.fecharModalNovoUsuario()" style="flex:1;">Cancelar</button></div></div></div>
 
@@ -290,7 +293,20 @@ const app = {
 
   fecharModal(){ document.getElementById('modal').classList.remove('active'); },
   async carregarChamados(){ try{ const {data} = await sb.from('chamados').select('*').order('id',{ascending:false}); const tbody = document.getElementById('listaChamados'); tbody.innerHTML = '';       if(!data || !data.length) return tbody.innerHTML = '<tr><td colspan="8">Nenhum chamado</td></tr>';       const hoje = new Date().toISOString().split('T')[0]; const filtrados = data.filter(c => c.created_at.substring(0,10) === hoje || c.status === 'pendente'); if(!filtrados.length) return tbody.innerHTML = '<tr><td colspan="8">Nenhum chamado pendente ou de hoje</td></tr>';       filtrados.forEach(c => tbody.innerHTML += `<tr><td>${c.id}</td><td>${new Date(c.created_at).toLocaleDateString('pt-BR')}</td><td>${c.cliente}</td><td>${c.solicitante}</td><td>${c.tecnico}</td><td><strong>${c.categoria || 'N/A'}</strong></td><td><span class="status ${c.status}" onclick="app.alterarStatus(${c.id},'${c.status}')">${c.status}</span></td><td><button class="btn" onclick="app.abrirCronologia(${c.id})" style="font-size:11px;padding:4px 6px;">📋</button></td></tr>`); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  async alterarStatus(id, status){ const novo = status === 'pendente' ? 'resolvido' : 'pendente'; try{ const {error} = await sb.from('chamados').update({status: novo}).eq('id', id); if(error) return this.mostrarErro('Erro ao alterar'); await this.registrarHistorico(id, `Status alterado para ${novo}`); await this.registrarAuditoria('Alterou status do chamado', `ID: ${id} | Novo status: ${novo}`); this.carregarChamados(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
+  async alterarStatus(id, status){ 
+  const novo = status === 'pendente' ? 'resolvido' : 'pendente';
+  const msgStatus = novo === 'resolvido' ? 'Resolvido' : 'Pendente';
+  
+  if(!confirm(`Tem certeza que deseja alterar o status para "${msgStatus}"?`)) return;
+  
+  try{ 
+    const {error} = await sb.from('chamados').update({status: novo}).eq('id', id); 
+    if(error) return this.mostrarErro('Erro ao alterar'); 
+    await this.registrarHistorico(id, `Status alterado para ${novo}`); 
+    await this.registrarAuditoria('Alterou status do chamado', `ID: ${id} | Novo status: ${novo}`); 
+    this.carregarChamados(); 
+  }catch(e){this.mostrarErro('Erro: '+e.message);} 
+},
   async buscarClientes(){ const valor = document.getElementById('mCliente').value.trim(); const lista = document.getElementById('listaClientesAutoComplete'); if(valor.length < 1){ lista.style.display = 'none'; lista.innerHTML = ''; return; } try{ const {data} = await sb.from('clientes').select('nome').ilike('nome', `%${valor}%`).limit(20); lista.innerHTML = ''; if(!data || !data.length){ lista.innerHTML = `<div style="padding:10px;cursor:pointer;color:#2563eb;" onmousedown="app.selecionarCliente('${valor}')"><strong>+ Criar novo: ${valor}</strong></div>`; lista.style.display = 'block'; return; } data.forEach(c => lista.innerHTML += `<div style="cursor:pointer;border-bottom:1px solid #eee;" onmousedown="app.selecionarCliente('${c.nome}')">${c.nome}</div>`); lista.style.display = 'block'; }catch(e){console.error(e);} },
   selecionarCliente(nome){ document.getElementById('mCliente').value = nome; document.getElementById('listaClientesAutoComplete').style.display = 'none'; },
   async salvarChamado(){ const c = document.getElementById('mCliente').value.trim(); const s = document.getElementById('mSolicitante').value.trim(); const t = document.getElementById('mTecnico').value.trim(); const cat = document.getElementById('mCategoria').value.trim(); const tipo = document.getElementById('mTipoAtendimento').value.trim(); const d = document.getElementById('mDescricao').value.trim(); if(!c||!s||!t||!cat||!tipo||!d) return alert('Preencha todos os campos!'); try{ const {data:clienteExiste} = await sb.from('clientes').select('nome').eq('nome', c).single(); if(!clienteExiste){ await sb.from('clientes').insert({nome:c}); } const {data, error} = await sb.from('chamados').insert({cliente:c,solicitante:s,tecnico:t,categoria:cat,tipo_atendimento:tipo,descricao:d,status:'pendente',created_at:new Date().toISOString(),criado_por_id:this.usuarioAtual.id,criado_por_nome:this.usuarioAtual.user_metadata?.full_name || this.usuarioAtual.email,criado_por_email:this.usuarioAtual.email}).select().single(); if(error) return this.mostrarErro('Erro: '+error.message); await this.registrarHistorico(data.id, 'Chamado criado'); await this.registrarAuditoria('Criou chamado', `ID: ${data.id} | Cliente: ${c} | Categoria: ${cat} | Tipo: ${tipo}`); this.fecharModal(); this.carregarChamados(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
@@ -338,7 +354,23 @@ if(idChamado){
   async carregarAuditoria(){ try{ const tbody = document.getElementById('listaAuditoria'); tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#999;">Use a pesquisa para filtrar registros</td></tr>'; }catch(e){console.error(e);} },
   async filtrarAuditoria(){ try{ const {data, error} = await sb.from('auditoria').select('*').order('data_acao',{ascending:false}).limit(1000); if(error) return this.mostrarErro('Erro: '+error.message); let resultados = data || []; const usuarioFiltro = document.getElementById('auditFiltroUsuario').value.trim().toLowerCase(); if(usuarioFiltro){ resultados = resultados.filter(a => a.usuario_nome.toLowerCase().includes(usuarioFiltro)); } const acaoFiltro = document.getElementById('auditFiltroAcao').value.trim().toLowerCase(); if(acaoFiltro){ resultados = resultados.filter(a => a.acao.toLowerCase().includes(acaoFiltro)); } const dataInicio = document.getElementById('auditFiltroDataInicio').value; const dataFim = document.getElementById('auditFiltroDataFim').value; if(dataInicio || dataFim){ resultados = resultados.filter(a => { const dataAcao = a.data_acao.substring(0, 10); if(dataInicio && dataAcao < dataInicio) return false; if(dataFim && dataAcao > dataFim) return false; return true; }); } const tbody = document.getElementById('listaAuditoria'); tbody.innerHTML = ''; if(!resultados.length) return tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;">Nenhum resultado encontrado</td></tr>'; resultados.forEach(a => { const dataFormatada = new Date(a.data_acao).toLocaleString('pt-BR'); tbody.innerHTML += `<tr><td>${dataFormatada}</td><td><strong>${a.usuario_nome}</strong></td><td>${a.acao}</td><td style="font-size:12px;color:#666;">${a.detalhes || '--'}</td></tr>`; }); }catch(e){this.mostrarErro('Erro: '+e.message);} },
   limparAuditoria(){ document.getElementById('auditFiltroUsuario').value = ''; document.getElementById('auditFiltroAcao').value = ''; document.getElementById('auditFiltroDataInicio').value = ''; document.getElementById('auditFiltroDataFim').value = ''; const tbody = document.getElementById('listaAuditoria'); tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#999;">Use a pesquisa para filtrar registros</td></tr>'; },
-  // ADICIONE ESTA FUNÇÃO NO OBJETO "app"
+  limparFiltrosRelatorio(){
+  // Limpa todos os campos de entrada (inputs)
+  document.getElementById('fIdChamado').value = '';
+  document.getElementById('fCliente').value = '';
+  document.getElementById('fCNPJ').value = '';
+  document.getElementById('fSolicitante').value = '';
+  document.getElementById('fTecnico').value = '';
+  document.getElementById('fCategoria').value = '';
+  document.getElementById('fTipoAtendimento').value = '';
+  document.getElementById('fStatus').value = '';
+  document.getElementById('fDataInicio').value = '';
+  document.getElementById('fDataFim').value = '';
+  
+  // Limpa a tabela de resultados
+  const tbody = document.getElementById('resultadoRelatorio');
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:#999;">Use os filtros acima para pesquisar</td></tr>';
+},
 
 imprimirRelatorio(){
   const nomeEmpresa = document.getElementById('nomeEmpresa').innerText;
@@ -510,7 +542,47 @@ async excluirDescricaoChamado(){
     this.mostrarErro('Erro: '+e.message);
   }
 },
-  init(){ document.getElementById('btnLogin').addEventListener('click', () => this.login()); document.getElementById('btnLogout').addEventListener('click', () => this.logout()); document.getElementById('loginEmail').addEventListener('keypress', (e) => {if(e.key === 'Enter') this.login();}); document.getElementById('loginSenha').addEventListener('keypress', (e) => {if(e.key === 'Enter') this.login();}); document.getElementById('telaLogin').style.display = 'flex'; document.getElementById('appContainer').classList.add('hidden'); const menuToggle = document.getElementById('menuToggle'); const sidebar = document.querySelector('.sidebar'); if(menuToggle && sidebar){ menuToggle.addEventListener('click', () => sidebar.classList.toggle('open')); document.querySelectorAll('.menu-items button').forEach(btn => { btn.addEventListener('click', () => sidebar.classList.remove('open')); }); } }
+// Substitua a função "init" por esta versão melhorada:
+
+init(){
+  document.getElementById('btnLogin').addEventListener('click', () => this.login());
+  document.getElementById('btnLogout').addEventListener('click', () => this.logout());
+  document.getElementById('loginEmail').addEventListener('keypress', (e) => {if(e.key === 'Enter') this.login();});
+  document.getElementById('loginSenha').addEventListener('keypress', (e) => {if(e.key === 'Enter') this.login();});
+  
+  // ✅ VERIFICAR SE JÁ EXISTE SESSÃO
+  this.verificarSessao();
+  
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.querySelector('.sidebar');
+  if(menuToggle && sidebar){
+    menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+    document.querySelectorAll('.menu-items button').forEach(btn => {
+      btn.addEventListener('click', () => sidebar.classList.remove('open'));
+    });
+  }
+},
+
+// ✅ ADICIONE ESTA NOVA FUNÇÃO
+async verificarSessao(){
+  try{
+    const { data: { session } } = await sb.auth.getSession();
+    
+    if(session && session.user){
+      // Usuário já está logado
+      this.usuarioAtual = session.user;
+      this.mostrarApp();
+    } else {
+      // Nenhuma sessão, mostrar tela de login
+      document.getElementById('telaLogin').style.display = 'flex';
+      document.getElementById('appContainer').classList.add('hidden');
+    }
+  }catch(e){
+    console.error('Erro ao verificar sessão:', e);
+    document.getElementById('telaLogin').style.display = 'flex';
+    document.getElementById('appContainer').classList.add('hidden');
+  }
+}
 };
 window.addEventListener('load', () => app.init());
 </script>
