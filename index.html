@@ -60,6 +60,19 @@
       .content { padding: 12px; }
       .modal-content { width: 90%; max-width: 500px; }
     }
+	  /* ===== Cabeçalho fixo da tabela de relatório ===== */
+  .tabela-relatorio {
+    max-height: 450px;   /* altura da área com scroll */
+    overflow-y: auto;
+  }
+
+  .tabela-relatorio thead th {
+    position: sticky;
+    top: 0;
+    background: #f9fafb;
+    z-index: 2;
+  }
+
   </style>
 </head>
 <body>
@@ -176,7 +189,7 @@
 <hr style="margin:30px 0;border:0;border-top:1px solid #e5e7eb;">
 
         
-       <table><thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Tipo</th><th>Status</th><th>Descrição</th></tr></thead><tbody id="resultadoRelatorio"></tbody></table>
+       <div class="tabela-relatorio"><table><thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Tipo</th><th>Status</th><th>Descrição</th></tr></thead><tbody id="resultadoRelatorio"></tbody></table></div>
       </section>
       <section id="usuarios" class="hidden">
         <h2>Gerenciar Usuários</h2>
