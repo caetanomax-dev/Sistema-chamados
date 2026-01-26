@@ -109,8 +109,20 @@
       </section>
       <section id="relatorios" class="hidden">
         <h2>Relatórios</h2>
-        <div style="background:#fff;padding:20px;border-radius:8px;margin-bottom:20px;">
+        <div style="background:#fff;padding:20px;border-radius:8px;margin-bottom:20px;height:fit-content;">
           <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:15px;">
+		  <div>
+  <label style="font-weight:bold;display:block;margin-bottom:6px;">
+    ID do Chamado
+  </label>
+  <input
+    id="fIdChamado"
+    type="number"
+    placeholder="Filtrar por ID"
+    style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;"
+  >
+</div>
+
             <div>
               <label style="font-weight:bold;display:block;margin-bottom:6px;">Cliente</label>
               <div style="position:relative;"><input id="fCliente" placeholder="Filtrar por Cliente" autocomplete="off" oninput="app.buscarClientesFiltro()" onblur="setTimeout(() => { document.getElementById('listaClientesFiltro').style.display = 'none'; }, 200)" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;"><div id="listaClientesFiltro" style="position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ddd;border-radius:4px;max-height:150px;overflow-y:auto;z-index:10;display:none;"></div></div>
@@ -154,11 +166,15 @@
               <label style="font-weight:bold;display:block;margin-bottom:6px;">Data Fim</label>
               <input id="fDataFim" type="date" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
             </div>
+			</div>
          
-          <div style="display:flex;gap:10px;margin-top:10px;">
-  <button class="btn" onclick="app.relatorio()" style="flex:1;padding:12px;font-size:16px;">🔍 Filtrar</button>
-  <button class="btn" onclick="app.imprimirRelatorio()" style="flex:1;padding:12px;font-size:16px;background:#16a34a;">🖨️ Imprimir</button>
+          <div style="display:flex;gap:10px;justify-content:center;margin-bottom:30px;width:100%;margin-top:20px;">
+  <button class="btn" onclick="app.relatorio()" style="padding:12px 24px;font-size:16px;">🔍 Filtrar</button>
+  <button class="btn" onclick="app.imprimirRelatorio()" style="padding:12px 24px;font-size:16px;background:#16a34a;">🖨️ Imprimir</button>
 </div>
+
+<hr style="margin:30px 0;border:0;border-top:1px solid #e5e7eb;">
+
         
        <table><thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Tipo</th><th>Status</th><th>Descrição</th></tr></thead><tbody id="resultadoRelatorio"></tbody></table>
       </section>
@@ -297,7 +313,11 @@ const app = {
   abrirCronologiaVisualizar(id){ this.chamadoCronologiaId = id; document.getElementById('idCronologia').innerText = id; document.getElementById('descricaoCronologia').value = ''; this.carregarCronologia(); document.getElementById('modalCronologia').classList.add('active'); },
   async salvarConfig(){ const nome = document.getElementById('confEmpresa').value.trim(); const logo = document.getElementById('confLogo').value.trim(); if(nome) document.getElementById('nomeEmpresa').innerText = nome; if(logo){ const logoImg = document.getElementById('logoEmpresa'); logoImg.src = logo; logoImg.classList.remove('hidden'); } alert('✅ Configurações salvas!'); },
   async carregarConfig(){ try{ const {data} = await sb.from('configuracoes').select('*').eq('id',1).single(); if(!data) return; document.getElementById('confEmpresa').value = data.empresa || ''; document.getElementById('confLogo').value = data.logo_url || ''; if(data.empresa) document.getElementById('nomeEmpresa').innerText = data.empresa; if(data.logo_url){ const logoImg = document.getElementById('logoEmpresa'); logoImg.src = data.logo_url; logoImg.classList.remove('hidden'); } }catch(e){console.error(e);} },
-  async relatorio(){ try{ let q = sb.from('chamados').select('*'); if(document.getElementById('fTipoAtendimento').value){
+  async relatorio(){ try{ let q = sb.from('chamados').select('*'); const idChamado = document.getElementById('fIdChamado').value;
+if(idChamado){
+  q = q.eq('id', idChamado);
+}
+ if(document.getElementById('fTipoAtendimento').value){
   q = q.eq('tipo_atendimento', document.getElementById('fTipoAtendimento').value);
 } if(document.getElementById('fCategoria').value){
   q = q.eq('categoria', document.getElementById('fCategoria').value);
