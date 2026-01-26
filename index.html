@@ -46,10 +46,10 @@
     @media (max-width: 768px) {
       .layout { flex-direction: column; }
       .sidebar { position: sticky; top: 0; width: 100%; padding: 14px 12px; z-index: 1000; display: flex; flex-direction: column; align-items: center; }
-      .user-info { width: 100%; text-align: center; border: none !important; padding: 0 !important; margin-bottom: 10px; }
       .user-info #usuarioNome { font-size: 14px; font-weight: bold; color: #fff; display: block; }
       .user-info #usuarioEmail { font-size: 11px; color: #9ca3af; display: block; margin-top: 2px; }
-      .user-info button { display: none; }
+      .user-info { width: 100%; text-align: center; border: none !important; padding: 0 !important; margin-bottom: 10px; display: flex; flex-direction: column; }
+      .user-info button { display: block !important; width: auto; margin-top: 15px; padding: 8px; font-size: 12px; }
       .sidebar img { height: 40px; margin: 6px 0; }
       .sidebar h1 { font-size: 14px; text-align: center; margin: 4px 0 10px 0; white-space: nowrap; }
       .menu-toggle { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 22px; background: none; border: none; color: #fff; cursor: pointer; margin: 6px 0 10px 0; }
@@ -340,30 +340,7 @@ const app = {
   async salvarEditCronologia(id, desc){ try{ const {error} = await sb.from('cronologia_chamados').update({descricao:desc,editado_por:this.usuarioAtual.user_metadata?.full_name || this.usuarioAtual.email,data_edicao:new Date().toISOString()}).eq('id', id); if(error) return this.mostrarErro('Erro: '+error.message); await this.registrarAuditoria('Editou cronologia', `Chamado ID: ${this.chamadoCronologiaId} | Nova atualização: ${desc.substring(0, 50)}...`); this.carregarCronologia(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
   async excluirCronologia(id){ if(!confirm('Excluir?')) return; try{ const {error} = await sb.from('cronologia_chamados').delete().eq('id', id); if(error) return this.mostrarErro('Erro: '+error.message); await this.registrarAuditoria('Deletou cronologia', `Chamado ID: ${this.chamadoCronologiaId}`); this.carregarCronologia(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
   abrirCronologiaVisualizar(id){ this.chamadoCronologiaId = id; document.getElementById('idCronologia').innerText = id; document.getElementById('descricaoCronologia').value = ''; this.carregarCronologia(); document.getElementById('modalCronologia').classList.add('active'); },
-  async salvarConfig(){ 
-  const nome = document.getElementById('confEmpresa').value.trim(); 
-  const logo = document.getElementById('confLogo').value.trim(); 
-  
-  try{
-    const {data: existe} = await sb.from('configuracoes').select('*').eq('id',1).single();
-    
-    if(!existe){
-      await sb.from('configuracoes').insert({id: 1, empresa: nome, logo_url: logo});
-    } else {
-      await sb.from('configuracoes').update({empresa: nome, logo_url: logo}).eq('id', 1);
-    }
-    
-    if(nome) document.getElementById('nomeEmpresa').innerText = nome; 
-    if(logo){ 
-      const logoImg = document.getElementById('logoEmpresa'); 
-      logoImg.src = logo; 
-      logoImg.classList.remove('hidden'); 
-    } 
-    alert('✅ Configurações salvas!'); 
-  }catch(e){
-    alert('❌ Erro: '+e.message);
-  }
-},
+  async salvarConfig(){ const nome = document.getElementById('confEmpresa').value.trim(); const logo = document.getElementById('confLogo').value.trim(); if(nome) document.getElementById('nomeEmpresa').innerText = nome; if(logo){ const logoImg = document.getElementById('logoEmpresa'); logoImg.src = logo; logoImg.classList.remove('hidden'); } alert('✅ Configurações salvas!'); },
   async carregarConfig(){ try{ const {data} = await sb.from('configuracoes').select('*').eq('id',1).single(); if(!data) return; document.getElementById('confEmpresa').value = data.empresa || ''; document.getElementById('confLogo').value = data.logo_url || ''; if(data.empresa) document.getElementById('nomeEmpresa').innerText = data.empresa; if(data.logo_url){ const logoImg = document.getElementById('logoEmpresa'); logoImg.src = data.logo_url; logoImg.classList.remove('hidden'); } }catch(e){console.error(e);} },
   async relatorio(){ try{ let q = sb.from('chamados').select('*'); const idChamado = document.getElementById('fIdChamado').value;
 if(idChamado){
