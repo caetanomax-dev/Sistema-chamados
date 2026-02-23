@@ -1,9 +1,16 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Implantação ERP</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://boendmrotsttljydigld.supabase.co';
+const SUPABASE_KEY = 'SUA_KEY_AQUI'; 
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         :root {
@@ -451,7 +458,6 @@
                         updatePhaseCounter(phase.id);
                         renderDeliveryChart();
                         
-                        // Mostrar/esconder campo de data
                         const wrapper = li.querySelector('.checklist-date-wrapper');
                         if (wrapper) {
                             wrapper.style.display = input.checked ? 'block' : 'none';
@@ -568,7 +574,6 @@
                     if (checkbox) {
                         checkbox.checked = currentProjectData.checklistStates[phaseId][itemIndex];
                         
-                        // Mostrar/esconder campo de data quando carregar
                         const li = checkbox.closest('.checklist-item');
                         if (li) {
                             const wrapper = li.querySelector('.checklist-date-wrapper');
@@ -763,7 +768,7 @@
             closeChecklistEditor();
         }
 
-        function saveProject() {
+        async function saveProject() {
             if (!currentProjectId) {
                 alert('Nenhum projeto em edição!');
                 return;
@@ -773,9 +778,15 @@
             currentProjectData.weeks = weeks;
             currentProjectData.savedAt = new Date().toLocaleString('pt-BR');
 
-            const allProjects = JSON.parse(localStorage.getItem('allProjects') || '{}');
-            allProjects[currentProjectId] = currentProjectData;
-            localStorage.setItem('allProjects', JSON.stringify(allProjects));
+            const { error } = await sb.from('instalacoes').insert({
+                nome_projeto: currentProjectData.clientName,
+                dados: currentProjectData
+            });
+
+            if (error) {
+                alert('Erro ao salvar: ' + error.message);
+                return;
+            }
 
             alert('✓ Projeto salvo com sucesso!');
             backToProjects();
@@ -848,23 +859,30 @@
             }, 300);
         }
 
-        function loadProjectsList() {
-            const allProjects = JSON.parse(localStorage.getItem('allProjects') || '{}');
+        async function loadProjectsList() {
             const projectsList = document.getElementById('projectsList');
             projectsList.innerHTML = '';
 
-            if (Object.keys(allProjects).length === 0) {
+            const { data, error } = await sb.from('instalacoes').select('*');
+
+            if (error) {
+                projectsList.innerHTML = '<p style="color: var(--text2); text-align: center; grid-column: 1/-1;">Erro ao carregar projetos</p>';
+                return;
+            }
+
+            if (!data || data.length === 0) {
                 projectsList.innerHTML = '<p style="color: var(--text2); text-align: center; grid-column: 1/-1;">Nenhum projeto salvo ainda</p>';
                 return;
             }
 
-            Object.entries(allProjects).forEach(([projectId, project]) => {
+            data.forEach((row) => {
+                const project = row.dados;
                 const card = document.createElement('div');
                 card.className = 'project-card';
-                
+
                 const progressData = calculateProjectProgress(project);
 
-                card.innerHTML = `<h3>${project.clientName}</h3><p><strong>Responsável:</strong> ${project.responsible}</p><p><strong>Início:</strong> ${formatDate(project.startDate)}</p><p><strong>Progresso:</strong> ${progressData}%</p><p style="font-size: 0.85em; color: var(--text2);">Salvo em: ${project.savedAt}</p><div class="project-card-buttons"><button class="btn btn-secondary" onclick="loadProject('${projectId}')">Abrir</button><button class="btn btn-danger" onclick="deleteProject('${projectId}')">Deletar</button></div>`;
+                card.innerHTML = `<h3>${project.clientName}</h3><p><strong>Responsável:</strong> ${project.responsible}</p><p><strong>Início:</strong> ${formatDate(project.startDate)}</p><p><strong>Progresso:</strong> ${progressData}%</p><p style="font-size: 0.85em; color: var(--text2);">Salvo em: ${project.savedAt}</p><div class="project-card-buttons"><button class="btn btn-secondary" onclick="loadProject(${row.id})">Abrir</button><button class="btn btn-danger" onclick="deleteProject(${row.id})">Deletar</button></div>`;
                 projectsList.appendChild(card);
             });
         }
@@ -892,14 +910,15 @@
             return totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
         }
 
-        function loadProject(projectId) {
-            const allProjects = JSON.parse(localStorage.getItem('allProjects') || '{}');
-            const projectData = allProjects[projectId];
+        async function loadProject(projectId) {
+            const { data, error } = await sb.from('instalacoes').select('*').eq('id', projectId).single();
 
-            if (!projectData) {
+            if (error || !data) {
                 alert('Projeto não encontrado!');
                 return;
             }
+
+            const projectData = data.dados;
 
             currentProjectId = projectId;
             currentProjectData = JSON.parse(JSON.stringify(projectData));
@@ -919,11 +938,15 @@
             renderDeliveryChart();
         }
 
-        function deleteProject(projectId) {
+        async function deleteProject(projectId) {
             if (confirm('Deseja deletar este projeto? Esta ação não pode ser desfeita!')) {
-                const allProjects = JSON.parse(localStorage.getItem('allProjects') || '{}');
-                delete allProjects[projectId];
-                localStorage.setItem('allProjects', JSON.stringify(allProjects));
+                const { error } = await sb.from('instalacoes').delete().eq('id', projectId);
+
+                if (error) {
+                    alert('Erro ao deletar: ' + error.message);
+                    return;
+                }
+
                 loadProjectsList();
             }
         }
@@ -974,3 +997,4 @@
     </script>
 </body>
 </html>
+```
