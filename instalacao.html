@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = 'https://boendmrotsttljydigld.supabase.co';
-const SUPABASE_KEY = 'SUA_KEY_AQUI'; 
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvZW5kbXJvdHN0dGxqeWRpZ2xkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1OTI5NTksImV4cCI6MjA4MjE2ODk1OX0.k6vVvD6kNV8r-a9lR6jaTcAm1wz5c_jbTDnjKlpo0cE'; 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 </script>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
@@ -333,7 +333,6 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let weeks = JSON.parse(JSON.stringify(defaultWeeks));
         let currentProjectId = null;
         let currentProjectData = null;
-        let currentSupabaseId = null;
         let deliveryChart = null;
 
         function initializeProject() {
@@ -348,7 +347,6 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
             const defaultDates = generateDefaultDates(startDate);
             currentProjectId = Date.now().toString();
-            currentSupabaseId = null;
 
             currentProjectData = {
                 id: currentProjectId,
@@ -780,30 +778,14 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             currentProjectData.weeks = weeks;
             currentProjectData.savedAt = new Date().toLocaleString('pt-BR');
 
-            // Se já existe no banco (currentSupabaseId definido), faz UPDATE
-            if (currentSupabaseId) {
-                const { error } = await sb.from('instalacoes').update({
-                    nome_projeto: currentProjectData.clientName,
-                    dados: currentProjectData
-                }).eq('id', currentSupabaseId);
+            const { error } = await sb.from('instalacoes').insert({
+                nome_projeto: currentProjectData.clientName,
+                dados: currentProjectData
+            });
 
-                if (error) {
-                    alert('Erro ao atualizar: ' + error.message);
-                    return;
-                }
-            } else {
-                // Projeto novo, faz INSERT e guarda o id retornado
-                const { data, error } = await sb.from('instalacoes').insert({
-                    nome_projeto: currentProjectData.clientName,
-                    dados: currentProjectData
-                }).select().single();
-
-                if (error) {
-                    alert('Erro ao salvar: ' + error.message);
-                    return;
-                }
-
-                currentSupabaseId = data.id;
+            if (error) {
+                alert('Erro ao salvar: ' + error.message);
+                return;
             }
 
             alert('✓ Projeto salvo com sucesso!');
@@ -938,8 +920,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
             const projectData = data.dados;
 
-            currentProjectId = projectData.id;
-            currentSupabaseId = data.id;
+            currentProjectId = projectId;
             currentProjectData = JSON.parse(JSON.stringify(projectData));
             phases = JSON.parse(JSON.stringify(projectData.phases || defaultPhases));
             weeks = JSON.parse(JSON.stringify(projectData.weeks || defaultWeeks));
@@ -977,7 +958,6 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             document.getElementById('chartSection').style.display = 'none';
             document.getElementById('timelineSection').style.display = 'none';
             document.getElementById('checklistsSection').style.display = 'none';
-            currentSupabaseId = null;
             loadProjectsList();
         }
 
@@ -992,7 +972,6 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             document.getElementById('checklistsSection').style.display = 'none';
             currentProjectId = null;
             currentProjectData = null;
-            currentSupabaseId = null;
             phases = JSON.parse(JSON.stringify(defaultPhases));
             weeks = JSON.parse(JSON.stringify(defaultWeeks));
             if (deliveryChart) deliveryChart.destroy();
