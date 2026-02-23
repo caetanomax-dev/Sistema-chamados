@@ -333,6 +333,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let weeks = JSON.parse(JSON.stringify(defaultWeeks));
         let currentProjectId = null;
         let currentProjectData = null;
+        let currentSupabaseId = null;
         let deliveryChart = null;
 
         function initializeProject() {
@@ -347,6 +348,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
             const defaultDates = generateDefaultDates(startDate);
             currentProjectId = Date.now().toString();
+            currentSupabaseId = null;
 
             currentProjectData = {
                 id: currentProjectId,
@@ -778,14 +780,30 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             currentProjectData.weeks = weeks;
             currentProjectData.savedAt = new Date().toLocaleString('pt-BR');
 
-            const { error } = await sb.from('instalacoes').insert({
-                nome_projeto: currentProjectData.clientName,
-                dados: currentProjectData
-            });
+            // Se já existe no banco (currentSupabaseId definido), faz UPDATE
+            if (currentSupabaseId) {
+                const { error } = await sb.from('instalacoes').update({
+                    nome_projeto: currentProjectData.clientName,
+                    dados: currentProjectData
+                }).eq('id', currentSupabaseId);
 
-            if (error) {
-                alert('Erro ao salvar: ' + error.message);
-                return;
+                if (error) {
+                    alert('Erro ao atualizar: ' + error.message);
+                    return;
+                }
+            } else {
+                // Projeto novo, faz INSERT e guarda o id retornado
+                const { data, error } = await sb.from('instalacoes').insert({
+                    nome_projeto: currentProjectData.clientName,
+                    dados: currentProjectData
+                }).select().single();
+
+                if (error) {
+                    alert('Erro ao salvar: ' + error.message);
+                    return;
+                }
+
+                currentSupabaseId = data.id;
             }
 
             alert('✓ Projeto salvo com sucesso!');
@@ -920,7 +938,8 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
             const projectData = data.dados;
 
-            currentProjectId = projectId;
+            currentProjectId = projectData.id;
+            currentSupabaseId = data.id;
             currentProjectData = JSON.parse(JSON.stringify(projectData));
             phases = JSON.parse(JSON.stringify(projectData.phases || defaultPhases));
             weeks = JSON.parse(JSON.stringify(projectData.weeks || defaultWeeks));
@@ -958,6 +977,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             document.getElementById('chartSection').style.display = 'none';
             document.getElementById('timelineSection').style.display = 'none';
             document.getElementById('checklistsSection').style.display = 'none';
+            currentSupabaseId = null;
             loadProjectsList();
         }
 
@@ -972,6 +992,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             document.getElementById('checklistsSection').style.display = 'none';
             currentProjectId = null;
             currentProjectData = null;
+            currentSupabaseId = null;
             phases = JSON.parse(JSON.stringify(defaultPhases));
             weeks = JSON.parse(JSON.stringify(defaultWeeks));
             if (deliveryChart) deliveryChart.destroy();
