@@ -640,10 +640,22 @@
           <div><h1>👥 Clientes</h1><p>Base de clientes cadastrados</p></div>
         </div>
         <div class="section">
-          <div class="btn-toolbar">
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
+            <div style="flex:1;min-width:220px;position:relative;">
+              <input id="pesquisaCliente" type="text" placeholder="🔍 Pesquisar cliente por nome, CNPJ ou razão social..."
+                style="width:100%;padding-left:16px;"
+                oninput="app.pesquisarClientes()"
+                onkeydown="if(event.key==='Enter') app.pesquisarClientes()">
+            </div>
+            <button class="btn btn-primary" onclick="app.pesquisarClientes()">🔍 Buscar</button>
+            <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.limparPesquisaClientes()">🧹 Limpar</button>
             <button class="btn btn-primary" onclick="app.abrirModalNovoCliente()">+ Novo Cliente</button>
           </div>
-          <div class="cards-grid" id="listaClientes"></div>
+          <div id="clientesEstadoVazio" style="text-align:center;padding:40px 20px;color:var(--text2);">
+            <div style="font-size:3em;margin-bottom:12px;">🔍</div>
+            <p style="font-size:1.05em;">Use o campo de pesquisa acima para encontrar clientes.</p>
+          </div>
+          <div class="cards-grid" id="listaClientes" style="display:none;"></div>
         </div>
       </section>
 
@@ -1210,26 +1222,57 @@ const app = {
 
   /* ── CLIENTES ── */
   async carregarClientes(){
+    // Ao entrar na aba, apenas limpa — não carrega tudo automaticamente
+    document.getElementById('listaClientes').style.display = 'none';
+    document.getElementById('clientesEstadoVazio').style.display = 'block';
+    document.getElementById('pesquisaCliente').value = '';
+  },
+
+  _renderizarClientes(data){
+    const div = document.getElementById('listaClientes');
+    const vazio = document.getElementById('clientesEstadoVazio');
+    div.innerHTML='';
+    if(!data||!data.length){
+      div.style.display='none';
+      vazio.innerHTML='<div style="font-size:3em;margin-bottom:12px;">😕</div><p style="font-size:1.05em;">Nenhum cliente encontrado para essa pesquisa.</p>';
+      vazio.style.display='block';
+      return;
+    }
+    vazio.style.display='none';
+    div.style.display='grid';
+    data.forEach(c=>{
+      div.innerHTML+=`<div class="cliente-card">
+        <h3>👤 ${c.nome}</h3>
+        ${c.razao_social?`<p><strong>Razão:</strong> ${c.razao_social}</p>`:''}
+        ${c.cnpj?`<p><strong>CNPJ/CPF:</strong> ${c.cnpj}</p>`:''}
+        ${c.endereco?`<p><strong>Endereço:</strong> ${c.endereco}</p>`:''}
+        ${c.observacoes?`<p style="font-style:italic;margin-top:6px;">${c.observacoes}</p>`:''}
+        <div class="cliente-actions">
+          <button class="btn btn-info btn-sm" onclick="app.editarCliente('${c.nome.replace(/'/g,"\\'")}')">✏️ Editar</button>
+          <button class="btn btn-success btn-sm" onclick="app.abrirAcessos('${c.nome.replace(/'/g,"\\'")}')">🔐 Acessos</button>
+          <button class="btn btn-danger btn-sm" onclick="app.excluirCliente('${c.nome.replace(/'/g,"\\'")}')">🗑️</button>
+        </div>
+      </div>`;
+    });
+  },
+
+  async pesquisarClientes(){
+    const termo = document.getElementById('pesquisaCliente').value.trim();
     try{
-      const {data} = await sb.from('clientes').select('*');
-      const div = document.getElementById('listaClientes');
-      div.innerHTML='';
-      if(!data||!data.length) return div.innerHTML='<p style="color:var(--text2);grid-column:1/-1;text-align:center;padding:20px;">Nenhum cliente cadastrado</p>';
-      data.forEach(c=>{
-        div.innerHTML+=`<div class="cliente-card">
-          <h3>👤 ${c.nome}</h3>
-          ${c.razao_social?`<p><strong>Razão:</strong> ${c.razao_social}</p>`:''}
-          ${c.cnpj?`<p><strong>CNPJ/CPF:</strong> ${c.cnpj}</p>`:''}
-          ${c.endereco?`<p><strong>Endereço:</strong> ${c.endereco}</p>`:''}
-          ${c.observacoes?`<p style="font-style:italic;margin-top:6px;">${c.observacoes}</p>`:''}
-          <div class="cliente-actions">
-            <button class="btn btn-info btn-sm" onclick="app.editarCliente('${c.nome.replace(/'/g,"\\'")}')">✏️ Editar</button>
-            <button class="btn btn-success btn-sm" onclick="app.abrirAcessos('${c.nome.replace(/'/g,"\\'")}')">🔐 Acessos</button>
-            <button class="btn btn-danger btn-sm" onclick="app.excluirCliente('${c.nome.replace(/'/g,"\\'")}')">🗑️</button>
-          </div>
-        </div>`;
-      });
+      let query = sb.from('clientes').select('*');
+      if(termo){
+        query = query.or(`nome.ilike.%${termo}%,razao_social.ilike.%${termo}%,cnpj.ilike.%${termo}%`);
+      }
+      const {data} = await query.order('nome',{ascending:true});
+      this._renderizarClientes(data);
     }catch(e){ console.error(e); }
+  },
+
+  limparPesquisaClientes(){
+    document.getElementById('pesquisaCliente').value='';
+    document.getElementById('listaClientes').style.display='none';
+    document.getElementById('clientesEstadoVazio').innerHTML='<div style="font-size:3em;margin-bottom:12px;">🔍</div><p style="font-size:1.05em;">Use o campo de pesquisa acima para encontrar clientes.</p>';
+    document.getElementById('clientesEstadoVazio').style.display='block';
   },
 
   abrirModalNovoCliente(){
@@ -1256,7 +1299,7 @@ const app = {
       await this.registrarAuditoria('Criou cliente',`Nome: ${nome}`);
       alert('✅ Cliente cadastrado!');
       this.fecharModalNovoCliente();
-      this.carregarClientes();
+      this.pesquisarClientes();
     }catch(e){ this.mostrarErro('Erro: '+e.message); }
   },
 
@@ -1289,7 +1332,7 @@ const app = {
       if(error) return this.mostrarErro('Erro: '+error.message);
       alert('✅ Cliente atualizado!');
       this.fecharModalNovoCliente();
-      this.carregarClientes();
+      this.pesquisarClientes();
     }catch(e){ this.mostrarErro('Erro: '+e.message); }
   },
 
@@ -1301,7 +1344,7 @@ const app = {
       const {error} = await sb.from('clientes').delete().eq('nome',nome);
       if(error) return this.mostrarErro('Erro: '+error.message);
       alert('✅ Excluído!');
-      this.carregarClientes();
+      this.pesquisarClientes();
     }catch(e){ this.mostrarErro('Erro: '+e.message); }
   },
 
