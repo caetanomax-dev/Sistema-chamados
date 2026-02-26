@@ -6,588 +6,1721 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f8; min-height: 100vh; }
-    .layout { display: flex; min-height: 100vh; }
-    .sidebar { width: 260px; background: #111827; color: #fff; padding: 20px; overflow-y: auto; }
-    .sidebar img { max-width: 100%; max-height: 60px; margin-bottom: 10px; }
-    .sidebar h1 { font-size: 16px; margin: 5px 0; }
-    .sidebar button { width: 100%; background: none; border: none; color: #d1d5db; padding: 12px; text-align: left; border-radius: 6px; cursor: pointer; margin-bottom: 8px; transition: 0.2s; }
-    .sidebar button.active, .sidebar button:hover { background: #2563eb; color: #fff; }
-    .sidebar .user-info { border-top: 1px solid #374151; margin-top: 20px; padding-top: 15px; font-size: 12px; color: #9ca3af; }
-    .content { flex: 1; padding: 30px; overflow-y: auto; }
-    .hidden { display: none; }
-    .btn { background: #2563eb; color: #fff; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-    .btn:hover { background: #1e40af; }
-    .btn-danger { background: #dc2626; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-    .btn-danger:hover { background: #b91c1c; }
-    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; margin-top: 15px; }
-    th, td { padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
-    th { background: #f9fafb; font-size: 12px; text-transform: uppercase; }
-    .status { padding: 4px 10px; border-radius: 999px; font-size: 12px; cursor: pointer; }
-    .pendente { background: #fef3c7; color: #92400e; }
-    .resolvido { background: #dcfce7; color: #166534; }
-    .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); display: none; align-items: center; justify-content: center; z-index: 1000; }
-    .modal.active { display: flex; }
-    .modal-content { background: #fff; padding: 20px; border-radius: 10px; max-height: 90vh; overflow-y: auto; }
-    .modal-content input, .modal-content textarea, .modal-content select { width: 100%; margin-bottom: 10px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; }
-    .erro { color: #dc2626; padding: 10px; background: #fee; border-radius: 6px; margin: 10px 0; }
-    .sucesso { color: #166534; padding: 10px; background: #dcfce7; border-radius: 6px; margin: 10px 0; }
-    .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f4f6f8; }
-    .login-box { background: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15); width: 100%; max-width: 400px; }
-    .login-box h1 { text-align: center; color: #1f2937; margin-bottom: 30px; }
-    .login-box input { width: 100%; margin-bottom: 15px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-    .login-box .btn { width: 100%; padding: 12px; font-size: 16px; margin-bottom: 15px; }
-    .cliente-card { background: #fff; border-radius: 8px; padding: 15px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
-    .cliente-card h3 { margin: 0 0 10px 0; color: #1f2937; }
-    .cliente-actions { display: flex; gap: 8px; margin-top: 12px; }
-    .cliente-actions button { flex: 1; font-size: 12px; padding: 8px; }
-    .menu-toggle { display: none; }
-    @media (max-width: 768px) {
-      .layout { flex-direction: column; }
-      .sidebar { position: sticky; top: 0; width: 100%; padding: 14px 12px; z-index: 1000; display: flex; flex-direction: column; align-items: center; }
-      .user-info #usuarioNome { font-size: 14px; font-weight: bold; color: #fff; display: block; }
-      .user-info #usuarioEmail { font-size: 11px; color: #9ca3af; display: block; margin-top: 2px; }
-      .user-info { width: 100%; text-align: center; border: none !important; padding: 0 !important; margin-bottom: 10px; display: flex; flex-direction: column; }
-      .user-info button { display: block !important; width: auto; margin-top: 15px; padding: 8px; font-size: 12px; }
-      .sidebar img { height: 40px; margin: 6px 0; }
-      .sidebar h1 { font-size: 14px; text-align: center; margin: 4px 0 10px 0; white-space: nowrap; }
-      .menu-toggle { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 22px; background: none; border: none; color: #fff; cursor: pointer; margin: 6px 0 10px 0; }
-      .menu-toggle::after { content: "MENU"; font-size: 12px; font-weight: bold; letter-spacing: 1px; color: #9ca3af; margin-top: 4px; }
-      .menu-items { display: none; width: 100%; margin-top: 8px; text-align: center; }
-      .sidebar.open .menu-items { display: block; }
-      .menu-items button { width: 100%; padding: 12px; text-align: center; border-top: 1px solid #1f2937; font-size: 14px; }
-      .content { padding: 12px; }
-      .modal-content { width: 90%; max-width: 500px; }
+    :root {
+      --primary: #2563eb; --dark: #1e40af; --success: #10b981; --warning: #f59e0b;
+      --danger: #ef4444; --info: #06b6d4;
+      --bg: white; --bg2: #f9fafb; --text: #1f2937; --text2: #6b7280;
+      --border: #e5e7eb; --card: white;
     }
-	  /* ===== Cabeçalho fixo da tabela de relatório ===== */
-  .tabela-relatorio {
-    max-height: 450px;   /* altura da área com scroll */
-    overflow-y: auto;
-  }
+    body.dark-mode {
+      --bg: #0f172a; --bg2: #1e293b; --text: #f1f5f9; --text2: #94a3b8;
+      --border: #334155; --card: #1e293b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  .tabela-relatorio thead th {
-    position: sticky;
-    top: 0;
-    background: #f9fafb;
-    z-index: 2;
-  }
+    /* ── NORMALIZA TODOS OS CAMPOS DO SISTEMA ── */
+    input, select, textarea {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    /* Garante que input sem type= também tenha altura padrão */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="file"]) {
+      height: 44px;
+      line-height: 44px;
+    }
+    select { height: 44px; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: var(--text); line-height: 1.6; min-height: 100vh;
+      padding: 20px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    body.dark-mode { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
 
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── THEME TOGGLE ── integrado no topbar, sem position fixed */
+    .theme-toggle {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 50%; width: 36px; height: 36px; min-width: 36px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.3s ease; flex-shrink: 0;
+    }
+    .theme-toggle:hover { background: var(--border); transform: scale(1.1); }
+    .theme-icon { font-size: 16px; transition: transform 0.3s ease; line-height: 1; }
+    .theme-toggle:hover .theme-icon { transform: rotate(20deg); }
+
+    /* ── LOGIN ── */
+    .login-container {
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh;
+    }
+    .login-box {
+      background: var(--card); padding: 40px; border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12); width: 100%; max-width: 420px;
+      border-left: 5px solid var(--primary); animation: slideDown 0.6s ease-out;
+      transition: background 0.3s ease;
+    }
+    .login-box h1 {
+      text-align: center; margin-bottom: 30px; font-size: 1.8em;
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .login-box input {
+      width: 100%; margin-bottom: 15px; padding: 12px 15px;
+      border: 2px solid var(--border); border-radius: 8px; font-size: 0.95em;
+      font-family: inherit; background: var(--bg2); color: var(--text); transition: all 0.3s ease;
+    }
+    .login-box input:focus { outline: none; border-color: var(--primary); background: var(--card); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+    /* ── LAYOUT ── */
+    .layout { display: flex; flex-direction: column; min-height: 100vh; height: auto; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--card);
+      color: var(--text);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      margin: 0 0 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.07), 0 0 0 1px rgba(37,99,235,0.1);
+      border-left: 5px solid var(--primary);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      animation: slideDown 0.6s ease-out;
+    }
+    body.dark-mode .topbar {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 1px rgba(37,99,235,0.2);
+    }
+
+    /* Linha 1: brand + user */
+    .topbar-row1 {
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      height: 64px;
+    }
+    .topbar-brand {
+      display: flex; align-items: center; gap: 14px;
+      flex-shrink: 0;
+    }
+    .topbar-brand-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3em; flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+      overflow: hidden;
+    }
+    .topbar-brand-icon img {
+      width: 100% !important; height: 100% !important;
+      object-fit: contain; border-radius: 8px;
+    }
+    .topbar-brand h1 {
+      font-size: 1.35em; font-weight: 800; white-space: nowrap; letter-spacing: -0.3px;
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .topbar-user {
+      display: flex; align-items: center; gap: 12px;
+      margin-left: auto; flex-shrink: 0;
+    }
+    .topbar-user .user-info-wrap { text-align: right; }
+    .topbar-user .user-name { font-size: 0.88em; font-weight: 600; color: var(--text); line-height: 1.2; white-space: nowrap; }
+    .topbar-user .user-email { font-size: 0.73em; color: var(--text2); white-space: nowrap; }
+    .topbar-user .btn-logout {
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      color: var(--danger); padding: 7px 14px; border-radius: 10px;
+      cursor: pointer; font-size: 0.8em; font-family: inherit; font-weight: 600;
+      transition: all 0.2s ease; white-space: nowrap; flex-shrink: 0;
+    }
+    .topbar-user .btn-logout:hover { background: var(--danger); color: white; transform: translateY(-1px); }
+
+    /* Linha 2: nav */
+    .topbar-row2 {
+      display: flex;
+      align-items: center;
+      padding: 0 20px 14px;
+      gap: 4px;
+      border-top: none;
+    }
+    .topbar-row2 nav {
+      display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;
+    }
+    .topbar-row2 nav button {
+      background: none; border: none; color: var(--text2);
+      padding: 8px 14px; border-radius: 10px; cursor: pointer;
+      font-size: 0.84em; font-family: inherit; font-weight: 500;
+      transition: all 0.2s ease; white-space: nowrap;
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+      height: 36px;
+    }
+    .topbar-row2 nav button:hover { background: rgba(37,99,235,0.08); color: var(--primary); }
+    .topbar-row2 nav button.active {
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      color: white; box-shadow: 0 4px 12px rgba(37,99,235,0.3); font-weight: 600;
+    }
+
+    /* ── THEME TOGGLE ── */
+    .theme-toggle {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 50%; width: 36px; height: 36px; min-width: 36px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.3s ease; flex-shrink: 0;
+    }
+    .theme-toggle:hover { background: var(--border); transform: scale(1.1); }
+    .theme-icon { font-size: 16px; transition: transform 0.3s ease; line-height: 1; }
+    .theme-toggle:hover .theme-icon { transform: rotate(20deg); }
+
+    /* ── MENU TOGGLE MOBILE ── */
+    .menu-toggle-btn { display: none; }
+
+    /* ── CONTENT ── */
+    .content { flex: 1; padding: 0; overflow-y: auto; }
+
+    /* ── SECTION / CARD ── */
+    .section {
+      background: var(--card); border-radius: 16px; padding: 30px;
+      margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+      animation: fadeIn 0.6s ease-out; transition: background 0.3s ease;
+    }
+    .section h2 {
+      font-size: 1.5em; margin-bottom: 25px; color: var(--text);
+      border-bottom: 3px solid var(--primary); padding-bottom: 15px; display: inline-block;
+    }
+    .page-header {
+      background: var(--card); border-radius: 16px; padding: 30px;
+      margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+      border-left: 5px solid var(--primary); animation: slideDown 0.6s ease-out;
+      transition: background 0.3s ease; display: flex; align-items: center; gap: 16px;
+    }
+    .page-header h1 {
+      font-size: 2.2em;
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .page-header p { color: var(--text2); font-size: 0.95em; margin-top: 2px; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 12px 28px; border: none; border-radius: 8px; font-size: 0.95em;
+      font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+      text-transform: uppercase; letter-spacing: 0.5px; display: inline-block;
+      font-family: inherit;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.3); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #059669; transform: translateY(-2px); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #dc2626; transform: translateY(-1px); }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-warning:hover { background: #d97706; }
+    .btn-info { background: var(--info); color: white; }
+    .btn-info:hover { background: #0891b2; transform: translateY(-2px); }
+    .btn-sm { padding: 8px 16px; font-size: 0.85em; }
+    .btn-icon { padding: 6px 10px; font-size: 0.85em; }
+
+    /* ── INPUTS ── */
+    input[type="text"], input[type="date"], input[type="email"],
+    input[type="password"], input[type="number"], select, textarea {
+      padding: 12px 15px; border: 2px solid var(--border); border-radius: 8px;
+      font-size: 0.95em; font-family: inherit; background: var(--bg2);
+      color: var(--text); transition: all 0.3s ease; width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--primary);
+      background: var(--card); box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 0.88em; text-align: left; }
+    th { background: var(--bg2); font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; color: var(--text2); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(37,99,235,0.03); }
+
+    /* ── STATUS BADGES ── */
+    .badge {
+      padding: 4px 12px; border-radius: 20px; font-size: 0.78em; font-weight: 600;
+      display: inline-block; cursor: pointer;
+    }
+    .badge-pendente { background: rgba(245,158,11,0.15); color: #d97706; text-transform: capitalize; }
+    .badge-resolvido { background: rgba(16,185,129,0.15); color: #059669; text-transform: capitalize; }
+
+    /* ── CLIENTE CARDS ── */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .cliente-card {
+      background: var(--card); border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid var(--primary);
+      transition: all 0.3s ease; animation: fadeIn 0.6s ease-out;
+    }
+    .cliente-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.12); transform: translateY(-2px); }
+    .cliente-card h3 { font-size: 1.2em; margin-bottom: 10px; color: var(--text); }
+    .cliente-card p { font-size: 0.9em; color: var(--text2); margin-bottom: 5px; }
+    .cliente-actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+    .cliente-actions .btn { flex: 1; min-width: 70px; text-align: center; }
+
+    /* ── FORM GRID ── */
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-weight: 600; font-size: 0.9em; color: var(--text); }
+
+    /* ── MODAL ── */
+    .modal {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 2000; align-items: center; justify-content: center;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: var(--card); border-radius: 16px; padding: 30px;
+      width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      display: flex; flex-direction: column; gap: 10px;
+      animation: fadeIn 0.3s ease-out; transition: background 0.3s ease;
+    }
+    .modal-content.wide { max-width: 700px; }
+
+    /* ── MODAL USUÁRIO — CORREÇÃO ESTRUTURAL ── */
+    #modalNovoUsuario {
+      position: fixed !important;
+      top: 0 !important; left: 0 !important;
+      width: 100vw !important; height: 100vh !important;
+      background: rgba(0,0,0,0.6) !important;
+      z-index: 9999 !important;
+      display: none;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 20px !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+    }
+    #modalNovoUsuario.active { display: flex !important; }
+    #modalNovoUsuario > .modal-content {
+      width: 100% !important;
+      max-width: 480px !important;
+      max-height: 85vh !important;
+      height: auto !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border-radius: 16px !important;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4) !important;
+      position: relative !important;
+    }
+    #modalNovoUsuario > .modal-content > .modal-header {
+      padding: 24px 24px 16px !important;
+      flex-shrink: 0 !important;
+      position: static !important;
+    }
+    #modalNovoUsuario > .modal-content > #msgNovoUsuario {
+      padding: 0 24px !important;
+      flex-shrink: 0 !important;
+    }
+    #modalNovoUsuario .modal-usuario-body {
+      flex: 1 1 auto !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      padding: 8px 24px 16px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 14px !important;
+      min-height: 0 !important;
+    }
+    #modalNovoUsuario > .modal-content > .modal-footer {
+      padding: 14px 24px !important;
+      flex-shrink: 0 !important;
+      position: static !important;
+      margin-top: 0 !important;
+      bottom: auto !important;
+    }
+    #modalNovoUsuario input[type="checkbox"] {
+      width: 18px !important;
+      height: 18px !important;
+      min-height: unset !important;
+      line-height: normal !important;
+      padding: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      background: none !important;
+      flex-shrink: 0 !important;
+    }
+    /* grid de 2 colunas dentro dos modais */
+    .modal-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;
+    }
+    .modal-grid .field-full,
+    .modal-grid .field.field-full { grid-column: 1 / -1; }
+    .modal-grid .field { width: 100%; }
+    .modal-header {
+      font-size: 1.5em; font-weight: 700; color: var(--text);
+      border-bottom: 3px solid var(--primary); padding-bottom: 15px; margin-bottom: 8px;
+    }
+    .modal-footer {
+      display: flex; gap: 15px; justify-content: flex-end;
+      padding-top: 20px; border-top: 1px solid var(--border);
+      position: sticky; bottom: 0; background: var(--card); margin-top: auto;
+    }
+    /* ── CAMPO PADRÃO UNIVERSAL ── */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+    .field label {
+      font-weight: 600;
+      font-size: 0.88em;
+      color: var(--text);
+      display: block;
+    }
+    .field input,
+    .field select,
+    .field textarea,
+    .field .autocomplete-wrap input {
+      width: 100% !important;
+      height: 44px !important;
+      padding: 0 14px !important;
+      border: 2px solid var(--border) !important;
+      border-radius: 8px !important;
+      font-size: 0.92em !important;
+      font-family: inherit !important;
+      background: var(--bg2) !important;
+      color: var(--text) !important;
+      box-sizing: border-box !important;
+      transition: all 0.3s ease !important;
+      appearance: auto !important;
+      -webkit-appearance: auto !important;
+      line-height: normal !important;
+    }
+    .field textarea {
+      height: auto !important;
+      min-height: 90px !important;
+      padding: 12px 14px !important;
+      resize: vertical !important;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none !important;
+      border-color: var(--primary) !important;
+      background: var(--card) !important;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+    }
+
+    /* modal label legado */
+    .modal-content label { font-weight: 600; font-size: 0.88em; color: var(--text); display: block; margin-bottom: 6px; }
+    /* garante que divs dentro do modal ocupem 100% */
+    .modal-content > div { width: 100%; }
+
+    /* form-group nos filtros também usa .field */
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100% !important;
+      height: 44px !important;
+      padding: 0 14px !important;
+      border: 2px solid var(--border) !important;
+      border-radius: 8px !important;
+      font-size: 0.92em !important;
+      font-family: inherit !important;
+      background: var(--bg2) !important;
+      color: var(--text) !important;
+      box-sizing: border-box !important;
+      transition: all 0.3s ease !important;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none !important;
+      border-color: var(--primary) !important;
+      background: var(--card) !important;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+    }
+
+    /* ── INFO CARDS ── */
+    .info-card {
+      background: linear-gradient(135deg, var(--bg2), var(--card)); padding: 20px;
+      border-radius: 12px; border-left: 4px solid var(--primary);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background 0.3s ease;
+    }
+    .info-card .info-label { font-size: 0.85em; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; display: block; }
+    .info-card .info-value { font-size: 1.1em; font-weight: 600; color: var(--text); }
+
+    /* ── FILTROS ── */
+    .filtros-box {
+      background: var(--card); border-radius: 16px; padding: 24px;
+      margin-bottom: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+      transition: background 0.3s ease;
+    }
+
+    /* ── AUDITORIA ITEM ── */
+    .audit-item {
+      padding: 12px; background: var(--bg2); border-radius: 8px;
+      border-left: 4px solid var(--info); margin-bottom: 10px;
+      font-size: 0.88em; transition: background 0.3s ease;
+    }
+
+    /* ── CRONOLOGIA ── */
+    .crono-item {
+      padding: 12px; background: var(--bg2); border-radius: 8px;
+      border-left: 4px solid var(--primary); margin-bottom: 10px;
+      font-size: 0.88em; transition: background 0.3s ease;
+    }
+    .crono-item .crono-date { font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .crono-item .crono-author { font-size: 0.82em; color: var(--text2); margin-bottom: 6px; }
+
+    /* ── ACESSO ITEM ── */
+    .acesso-item {
+      padding: 16px; background: var(--bg2); border-radius: 10px;
+      border-left: 4px solid var(--success); margin-bottom: 12px;
+      font-size: 0.95em; transition: background 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ── AUTOCOMPLETE ── */
+    .autocomplete-wrap { position: relative; width: 100%; }
+    .autocomplete-wrap input { width: 100% !important; }
+    .autocomplete-list {
+      position: absolute; top: 100%; left: 0; right: 0; background: var(--card);
+      border: 2px solid var(--primary); border-radius: 0 0 8px 8px;
+      max-height: 180px; overflow-y: auto; z-index: 500; display: none;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    .autocomplete-list div {
+      padding: 10px 14px; cursor: pointer; font-size: 0.9em; border-bottom: 1px solid var(--border);
+      color: var(--text); transition: background 0.15s;
+    }
+    .autocomplete-list div:hover { background: rgba(37,99,235,0.08); }
+
+    /* ── MSGS ── */
+    .msg-erro { color: #dc2626; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px; border-left: 4px solid var(--danger); margin-bottom: 16px; font-size: 0.9em; }
+    .msg-sucesso { color: #059669; padding: 12px; background: rgba(16,185,129,0.1); border-radius: 8px; border-left: 4px solid var(--success); margin-bottom: 16px; font-size: 0.9em; }
+
+    /* ── PERM CHECKBOX ── */
+    .perm-group {
+      background: var(--bg2); padding: 16px; border-radius: 10px;
+      border: 1px solid var(--border); transition: background 0.3s ease;
+    }
+    .perm-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .perm-item:last-child { border-bottom: none; }
+    .perm-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); flex-shrink: 0; }
+    .perm-item label { cursor: pointer; font-weight: 500; font-size: 0.92em; margin: 0; }
+
+    /* ── BUTTON TOOLBAR ── */
+    .btn-toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+
+    /* ── TABELA RELATORIO ── */
+    .tabela-scroll { max-height: 450px; overflow-y: auto; border-radius: 12px; }
+    .tabela-scroll thead th { position: sticky; top: 0; background: var(--bg2); z-index: 2; }
+
+    /* ── HIDDEN ── */
+    .hidden { display: none !important; }
+
+    /* ── MENU TOGGLE (mobile) ── */
+    .menu-toggle-btn { display: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .topbar { margin: 10px 12px 0; top: 10px; border-radius: 14px; }
+      .topbar-row1 { padding: 0 16px; height: 56px; }
+      .topbar-brand h1 { font-size: 1em; }
+      .topbar-brand-icon { width: 34px; height: 34px; font-size: 1em; }
+      .topbar-row2 { display: none; flex-direction: column; align-items: flex-start; padding: 8px 12px 12px; height: auto; }
+      .topbar-row2 nav { flex-direction: column; width: 100%; gap: 2px; }
+      .topbar-row2 nav button { width: 100%; justify-content: flex-start; }
+      .topbar.open .topbar-row2 { display: flex; }
+      .topbar-user .user-info-wrap { display: none; }
+      .menu-toggle-btn {
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        background: none; border: none; color: #9ca3af; cursor: pointer; padding: 8px; gap: 4px;
+        margin-right: 4px;
+      }
+      .menu-toggle-btn span { display: block; width: 20px; height: 2px; background: currentColor; border-radius: 2px; }
+      .content { padding: 12px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .modal-content { width: 95%; max-width: none; padding: 20px; }
+      .modal-grid { grid-template-columns: 1fr !important; }
+      .btn-toolbar { flex-direction: column; }
+      .btn-toolbar .btn { width: 100%; text-align: center; }
+    }
   </style>
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="telaLogin" class="login-container">
   <div class="login-box">
     <h1>🔐 Sistema de Chamados</h1>
     <div id="msgLogin"></div>
     <input id="loginEmail" type="email" placeholder="Email" autocomplete="email">
-    <input id="loginSenha" type="password" placeholder="Senha" autocomplete="current-password">
-    <button class="btn" id="btnLogin" style="width: 100%;">Entrar</button>
+    <input id="loginSenha" type="password" placeholder="Senha" autocomplete="current-password" style="margin-top:0;">
+    <button class="btn btn-primary" id="btnLogin" style="width:100%;margin-top:8px;">Entrar</button>
   </div>
 </div>
 
+<!-- APP -->
 <div id="appContainer" class="hidden">
   <div class="layout">
-    <aside class="sidebar">
-      <img id="logoEmpresa" class="hidden">
-      <h1 id="nomeEmpresa">Sistema</h1>
-      <button id="menuToggle" class="menu-toggle">☰</button>
-      <div class="menu-items">
-        <button class="active" onclick="app.aba('chamados',this)">📋 Chamados</button>
-        <button onclick="app.aba('clientes',this)">👥 Clientes</button>
-        <button onclick="app.aba('relatorios',this)">📊 Relatórios</button>
-        <button onclick="app.aba('usuarios',this)">👨‍💼 Usuários</button>
-        <button onclick="app.aba('auditoria',this)">🔍 Auditoria</button>
-        <button onclick="app.aba('config',this)">⚙️ Config</button>
-		<button onclick="window.open('instalacao.html', '_blank')">
-  📅 Instalações
-</button>
-      </div>
-      <div class="user-info">
-        <div>👤 <span id="usuarioNome">Usuário</span></div>
-        <div style="margin-top:10px;color:#6b7280;"><small id="usuarioEmail"></small></div>
-        <button class="btn" id="btnLogout" style="width:100%;margin-top:15px;padding:8px;font-size:12px;">Sair</button>
-      </div>
-    </aside>
 
+    <!-- TOPBAR -->
+    <header class="topbar" id="sidebar">
+      <!-- Linha 1: Logo + Usuário -->
+      <div class="topbar-row1">
+        <div class="topbar-brand">
+          <div class="topbar-brand-icon" id="logoWrap">
+            <img id="logoEmpresa" class="hidden" style="width:100%;height:100%;object-fit:contain;border-radius:8px;">
+            <span id="logoIcon">📋</span>
+          </div>
+          <h1 id="nomeEmpresa">Sistema de Chamados</h1>
+        </div>
+        <div class="topbar-user">
+          <div class="user-info-wrap">
+            <div class="user-name" id="usuarioNome">Usuário</div>
+            <div class="user-email" id="usuarioEmail"></div>
+          </div>
+          <div id="themeToggle" class="theme-toggle" title="Alternar tema claro/escuro">
+            <span class="theme-icon">🌙</span>
+          </div>
+          <button class="btn-logout" id="btnLogout">Sair</button>
+        </div>
+      </div>
+      <!-- Linha 2: Navegação -->
+      <div class="topbar-row2">
+        <button class="menu-toggle-btn" id="menuToggle">
+          <span></span><span></span><span></span>
+        </button>
+        <nav>
+          <button class="active" onclick="app.aba('chamados',this)">📋 Chamados</button>
+          <button onclick="app.aba('clientes',this)">👥 Clientes</button>
+          <button onclick="app.aba('relatorios',this)">📊 Relatórios</button>
+          <button onclick="app.aba('usuarios',this)">👨‍💼 Usuários</button>
+          <button onclick="app.aba('auditoria',this)">🔍 Auditoria</button>
+          <button onclick="app.aba('config',this)">⚙️ Config</button>
+          <button onclick="abrirInstalacoes(this)">📅 Instalações</button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
     <main class="content">
       <div id="msgErro"></div>
+
+      <!-- CHAMADOS -->
       <section id="chamados">
-        <h2>Chamados</h2>
-        <button class="btn" onclick="app.abrirModal()">+ Abrir Chamado</button>
-        <table><thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Status</th><th>Ação</th></tr></thead><tbody id="listaChamados"></tbody></table>
+        <div class="page-header">
+          <div>
+            <h1>📋 Chamados</h1>
+            <p>Gerenciamento de atendimentos e suporte</p>
+          </div>
+        </div>
+        <div class="section">
+          <div class="btn-toolbar">
+            <button class="btn btn-primary" onclick="app.abrirModal()">+ Abrir Chamado</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Data</th><th>Hora</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Status</th><th>Cronologia</th></tr></thead>
+              <tbody id="listaChamados"></tbody>
+            </table>
+          </div>
+        </div>
       </section>
+
+      <!-- CLIENTES -->
       <section id="clientes" class="hidden">
-        <h2>Clientes</h2>
-        <button class="btn" onclick="app.abrirModalNovoCliente()" style="margin-bottom:20px;">+ Novo Cliente</button>
-        <div id="listaClientes" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px;"></div>
+        <div class="page-header">
+          <div><h1>👥 Clientes</h1><p>Base de clientes cadastrados</p></div>
+        </div>
+        <div class="section">
+          <div class="btn-toolbar">
+            <button class="btn btn-primary" onclick="app.abrirModalNovoCliente()">+ Novo Cliente</button>
+          </div>
+          <div class="cards-grid" id="listaClientes"></div>
+        </div>
       </section>
+
+      <!-- RELATÓRIOS -->
       <section id="relatorios" class="hidden">
-        <h2>Relatórios</h2>
-        <div style="background:#fff;padding:20px;border-radius:8px;margin-bottom:20px;height:fit-content;">
-          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:15px;">
-		  <div>
-  <label style="font-weight:bold;display:block;margin-bottom:6px;">
-    ID do Chamado
-  </label>
-  <input
-    id="fIdChamado"
-    type="number"
-    placeholder="Filtrar por ID"
-    style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;"
-  >
-</div>
-
-            <div>
-              <label style="font-weight:bold;display:block;margin-bottom:6px;">Cliente</label>
-              <div style="position:relative;"><input id="fCliente" placeholder="Filtrar por Cliente" autocomplete="off" oninput="app.buscarClientesFiltro()" onblur="setTimeout(() => { document.getElementById('listaClientesFiltro').style.display = 'none'; }, 200)" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;"><div id="listaClientesFiltro" style="position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ddd;border-radius:4px;max-height:150px;overflow-y:auto;z-index:10;display:none;"></div></div>
+        <div class="page-header">
+          <div><h1>📊 Relatórios</h1><p>Consulta e exportação de chamados</p></div>
+        </div>
+        <div class="filtros-box section">
+          <h2>Filtros</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>ID do Chamado</label>
+              <input id="fIdChamado" type="number" placeholder="Filtrar por ID">
             </div>
-			
-			<div>
-  <label style="font-weight:bold;display:block;margin-bottom:6px;">
-    CNPJ
-  </label>
-
-  <input id="fCNPJ"
-         placeholder="Filtrar por CNPJ"
-         style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
-</div>
-
-            <div>
-              <label style="font-weight:bold;display:block;margin-bottom:6px;">Solicitante</label>
-              <input id="fSolicitante" placeholder="Filtrar por Solicitante" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+            <div class="form-group">
+              <label>Cliente</label>
+              <div class="autocomplete-wrap">
+                <input id="fCliente" type="text" placeholder="Filtrar por cliente" autocomplete="off" oninput="app.buscarClientesFiltro()" onblur="setTimeout(()=>{document.getElementById('listaClientesFiltro').style.display='none'},200)">
+                <div class="autocomplete-list" id="listaClientesFiltro"></div>
+              </div>
             </div>
-            <div>
-              <label style="font-weight:bold;display:block;margin-bottom:6px;">Técnico</label>
-              <select id="fTecnico" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Todos os Técnicos</option></select>
+            <div class="form-group">
+              <label>CNPJ</label>
+              <input id="fCNPJ" type="text" placeholder="Filtrar por CNPJ">
             </div>
-            <div>
-              <label style="font-weight:bold;display:block;margin-bottom:6px;">Categoria</label>
-              <select id="fCategoria" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Todas as Categorias</option><option value="Caixa">Caixa</option><option value="Equipamento">Equipamento</option><option value="Retaguarda">Retaguarda</option><option value="Treinamento">Treinamento</option><option value="Apresentação">Apresentação</option><option value="Instalação">Instalação</option><option value="Sitef">Sitef</option>
-<option value="Outros">Outros</option></select>
+            <div class="form-group">
+              <label>Solicitante</label>
+              <input id="fSolicitante" type="text" placeholder="Filtrar por solicitante">
             </div>
-            <div>
-              <label style="font-weight:bold;display:block;margin-bottom:6px;">Tipo de Atendimento</label>
-              <select id="fTipoAtendimento" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Todos os Tipos</option><option value="Remoto">Remoto</option><option value="Presencial">Presencial</option></select>
+            <div class="form-group">
+              <label>Técnico</label>
+              <select id="fTecnico"><option value="">Todos os Técnicos</option></select>
             </div>
-            <div>
-              <label style="font-weight:bold;display:block;margin-bottom:6px;">Status</label>
-              <select id="fStatus" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Todos</option><option value="pendente">Pendente</option><option value="resolvido">Resolvido</option></select>
+            <div class="form-group">
+              <label>Categoria</label>
+              <select id="fCategoria">
+                <option value="">Todas as Categorias</option>
+                <option>Caixa</option><option>Equipamento</option><option>Retaguarda</option>
+                <option>Treinamento</option><option>Apresentação</option><option>Instalação</option>
+                <option>Sitef</option><option>Outros</option>
+              </select>
             </div>
-            <div>
-              <label style="font-weight:bold;display:block;margin-bottom:6px;">Data Início</label>
-              <input id="fDataInicio" type="date" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+            <div class="form-group">
+              <label>Tipo de Atendimento</label>
+              <select id="fTipoAtendimento">
+                <option value="">Todos os Tipos</option>
+                <option>Remoto</option><option>Presencial</option>
+              </select>
             </div>
-            <div>
-              <label style="font-weight:bold;display:block;margin-bottom:6px;">Data Fim</label>
-              <input id="fDataFim" type="date" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+            <div class="form-group">
+              <label>Status</label>
+              <select id="fStatus">
+                <option value="">Todos</option>
+                <option value="pendente">Pendente</option>
+                <option value="resolvido">Resolvido</option>
+              </select>
             </div>
-			</div>
-         
-          <div style="display:flex;gap:10px;justify-content:center;margin-bottom:30px;width:100%;margin-top:20px;">
-  <button class="btn" onclick="app.relatorio()" style="padding:12px 24px;font-size:16px;">🔍 Filtrar</button>
-  <button class="btn" onclick="app.imprimirRelatorio()" style="padding:12px 24px;font-size:16px;background:#16a34a;">🖨️ Imprimir</button>
-  <button class="btn" onclick="app.limparFiltrosRelatorio()" style="padding:12px 24px;font-size:16px;background:#e5e7eb;color:#111;">🧹 Limpar </button>
-</div>
-
-<hr style="margin:30px 0;border:0;border-top:1px solid #e5e7eb;">
-
-        
-       <div class="tabela-relatorio"><table><thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Tipo</th><th>Status</th><th>Descrição</th></tr></thead><tbody id="resultadoRelatorio"></tbody></table></div>
+            <div class="form-group">
+              <label>Data Início</label>
+              <input id="fDataInicio" type="date">
+            </div>
+            <div class="form-group">
+              <label>Data Fim</label>
+              <input id="fDataFim" type="date">
+            </div>
+          </div>
+          <div class="btn-toolbar" style="justify-content:center;margin-top:10px;">
+            <button class="btn btn-primary" onclick="app.relatorio()">🔍 Filtrar</button>
+            <button class="btn btn-success" onclick="app.imprimirRelatorio()">🖨️ Imprimir</button>
+            <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.limparFiltrosRelatorio()">🧹 Limpar</button>
+          </div>
+        </div>
+        <div class="section">
+          <div class="tabela-scroll">
+            <table>
+              <thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Tipo</th><th>Status</th><th>Descrição</th></tr></thead>
+              <tbody id="resultadoRelatorio"></tbody>
+            </table>
+          </div>
+        </div>
       </section>
+
+      <!-- USUÁRIOS -->
       <section id="usuarios" class="hidden">
-        <h2>Gerenciar Usuários</h2>
-        <button class="btn" onclick="app.abrirModalNovoUsuario()" style="margin-bottom:20px;">+ Novo Usuário</button>
-        <table><thead><tr><th>Nome</th><th>Email</th><th>Permissões</th><th>Cadastro</th><th>Ações</th></tr></thead><tbody id="listaUsuarios"></tbody></table>
+        <div class="page-header">
+          <div><h1>👨‍💼 Usuários</h1><p>Gerenciamento de acesso ao sistema</p></div>
+        </div>
+        <div class="section">
+          <div class="btn-toolbar">
+            <button class="btn btn-primary" onclick="app.abrirModalNovoUsuario()">+ Novo Usuário</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nome</th><th>Email</th><th>Permissões</th><th>Cadastro</th><th>Ações</th></tr></thead>
+              <tbody id="listaUsuarios"></tbody>
+            </table>
+          </div>
+        </div>
       </section>
+
+      <!-- AUDITORIA -->
       <section id="auditoria" class="hidden">
-        <h2>Auditoria (Histórico de Ações)</h2>
-        <div style="background:#fff;padding:20px;border-radius:8px;margin-bottom:20px;">
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:15px;">
-            <input id="auditFiltroUsuario" placeholder="Filtrar por usuário">
-            <input id="auditFiltroAcao" placeholder="Filtrar por ação">
-            <input id="auditFiltroDataInicio" type="date">
-            <input id="auditFiltroDataFim" type="date">
+        <div class="page-header">
+          <div><h1>🔍 Auditoria</h1><p>Histórico de ações do sistema</p></div>
+        </div>
+        <div class="section">
+          <div class="form-grid" style="margin-bottom:16px;">
+            <input type="text" id="auditFiltroUsuario" placeholder="Filtrar por usuário">
+            <input type="text" id="auditFiltroAcao" placeholder="Filtrar por ação">
+            <input type="date" id="auditFiltroDataInicio">
+            <input type="date" id="auditFiltroDataFim">
           </div>
-          <div style="display:flex;gap:10px;">
-            <button class="btn" onclick="app.filtrarAuditoria()" style="flex:1;">🔍 Pesquisar</button>
-            <button class="btn-danger" onclick="app.limparAuditoria()" style="flex:1;">🗑️ Limpar</button>
+          <div class="btn-toolbar">
+            <button class="btn btn-primary" onclick="app.filtrarAuditoria()">🔍 Pesquisar</button>
+            <button class="btn btn-danger" onclick="app.limparAuditoria()">🗑️ Limpar</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Detalhes</th></tr></thead>
+              <tbody id="listaAuditoria"></tbody>
+            </table>
           </div>
         </div>
-        <table><thead><tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Detalhes</th></tr></thead><tbody id="listaAuditoria"></tbody></table>
       </section>
+
+      <!-- CONFIG -->
       <section id="config" class="hidden">
-        <h2>Configurações</h2>
-        <div style="background:#fff;padding:20px;border-radius:8px;max-width:600px;">
-          <h3 style="margin-top:0;">Informações da Empresa</h3>
-          <label style="display:block;margin-bottom:8px;font-weight:bold;">Nome:</label>
-          <input id="confEmpresa" placeholder="Nome da empresa" style="width:100%;margin-bottom:15px;padding:8px;border:1px solid #ddd;border-radius:4px;">
-          <label style="display:block;margin-bottom:8px;font-weight:bold;">Logo:</label>
-          <input id="confLogo" placeholder="URL da logo" style="width:100%;margin-bottom:20px;padding:8px;border:1px solid #ddd;border-radius:4px;">
-          <button class="btn" onclick="app.salvarConfig()" style="width:100%;">💾 Salvar</button>
+        <div class="page-header">
+          <div><h1>⚙️ Configurações</h1><p>Personalização do sistema</p></div>
+        </div>
+        <div class="section" style="max-width:500px;">
+          <h2>Empresa</h2>
+          <div class="form-group" style="margin-bottom:16px;">
+            <label>Nome da Empresa</label>
+            <input id="confEmpresa" type="text" placeholder="Nome da empresa">
+          </div>
+          <div class="form-group" style="margin-bottom:20px;">
+            <label>URL da Logo</label>
+            <input id="confLogo" type="text" placeholder="https://...">
+          </div>
+          <button class="btn btn-primary" onclick="app.salvarConfig()" style="width:100%;">💾 Salvar</button>
         </div>
       </section>
+
+      <!-- INSTALAÇÕES -->
+      <section id="instalacoesSection" class="hidden" style="overflow:visible;">
+        <iframe
+          id="iframeInstalacoes"
+          src=""
+          scrolling="auto"
+          style="width:100%; height:calc(100vh - 75px); border:none; display:block;">
+        </iframe>
+      </section>
+
     </main>
   </div>
 </div>
 
-<div id="modal" class="modal"><div class="modal-content" style="width:400px;"><h3 style="margin-top:0;">Novo Chamado</h3><label style="font-weight:bold;display:block;margin-bottom:6px;">Cliente *</label><div style="position:relative;margin-bottom:10px;"><input id="mCliente" placeholder="Digite o cliente" autocomplete="off" oninput="app.buscarClientes()" onblur="setTimeout(() => { document.getElementById('listaClientesAutoComplete').style.display = 'none'; }, 200)"><div id="listaClientesAutoComplete" style="position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ddd;border-radius:4px;max-height:150px;overflow-y:auto;z-index:10;display:none;"></div></div><input id="mSolicitante" placeholder="Solicitante"><label style="font-weight:bold;display:block;margin-bottom:6px;">Técnico *</label><select id="mTecnico" style="width:100%;margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Selecione um técnico</option></select><label style="font-weight:bold;display:block;margin-bottom:6px;">Categoria *</label><select id="mCategoria" style="width:100%;margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Selecione uma categoria</option><option value="Caixa">Caixa</option><option value="Equipamento">Equipamento</option><option value="Retaguarda">Retaguarda</option><option value="Treinamento">Treinamento</option><option value="Apresentação">Apresentação</option><option value="Instalação">Instalação</option><option value="Sitef">Sitef</option>
-<option value="Outros">Outros</option></select><label style="font-weight:bold;display:block;margin-bottom:6px;">Tipo de Atendimento *</label><select id="mTipoAtendimento" style="width:100%;margin-bottom:10px;padding:8px;border:1px solid #ddd;border-radius:4px;"><option value="">Selecione o tipo</option><option value="Remoto">Remoto</option><option value="Presencial">Presencial</option></select><textarea id="mDescricao" placeholder="Descrição" style="height:80px;"></textarea><button class="btn" onclick="app.salvarChamado()" style="width:100%;margin-bottom:8px;">Salvar</button><button class="btn-danger" onclick="app.fecharModal()" style="width:100%;">Cancelar</button></div></div>
+<!-- MODAL NOVO CHAMADO -->
+<div id="modal" class="modal">
+  <div class="modal-content wide">
+    <div class="modal-header">📋 Novo Chamado</div>
+    <div class="modal-grid">
+      <div class="field field-full">
+        <label>Cliente *</label>
+        <div class="autocomplete-wrap">
+          <input id="mCliente" placeholder="Digite o cliente" autocomplete="off" oninput="app.buscarClientes()" onblur="setTimeout(()=>{document.getElementById('listaClientesAutoComplete').style.display='none'},200)">
+          <div class="autocomplete-list" id="listaClientesAutoComplete"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Solicitante *</label>
+        <input id="mSolicitante" type="text" placeholder="Nome do solicitante">
+      </div>
+      <div class="field">
+        <label>Técnico *</label>
+        <select id="mTecnico"><option value="">Selecione um técnico</option></select>
+      </div>
+      <div class="field">
+        <label>Categoria *</label>
+        <select id="mCategoria">
+          <option value="">Selecione uma categoria</option>
+          <option>Caixa</option><option>Equipamento</option><option>Retaguarda</option>
+          <option>Treinamento</option><option>Apresentação</option><option>Instalação</option>
+          <option>Sitef</option><option>Outros</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Tipo de Atendimento *</label>
+        <select id="mTipoAtendimento">
+          <option value="">Selecione o tipo</option>
+          <option>Remoto</option><option>Presencial</option>
+        </select>
+      </div>
+      <div class="field field-full">
+        <label>Descrição *</label>
+        <textarea id="mDescricao" placeholder="Descreva o problema..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="app.salvarChamado()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
 
-<div id="modalNovoUsuario" class="modal"><div class="modal-content" style="width:500px;"><h3>➕ Novo Usuário</h3><div id="msgNovoUsuario"></div><label style="font-weight:bold;display:block;margin-bottom:6px;">Nome *</label><input id="novoUsuarioNome" type="text" placeholder="Nome completo"><label style="font-weight:bold;display:block;margin-bottom:6px;">Email *</label><input id="novoUsuarioEmail" type="email" placeholder="Email"><label style="font-weight:bold;display:block;margin-bottom:6px;">Senha *</label><input id="novoUsuarioSenha" type="password" placeholder="Mín. 6 caracteres"><label style="font-weight:bold;display:block;margin-bottom:6px;">Confirmar *</label><input id="novoUsuarioConfirma" type="password" placeholder="Confirmar senha"><label style="font-weight:bold;display:block;margin-bottom:10px;">Permissões:</label><div style="background:#f0f4f8;padding:15px;border-radius:6px;margin-bottom:20px;border:1px solid #ddd;"><div style="display:flex;align-items:center;margin-bottom:10px;"><input type="checkbox" id="permChamados" checked style="margin-right:10px;"><label for="permChamados" style="cursor:pointer;margin:0;">📋 Chamados</label></div><div style="display:flex;align-items:center;margin-bottom:10px;"><input type="checkbox" id="permClientes" checked style="margin-right:10px;"><label for="permClientes" style="cursor:pointer;margin:0;">👥 Clientes</label></div><div style="display:flex;align-items:center;margin-bottom:10px;"><input type="checkbox" id="permRelatorios" checked style="margin-right:10px;"><label for="permRelatorios" style="cursor:pointer;margin:0;">📊 Relatórios</label></div><div style="display:flex;align-items:center;"><input type="checkbox" id="permUsuarios" style="margin-right:10px;"><label for="permUsuarios" style="cursor:pointer;margin:0;">👨‍💼 Admin</label></div></div><div style="display:flex;gap:10px;"><button class="btn" id="btnSalvarUsuario" onclick="app.criarNovoUsuario()" style="flex:1;">💾 Criar</button><button class="btn-danger" onclick="app.fecharModalNovoUsuario()" style="flex:1;">Cancelar</button></div></div></div>
+<!-- MODAL NOVO USUÁRIO -->
+<div id="modalNovoUsuario" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">👨‍💼 Usuário</div>
+    <div id="msgNovoUsuario"></div>
 
-<div id="modalNovoCliente" class="modal"><div class="modal-content" style="width:500px;"><h3>➕ Novo Cliente</h3><input id="ncNome" placeholder="Nome *"><input id="ncRazao" placeholder="Razão Social"><input id="ncCNPJ" placeholder="CNPJ/CPF"><input id="ncEndereco" placeholder="Endereço"><textarea id="ncObservacoes" placeholder="Observações..." style="height:80px;"></textarea><div style="display:flex;gap:10px;"><button class="btn" onclick="app.salvarNovoCliente()" style="flex:1;">💾 Salvar</button><button class="btn-danger" onclick="app.fecharModalNovoCliente()" style="flex:1;">Cancelar</button></div></div></div>
+    <div class="modal-usuario-body">
+      <div class="field field-full">
+        <label>Nome *</label>
+        <input id="novoUsuarioNome" type="text" placeholder="Nome completo">
+      </div>
+      <div class="field field-full">
+        <label>Email *</label>
+        <input id="novoUsuarioEmail" type="email" placeholder="Email">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="field">
+          <label>Senha *</label>
+          <input id="novoUsuarioSenha" type="password" placeholder="Mínimo 6 caracteres">
+        </div>
+        <div class="field">
+          <label>Confirmar Senha *</label>
+          <input id="novoUsuarioConfirma" type="password" placeholder="Confirmar senha">
+        </div>
+      </div>
 
-<div id="modalAcessos" class="modal"><div class="modal-content" style="width:550px;"><h3>🔐 Acessos - <span id="clienteAcessoNome"></span></h3><label style="font-weight:bold;">Nome/Tipo *</label><input id="arNome" placeholder="Ex: Servidor 1"><label style="font-weight:bold;">Dados de Acesso</label><textarea id="arDescricao" placeholder="IP, Usuário, Senha..." style="height:80px;"></textarea><button class="btn" onclick="app.salvarAcessoRemoto()" style="width:100%;margin-bottom:15px;">+ Adicionar</button><h4>Acessos Cadastrados</h4><div id="listaAcessosRemoto" style="max-height:250px;overflow-y:auto;margin-bottom:15px;"></div><button class="btn-danger" onclick="app.fecharAcessos()" style="width:100%;">Fechar</button></div></div>
+      <div class="field field-full">
+        <label>Permissões</label>
+        <div style="background:var(--bg2);border-radius:10px;border:1px solid var(--border);padding:8px 16px;">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <input type="checkbox" id="permChamados" checked style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+            <label for="permChamados" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">📋 Chamados</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <input type="checkbox" id="permClientes" checked style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+            <label for="permClientes" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">👥 Clientes</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <input type="checkbox" id="permRelatorios" checked style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+            <label for="permRelatorios" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">📊 Relatórios</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <input type="checkbox" id="permExcluirChamados" style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+            <label for="permExcluirChamados" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">🗑️ Excluir Chamados</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;">
+            <input type="checkbox" id="permUsuarios" style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+            <label for="permUsuarios" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">👨‍💼 Admin</label>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div id="modalCronologia" class="modal"><div class="modal-content"><h3>📋 Cronologia - <span id="idCronologia"></span></h3> <div id="descricaoPrincipal"></div><label style="font-weight:bold;">Atualização</label><textarea id="descricaoCronologia" placeholder="Digite..." style="height:80px;"></textarea><button class="btn" onclick="app.salvarCronologia()" style="width:100%;margin-bottom:15px;">➕ Adicionar</button><h4>Histórico</h4><div id="listaCronologia" style="max-height:300px;overflow-y:auto;font-size:13px;"></div><button class="btn-danger" onclick="app.fecharCronologia()" style="width:100%;margin-top:15px;">Fechar</button></div></div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.fecharModalNovoUsuario()">Cancelar</button>
+      <button class="btn btn-primary" id="btnSalvarUsuario" onclick="app.criarNovoUsuario()">💾 Criar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOVO CLIENTE -->
+<div id="modalNovoCliente" class="modal">
+  <div class="modal-content wide">
+    <div class="modal-header">👥 Cliente</div>
+    <div class="modal-grid">
+      <div class="field field-full"><label>Nome *</label><input id="ncNome" type="text" placeholder="Nome do cliente"></div>
+      <div class="field"><label>Razão Social</label><input id="ncRazao" type="text" placeholder="Razão social"></div>
+      <div class="field"><label>CNPJ/CPF</label><input id="ncCNPJ" type="text" placeholder="CNPJ ou CPF"></div>
+      <div class="field field-full"><label>Endereço</label><input id="ncEndereco" type="text" placeholder="Endereço"></div>
+      <div class="field field-full"><label>Observações</label><textarea id="ncObservacoes" placeholder="Observações..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.fecharModalNovoCliente()">Cancelar</button>
+      <button class="btn btn-primary" onclick="app.salvarNovoCliente()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ACESSOS -->
+<div id="modalAcessos" class="modal">
+  <div class="modal-content wide">
+    <div class="modal-header">🔐 Acessos — <span id="clienteAcessoNome"></span></div>
+    <div class="modal-grid">
+      <div class="field field-full"><label>Nome/Tipo *</label><input id="arNome" type="text" placeholder="Ex: Servidor 1, VPN..."></div>
+      <div class="field field-full"><label>Dados de Acesso</label><textarea id="arDescricao" placeholder="IP, Usuário, Senha..." style="min-height:130px;"></textarea></div>
+    </div>
+    <button class="btn btn-success" onclick="app.salvarAcessoRemoto()" style="width:100%;">+ Adicionar Acesso</button>
+    <hr style="border:none;border-top:1px solid var(--border);margin:4px 0;">
+    <div id="listaAcessosRemoto" style="max-height:400px;overflow-y:auto;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" onclick="app.fecharAcessos()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CRONOLOGIA -->
+<div id="modalCronologia" class="modal">
+  <div class="modal-content wide">
+    <div class="modal-header">📋 Cronologia — Chamado #<span id="idCronologia"></span></div>
+    <div id="descricaoPrincipal"></div>
+    <div class="field"><label>Nova Atualização</label><textarea id="descricaoCronologia" placeholder="Digite a atualização..."></textarea></div>
+    <button class="btn btn-primary" onclick="app.salvarCronologia()" style="width:100%;">➕ Adicionar</button>
+    <hr style="border:none;border-top:1px solid var(--border);margin:4px 0;">
+    <div id="listaCronologia" style="max-height:280px;overflow-y:auto;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" onclick="app.fecharCronologia()">Fechar</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const SUPABASE_URL = 'https://boendmrotsttljydigld.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvZW5kbXJvdHN0dGxqeWRpZ2xkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1OTI5NTksImV4cCI6MjA4MjE2ODk1OX0.k6vVvD6kNV8r-a9lR6jaTcAm1wz5c_jbTDnjKlpo0cE';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* ── DARK MODE ── */
+function initDarkMode(){
+  const dark = localStorage.getItem('darkMode') === 'true';
+  if(dark){ document.body.classList.add('dark-mode'); document.querySelector('.theme-icon').textContent='☀️'; }
+}
+
+function setupThemeToggle(){
+  const btn = document.getElementById('themeToggle');
+  if(!btn) return;
+  btn.addEventListener('click', ()=>{
+    document.body.classList.toggle('dark-mode');
+    const dark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', dark);
+    document.querySelector('.theme-icon').textContent = dark ? '☀️' : '🌙';
+  });
+}
+
 const app = {
   usuarioAtual: null, clienteAcessoAtual: null, chamadoCronologiaId: null,
-  async login(){ const email = document.getElementById('loginEmail').value.trim(); const senha = document.getElementById('loginSenha').value; if(!email || !senha) return this.mostrarMsgLogin('❌ Preencha email e senha'); try{ const { data, error } = await sb.auth.signInWithPassword({ email, password: senha }); if(error) return this.mostrarMsgLogin('❌ ' + error.message); this.usuarioAtual = data.user; this.mostrarApp(); }catch(e){ this.mostrarMsgLogin('❌ Erro: ' + e.message); } },
-  async registrarHistorico(chamadoId, acao){ try{ await sb.from('historico_chamados').insert({ chamado_id: chamadoId, acao, usuario_id: this.usuarioAtual?.id || null, usuario_nome: this.usuarioAtual?.user_metadata?.full_name || this.usuarioAtual?.email || 'Sistema', created_at: new Date().toISOString() }); }catch(e){console.error('Erro ao registrar histórico:', e.message);} },
-  async registrarAuditoria(acao, detalhes = ''){ try{ await sb.from('auditoria').insert({ usuario_id: this.usuarioAtual?.id || null, usuario_nome: this.usuarioAtual?.user_metadata?.full_name || this.usuarioAtual?.email || 'Sistema', acao: acao, detalhes: detalhes, data_acao: new Date().toISOString() }); }catch(e){console.error('Erro ao registrar auditoria:', e.message);} },
-  async logout(){ try{ await sb.auth.signOut(); this.usuarioAtual = null; document.getElementById('telaLogin').style.display = 'flex'; document.getElementById('appContainer').classList.add('hidden'); document.getElementById('loginEmail').value = ''; document.getElementById('loginSenha').value = ''; document.getElementById('msgLogin').innerHTML = ''; }catch(e){console.error('Erro ao sair:', e);} },
-  mostrarMsgLogin(msg){ const div = document.getElementById('msgLogin'); const bg = msg.includes('✅') ? 'background:#dcfce7;color:#166534;' : 'background:#fee;color:#dc2626;'; div.innerHTML = `<div style="padding:10px;border-radius:6px;${bg}">${msg}</div>`; setTimeout(() => div.innerHTML = '', 5000); },
-  async mostrarApp(){ setTimeout(async () => { document.getElementById('telaLogin').style.display = 'none'; document.getElementById('appContainer').classList.remove('hidden'); const nome = this.usuarioAtual.user_metadata?.full_name || this.usuarioAtual.email; document.getElementById('usuarioNome').innerText = nome; document.getElementById('usuarioEmail').innerText = this.usuarioAtual.email; try{ const {data} = await sb.from('usuarios').select('permissoes').eq('email', this.usuarioAtual.email).single(); const perms = data?.permissoes ? JSON.parse(data.permissoes) : {chamados: true, clientes: true, relatorios: true, usuarios: true, auditoria: true}; this.salvarPermissoes(perms); this.mostrarAbasPermitidas(perms); }catch(e){ const perms = {chamados: true, clientes: true, relatorios: true, usuarios: true, auditoria: true}; this.salvarPermissoes(perms); this.mostrarAbasPermitidas(perms); } this.carregarChamados(); this.carregarConfig(); }, 100); },
-  mostrarAbasPermitidas(perms){ document.querySelectorAll('.menu-items button').forEach(btn => { const txt = btn.innerText; let aba = ''; if(txt.includes('Chamados')) aba = 'chamados'; else if(txt.includes('Clientes')) aba = 'clientes'; else if(txt.includes('Relatórios')) aba = 'relatorios'; else if(txt.includes('Usuários')) aba = 'usuarios'; else if(txt.includes('Auditoria')) aba = 'auditoria'; btn.style.display = (aba && perms[aba] === false) ? 'none' : 'block'; }); },
-  mostrarErro(msg){ const div = document.getElementById('msgErro'); div.innerHTML = `<div class="erro">❌ ${msg}</div>`; setTimeout(() => div.innerHTML = '', 5000); },
-  aba(id, btn){ const perms = this.obterPermissoes(); const abasOk = {chamados: perms.chamados !== false, clientes: perms.clientes !== false, relatorios: perms.relatorios !== false, usuarios: perms.usuarios !== false, auditoria: perms.auditoria !== false, config: true}; if(!abasOk[id]) return alert('❌ Sem permissão para acessar'); document.querySelectorAll('section').forEach(s => s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active')); btn.classList.add('active'); if(id === 'clientes') this.carregarClientes(); if(id === 'usuarios') this.carregarUsuarios(); if(id === 'auditoria') this.carregarAuditoria(); if(id === 'relatorios') this.carregarTecnicos();
-},
-  obterPermissoes(){ try{ return JSON.parse(localStorage.getItem('userPermissions') || '{}'); }catch{ return {chamados: true, clientes: true, relatorios: true, usuarios: true, auditoria: true}; } },
-  salvarPermissoes(perms){ localStorage.setItem('userPermissions', JSON.stringify(perms)); },
-  abrirModal(){ document.getElementById('modal').classList.add('active'); this.carregarTecnicos(); },
-  async carregarTecnicos(){
-  try{
-    const {data} = await sb
-      .from('usuarios')
-      .select('nome, email')
-      .order('nome',{ascending:true});
 
-    // 🔹 Modal Novo Chamado
-    const mSelect = document.getElementById('mTecnico');
-    if(mSelect){
-      mSelect.innerHTML = '<option value="">Selecione um técnico</option>';
-      data.forEach(u => {
-        const nome = u.nome || u.email;
-        mSelect.innerHTML += `<option value="${nome}">${nome}</option>`;
-      });
-    }
-
-    // 🔹 Relatórios
-    const fSelect = document.getElementById('fTecnico');
-    if(fSelect){
-      fSelect.innerHTML = '<option value="">Todos os Técnicos</option>';
-      data.forEach(u => {
-        const nome = u.nome || u.email;
-        fSelect.innerHTML += `<option value="${nome}">${nome}</option>`;
-      });
-    }
-
-  }catch(e){
-    console.error('Erro ao carregar técnicos:', e);
-  }
-},
-
-  fecharModal(){ document.getElementById('modal').classList.remove('active'); },
-  async carregarChamados(){ try{ const {data} = await sb.from('chamados').select('*').order('id',{ascending:false}); const tbody = document.getElementById('listaChamados'); tbody.innerHTML = '';       if(!data || !data.length) return tbody.innerHTML = '<tr><td colspan="8">Nenhum chamado</td></tr>';       const hoje = new Date().toISOString().split('T')[0]; const filtrados = data.filter(c => c.created_at.substring(0,10) === hoje || c.status === 'pendente'); if(!filtrados.length) return tbody.innerHTML = '<tr><td colspan="8">Nenhum chamado pendente ou de hoje</td></tr>';       filtrados.forEach(c => tbody.innerHTML += `<tr><td>${c.id}</td><td>${new Date(c.created_at).toLocaleDateString('pt-BR')}</td><td>${c.cliente}</td><td>${c.solicitante}</td><td>${c.tecnico}</td><td><strong>${c.categoria || 'N/A'}</strong></td><td><span class="status ${c.status}" onclick="app.alterarStatus(${c.id},'${c.status}')">${c.status}</span></td><td><button class="btn" onclick="app.abrirCronologia(${c.id})" style="font-size:11px;padding:4px 6px;">📋</button></td></tr>`); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  async alterarStatus(id, status){ 
-  const novo = status === 'pendente' ? 'resolvido' : 'pendente';
-  const msgStatus = novo === 'resolvido' ? 'Resolvido' : 'Pendente';
-  
-  if(!confirm(`Tem certeza que deseja alterar o status para "${msgStatus}"?`)) return;
-  
-  try{ 
-    const {error} = await sb.from('chamados').update({status: novo}).eq('id', id); 
-    if(error) return this.mostrarErro('Erro ao alterar'); 
-    await this.registrarHistorico(id, `Status alterado para ${novo}`); 
-    await this.registrarAuditoria('Alterou status do chamado', `ID: ${id} | Novo status: ${novo}`); 
-    this.carregarChamados(); 
-  }catch(e){this.mostrarErro('Erro: '+e.message);} 
-},
-  async buscarClientes(){ const valor = document.getElementById('mCliente').value.trim(); const lista = document.getElementById('listaClientesAutoComplete'); if(valor.length < 1){ lista.style.display = 'none'; lista.innerHTML = ''; return; } try{ const {data} = await sb.from('clientes').select('nome').ilike('nome', `%${valor}%`).limit(20); lista.innerHTML = ''; if(!data || !data.length){ lista.innerHTML = `<div style="padding:10px;cursor:pointer;color:#2563eb;" onmousedown="app.selecionarCliente('${valor}')"><strong>+ Criar novo: ${valor}</strong></div>`; lista.style.display = 'block'; return; } data.forEach(c => lista.innerHTML += `<div style="cursor:pointer;border-bottom:1px solid #eee;" onmousedown="app.selecionarCliente('${c.nome}')">${c.nome}</div>`); lista.style.display = 'block'; }catch(e){console.error(e);} },
-  selecionarCliente(nome){ document.getElementById('mCliente').value = nome; document.getElementById('listaClientesAutoComplete').style.display = 'none'; },
-  async salvarChamado(){ const c = document.getElementById('mCliente').value.trim(); const s = document.getElementById('mSolicitante').value.trim(); const t = document.getElementById('mTecnico').value.trim(); const cat = document.getElementById('mCategoria').value.trim(); const tipo = document.getElementById('mTipoAtendimento').value.trim(); const d = document.getElementById('mDescricao').value.trim(); if(!c||!s||!t||!cat||!tipo||!d) return alert('Preencha todos os campos!'); try{ const {data:clienteExiste} = await sb.from('clientes').select('nome').eq('nome', c).single(); if(!clienteExiste){ await sb.from('clientes').insert({nome:c}); } const {data, error} = await sb.from('chamados').insert({cliente:c,solicitante:s,tecnico:t,categoria:cat,tipo_atendimento:tipo,descricao:d,status:'pendente',created_at:new Date().toISOString(),criado_por_id:this.usuarioAtual.id,criado_por_nome:this.usuarioAtual.user_metadata?.full_name || this.usuarioAtual.email,criado_por_email:this.usuarioAtual.email}).select().single(); if(error) return this.mostrarErro('Erro: '+error.message); await this.registrarHistorico(data.id, 'Chamado criado'); await this.registrarAuditoria('Criou chamado', `ID: ${data.id} | Cliente: ${c} | Categoria: ${cat} | Tipo: ${tipo}`); this.fecharModal(); this.carregarChamados(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  async carregarClientes(){ try{ const {data} = await sb.from('clientes').select('*'); const div = document.getElementById('listaClientes'); div.innerHTML = ''; if(!data || !data.length) return div.innerHTML = '<p style="grid-column:1/-1;text-align:center;">Nenhum cliente</p>'; data.forEach(c => div.innerHTML += `<div class="cliente-card"><h3>👤 ${c.nome}</h3>${c.razao_social ? `<p style="font-size:12px;color:#666;"><strong>Razão:</strong> ${c.razao_social}</p>` : ''}${c.cnpj ? `<p style="font-size:12px;color:#666;"><strong>CNPJ/CPF:</strong> ${c.cnpj}</p>` : ''}${c.endereco ? `<p style="font-size:12px;color:#666;"><strong>Endereço:</strong> ${c.endereco}</p>` : ''}${c.observacoes ? `<p style="font-size:12px;color:#888;font-style:italic;margin-top:8px;">${c.observacoes}</p>` : ''}<div class="cliente-actions"><button class="btn" onclick="app.editarCliente('${c.nome.replace(/'/g, "\\'")}')" style="flex:1;">✏️ Alterar</button><button class="btn" onclick="app.abrirAcessos('${c.nome.replace(/'/g, "\\'")}')" style="flex:1;background:#16a34a;">🔐 Acessos</button><button class="btn-danger" onclick="app.excluirCliente('${c.nome.replace(/'/g, "\\'")}')" style="flex:1;">🗑️ Excluir</button></div></div>`); }catch(e){console.error(e);} },
-  abrirModalNovoCliente(){ document.getElementById('modalNovoCliente').classList.add('active'); document.getElementById('ncNome').value = ''; document.getElementById('ncRazao').value = ''; document.getElementById('ncCNPJ').value = ''; document.getElementById('ncEndereco').value = ''; document.getElementById('ncObservacoes').value = ''; },
-  fecharModalNovoCliente(){ document.getElementById('modalNovoCliente').classList.remove('active'); },
-  async salvarNovoCliente(){ const nome = document.getElementById('ncNome').value.trim(); if(!nome) return alert('Nome é obrigatório!'); try{ const {error} = await sb.from('clientes').insert({nome,razao_social:document.getElementById('ncRazao').value.trim()||null,cnpj:document.getElementById('ncCNPJ').value.trim()||null,endereco:document.getElementById('ncEndereco').value.trim()||null,observacoes:document.getElementById('ncObservacoes').value.trim()||null}); if(error) return this.mostrarErro('Erro: '+error.message); await this.registrarAuditoria('Criou cliente', `Nome: ${nome} | CNPJ: ${document.getElementById('ncCNPJ').value.trim()}`); alert('✅ Cliente cadastrado!'); this.fecharModalNovoCliente(); this.carregarClientes(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  async editarCliente(nome){ const {data} = await sb.from('clientes').select('*').eq('nome', nome).single(); if(!data) return this.mostrarErro('Cliente não encontrado'); document.getElementById('ncNome').value = data.nome || ''; document.getElementById('ncRazao').value = data.razao_social || ''; document.getElementById('ncCNPJ').value = data.cnpj || ''; document.getElementById('ncEndereco').value = data.endereco || ''; document.getElementById('ncObservacoes').value = data.observacoes || ''; document.getElementById('modalNovoCliente').dataset.nomeOriginal = nome; const btnSalvar = document.querySelector('#modalNovoCliente .btn'); btnSalvar.innerText = '💾 Atualizar'; btnSalvar.onclick = () => this.salvarEdicaoCliente(); document.getElementById('modalNovoCliente').classList.add('active'); },
-  async salvarEdicaoCliente(){ const original = document.getElementById('modalNovoCliente').dataset.nomeOriginal; const novo = document.getElementById('ncNome').value.trim(); if(!novo) return alert('Nome é obrigatório!'); try{ const {error} = await sb.from('clientes').update({nome:novo,razao_social:document.getElementById('ncRazao').value.trim()||null,cnpj:document.getElementById('ncCNPJ').value.trim()||null,endereco:document.getElementById('ncEndereco').value.trim()||null,observacoes:document.getElementById('ncObservacoes').value.trim()||null}).eq('nome', original); if(error) return this.mostrarErro('Erro: '+error.message); alert('✅ Cliente atualizado!'); this.fecharModalNovoCliente(); this.carregarClientes(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  async excluirCliente(nome){ const {data:chamados} = await sb.from('chamados').select('id').eq('cliente', nome).limit(1); if(chamados && chamados.length) return alert('❌ Não é possível excluir!\nEste cliente possui chamados.'); if(!confirm(`Tem certeza que deseja excluir "${nome}"?`)) return; try{ const {error} = await sb.from('clientes').delete().eq('nome', nome); if(error) return this.mostrarErro('Erro: '+error.message); alert('✅ Cliente excluído!'); this.carregarClientes(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  async carregarUsuarios(){ try{ const {data, error} = await sb.from('usuarios').select('*').order('criado_em',{ascending:false}); if(error) return this.mostrarErro('Erro: Tabela "usuarios" não configurada'); const tbody = document.getElementById('listaUsuarios'); tbody.innerHTML = ''; if(!data || !data.length) return tbody.innerHTML = '<tr><td colspan="5">Nenhum usuário</td></tr>'; data.forEach(u => { const perms = u.permissoes ? JSON.parse(u.permissoes) : {chamados:true,clientes:true,relatorios:true,usuarios:false}; const lista = [perms.chamados && 'Chamados',perms.clientes && 'Clientes',perms.relatorios && 'Relatórios',perms.usuarios && 'Admin'].filter(Boolean).join(', '); tbody.innerHTML += `<tr><td>${u.nome || u.email}</td><td>${u.email}</td><td>${lista}</td><td>${u.criado_em ? new Date(u.criado_em).toLocaleDateString('pt-BR') : '--'}</td><td><button class="btn" onclick="app.editarPermissoes('${u.id}','${u.nome || u.email}')" style="font-size:11px;padding:4px 6px;margin-right:5px;">✏️</button><button class="btn-danger" onclick="app.excluirUsuario('${u.id}')" style="font-size:11px;padding:4px 6px;">🗑️</button></td></tr>`; }); }catch(e){console.error(e);this.mostrarErro('Erro: '+e.message);} },
-  abrirModalNovoUsuario(){ document.getElementById('modalNovoUsuario').classList.add('active'); document.getElementById('novoUsuarioNome').value = ''; document.getElementById('novoUsuarioEmail').value = ''; document.getElementById('novoUsuarioSenha').value = ''; document.getElementById('novoUsuarioConfirma').value = ''; document.getElementById('permChamados').checked = true; document.getElementById('permClientes').checked = true; document.getElementById('permRelatorios').checked = true; document.getElementById('permUsuarios').checked = false; document.getElementById('msgNovoUsuario').innerHTML = ''; },
-  fecharModalNovoUsuario(){ document.getElementById('modalNovoUsuario').classList.remove('active'); document.querySelector('#modalNovoUsuario h3').innerText = '➕ Novo Usuário'; document.getElementById('btnSalvarUsuario').innerText = '💾 Criar Usuário'; document.getElementById('btnSalvarUsuario').onclick = () => this.criarNovoUsuario(); },
-  async criarNovoUsuario(){ const nome = document.getElementById('novoUsuarioNome').value.trim(); const email = document.getElementById('novoUsuarioEmail').value.trim(); const senha = document.getElementById('novoUsuarioSenha').value; const confirma = document.getElementById('novoUsuarioConfirma').value; if(!nome || !email || !senha || !confirma) return this.mostrarMsgNU('❌ Preencha todos'); if(senha !== confirma) return this.mostrarMsgNU('❌ Senhas não conferem'); if(senha.length < 6) return this.mostrarMsgNU('❌ Mínimo 6 caracteres'); try{ const {data, error} = await sb.auth.signUp({email, password: senha, options: {data: {full_name: nome}}}); if(error) return this.mostrarMsgNU('❌ '+error.message); const perms = {chamados:document.getElementById('permChamados').checked,clientes:document.getElementById('permClientes').checked,relatorios:document.getElementById('permRelatorios').checked,usuarios:document.getElementById('permUsuarios').checked}; const {error:dbErr} = await sb.from('usuarios').insert({id:data.user.id,nome,email,permissoes:JSON.stringify(perms),criado_em:new Date().toISOString()}); if(dbErr) return this.mostrarMsgNU('❌ '+dbErr.message); this.mostrarMsgNU('✅ Usuário criado!'); setTimeout(() => this.fecharModalNovoUsuario(), 1500); this.carregarUsuarios(); }catch(e){this.mostrarMsgNU('❌ '+e.message);} },
-  mostrarMsgNU(msg){ const div = document.getElementById('msgNovoUsuario'); const bg = msg.includes('✅') ? '#dcfce7' : '#fee'; const cor = msg.includes('✅') ? '#166534' : '#dc2626'; div.innerHTML = `<div style="padding:10px;border-radius:6px;background:${bg};color:${cor};">${msg}</div>`; },
-  async editarPermissoes(id, nome){ const {data} = await sb.from('usuarios').select('*').eq('id', id).single(); const perms = data.permissoes ? JSON.parse(data.permissoes) : {chamados:true,clientes:true,relatorios:true,usuarios:false}; document.getElementById('novoUsuarioNome').value = data.nome || data.email; document.getElementById('novoUsuarioEmail').value = data.email; document.getElementById('novoUsuarioSenha').value = ''; document.getElementById('novoUsuarioConfirma').value = ''; document.getElementById('novoUsuarioSenha').placeholder = '(deixar vazio = não alterar)'; document.getElementById('novoUsuarioConfirma').placeholder = '(deixar vazio = não alterar)'; document.getElementById('permChamados').checked = perms.chamados; document.getElementById('permClientes').checked = perms.clientes; document.getElementById('permRelatorios').checked = perms.relatorios; document.getElementById('permUsuarios').checked = perms.usuarios; document.querySelector('#modalNovoUsuario h3').innerText = '✏️ Editar - '+nome; document.getElementById('btnSalvarUsuario').innerText = '💾 Atualizar'; document.getElementById('btnSalvarUsuario').onclick = () => this.salvarEdicaoUsuario(id); document.getElementById('modalNovoUsuario').classList.add('active'); },
-  async salvarEdicaoUsuario(id){ const perms = {chamados:document.getElementById('permChamados').checked,clientes:document.getElementById('permClientes').checked,relatorios:document.getElementById('permRelatorios').checked,usuarios:document.getElementById('permUsuarios').checked}; try{ const {error} = await sb.from('usuarios').update({permissoes:JSON.stringify(perms)}).eq('id', id); if(error) return this.mostrarMsgNU('❌ '+error.message); this.mostrarMsgNU('✅ Atualizado!'); setTimeout(() => this.fecharModalNovoUsuario(), 1500); this.carregarUsuarios(); }catch(e){this.mostrarMsgNU('❌ '+e.message);} },
-  async excluirUsuario(id){ if(!confirm('Excluir usuário?')) return; try{ const {error} = await sb.from('usuarios').delete().eq('id', id); if(error) return this.mostrarErro('Erro: '+error.message); this.carregarUsuarios(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  abrirAcessos(cliente){ this.clienteAcessoAtual = cliente; document.getElementById('clienteAcessoNome').innerText = cliente; document.getElementById('arNome').value = ''; document.getElementById('arDescricao').value = ''; document.getElementById('modalAcessos').classList.add('active'); this.carregarAcessos(); },
-  fecharAcessos(){ document.getElementById('modalAcessos').classList.remove('active'); },
-  async carregarAcessos(){ try{ const {data} = await sb.from('acessos_remotos').select('*').eq('cliente_nome', this.clienteAcessoAtual).order('id',{ascending:false}); const lista = document.getElementById('listaAcessosRemoto'); lista.innerHTML = ''; if(!data || !data.length) return lista.innerHTML = '<p style="text-align:center;color:#999;">Nenhum acesso</p>'; data.forEach(a => lista.innerHTML += `<div style="padding:10px;background:#f0f4f8;border-radius:6px;margin-bottom:8px;border-left:4px solid #2563eb;"><strong>${a.nome}</strong><p style="margin:5px 0;font-size:12px;white-space:pre-wrap;">${a.descricao || '(sem dados)'}</p><button class="btn" onclick="app.editarAcesso(${a.id},'${a.nome.replace(/'/g,"\\'")}','${(a.descricao||'').replace(/'/g,"\\'")}')" style="padding:4px 6px;font-size:11px;margin-right:5px;">✏️</button><button class="btn-danger" onclick="app.excluirAcesso(${a.id})" style="padding:4px 6px;font-size:11px;">🗑️</button></div>`); }catch(e){console.error(e);} },
-  async salvarAcessoRemoto(){ const nome = document.getElementById('arNome').value.trim(); const desc = document.getElementById('arDescricao').value.trim(); if(!nome) return alert('Nome é obrigatório!'); try{ const {error} = await sb.from('acessos_remotos').insert({cliente_nome:this.clienteAcessoAtual,nome,descricao:desc||null}); if(error) return this.mostrarErro('Erro: '+error.message); document.getElementById('arNome').value = ''; document.getElementById('arDescricao').value = ''; this.carregarAcessos(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  editarAcesso(id, nome, desc){ const novo = prompt(`Editar: ${nome}`, desc); if(novo !== null) this.salvarEditAcesso(id, novo); },
-  async salvarEditAcesso(id, desc){ try{ const {error} = await sb.from('acessos_remotos').update({descricao:desc||null}).eq('id', id); if(error) return this.mostrarErro('Erro: '+error.message); this.carregarAcessos(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  async excluirAcesso(id){ if(!confirm('Excluir?')) return; try{ const {error} = await sb.from('acessos_remotos').delete().eq('id', id); if(error) return this.mostrarErro('Erro: '+error.message); this.carregarAcessos(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  abrirCronologia(id){ this.chamadoCronologiaId = id; document.getElementById('idCronologia').innerText = id; document.getElementById('descricaoCronologia').value = ''; this.carregarChamadoDescricao(); this.carregarCronologia(); document.getElementById('modalCronologia').classList.add('active'); },
-  fecharCronologia(){ document.getElementById('modalCronologia').classList.remove('active'); },
-  async carregarCronologia(){ try{ const {data} = await sb.from('cronologia_chamados').select('*').eq('chamado_id', this.chamadoCronologiaId).order('data',{ascending:true}); const lista = document.getElementById('listaCronologia'); lista.innerHTML = '';       if(!data || !data.length) return lista.innerHTML = '<p style="color:#999;text-align:center;padding:20px;">Nenhuma atualização</p>'; data.forEach(c => lista.innerHTML += `<div style="padding:10px;background:#f0f0f0;border-radius:4px;margin-bottom:8px;border-left:3px solid #2563eb;"><span style="font-weight:bold;">Data: ${new Date(c.data).toLocaleString('pt-BR')}</span><br><small style="color:#666;"><strong>Por:</strong> ${c.usuario_nome || 'N/A'}</small>${c.editado_por ? `<br><small style="color:#d97706;"><strong>Editado por:</strong> ${c.editado_por} em ${new Date(c.data_edicao).toLocaleString('pt-BR')}</small>` : ''}<p style="margin:6px 0 0 0;white-space:pre-wrap;">${c.descricao}</p><button class="btn" onclick="app.editarCronologia(${c.id},'${(c.descricao||'').replace(/'/g,"\\'")}')" style="padding:3px 8px;font-size:10px;margin-right:5px;background:#16a34a;">✏️</button><button class="btn-danger" onclick="app.excluirCronologia(${c.id})" style="padding:3px 8px;font-size:10px;">🗑️</button></div>`); }catch(e){console.error(e);} },
-  async salvarCronologia(){ const desc = document.getElementById('descricaoCronologia').value.trim(); if(!desc) return alert('Digite uma atualização!'); try{ const {error} = await sb.from('cronologia_chamados').insert({chamado_id:this.chamadoCronologiaId,descricao:desc,usuario_nome:this.usuarioAtual.user_metadata?.full_name || this.usuarioAtual.email,data:new Date().toISOString()}); if(error) return this.mostrarErro('Erro: '+error.message); await this.registrarHistorico(this.chamadoCronologiaId, 'Adicionou atualização na cronologia'); await this.registrarAuditoria('Adicionou cronologia', `Chamado ID: ${this.chamadoCronologiaId} | Atualização: ${desc.substring(0, 50)}...`); this.carregarCronologia(); document.getElementById('descricaoCronologia').value = ''; }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  editarCronologia(id, desc){ const novo = prompt('Editar:', desc); if(novo !== null && novo.trim()) this.salvarEditCronologia(id, novo.trim()); },
-  async salvarEditCronologia(id, desc){ try{ const {error} = await sb.from('cronologia_chamados').update({descricao:desc,editado_por:this.usuarioAtual.user_metadata?.full_name || this.usuarioAtual.email,data_edicao:new Date().toISOString()}).eq('id', id); if(error) return this.mostrarErro('Erro: '+error.message); await this.registrarAuditoria('Editou cronologia', `Chamado ID: ${this.chamadoCronologiaId} | Nova atualização: ${desc.substring(0, 50)}...`); this.carregarCronologia(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  async excluirCronologia(id){ if(!confirm('Excluir?')) return; try{ const {error} = await sb.from('cronologia_chamados').delete().eq('id', id); if(error) return this.mostrarErro('Erro: '+error.message); await this.registrarAuditoria('Deletou cronologia', `Chamado ID: ${this.chamadoCronologiaId}`); this.carregarCronologia(); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  abrirCronologiaVisualizar(id){ this.chamadoCronologiaId = id; document.getElementById('idCronologia').innerText = id; document.getElementById('descricaoCronologia').value = ''; this.carregarCronologia(); document.getElementById('modalCronologia').classList.add('active'); },
-  async salvarConfig(){ const nome = document.getElementById('confEmpresa').value.trim(); const logo = document.getElementById('confLogo').value.trim(); if(nome) document.getElementById('nomeEmpresa').innerText = nome; if(logo){ const logoImg = document.getElementById('logoEmpresa'); logoImg.src = logo; logoImg.classList.remove('hidden'); } alert('✅ Configurações salvas!'); },
-  async carregarConfig(){ try{ const {data} = await sb.from('configuracoes').select('*').eq('id',1).single(); if(!data) return; document.getElementById('confEmpresa').value = data.empresa || ''; document.getElementById('confLogo').value = data.logo_url || ''; if(data.empresa) document.getElementById('nomeEmpresa').innerText = data.empresa; if(data.logo_url){ const logoImg = document.getElementById('logoEmpresa'); logoImg.src = data.logo_url; logoImg.classList.remove('hidden'); } }catch(e){console.error(e);} },
-  async relatorio(){ try{ let q = sb.from('chamados').select('*'); const idChamado = document.getElementById('fIdChamado').value;
-if(idChamado){
-  q = q.eq('id', idChamado);
-}
- if(document.getElementById('fTipoAtendimento').value){
-  q = q.eq('tipo_atendimento', document.getElementById('fTipoAtendimento').value);
-} if(document.getElementById('fCategoria').value){
-  q = q.eq('categoria', document.getElementById('fCategoria').value);
-} if(document.getElementById('fCliente').value) q = q.ilike('cliente','%'+document.getElementById('fCliente').value+'%'); if(document.getElementById('fSolicitante').value) q = q.ilike('solicitante','%'+document.getElementById('fSolicitante').value+'%'); if(document.getElementById('fTecnico').value) q = q.ilike('tecnico','%'+document.getElementById('fTecnico').value+'%'); if(document.getElementById('fStatus').value) q = q.eq('status',document.getElementById('fStatus').value); const {data,error} = await q.order('created_at',{ascending:false}); if(error) return this.mostrarErro('Erro: '+error.message); let resultados = data || []; const cnpjFiltro = document.getElementById('fCNPJ').value.trim(); if(cnpjFiltro){ const {data:clientes} = await sb.from('clientes').select('nome, cnpj').ilike('cnpj','%'+cnpjFiltro+'%'); const nomes = clientes ? clientes.map(c => c.nome) : []; resultados = resultados.filter(c => nomes.includes(c.cliente)); } const dataInicio = document.getElementById('fDataInicio').value; const dataFim = document.getElementById('fDataFim').value; if(dataInicio || dataFim){ resultados = resultados.filter(c => { const dataChamado = c.created_at.substring(0, 10); if(dataInicio && dataChamado < dataInicio) return false; if(dataFim && dataChamado > dataFim) return false; return true; }); } const tbody = document.getElementById('resultadoRelatorio'); tbody.innerHTML = '';       if(!resultados || !resultados.length) return tbody.innerHTML = '<tr><td colspan="7">Nenhum resultado</td></tr>';       resultados.forEach(c => tbody.innerHTML += `<tr><td>${c.id}</td><td>${new Date(c.created_at).toLocaleDateString('pt-BR')}</td><td>${c.cliente}</td><td>${c.solicitante}</td><td>${c.tecnico}</td><td>${c.categoria || 'N/A'}</td><td>${c.tipo_atendimento || 'N/A'}</td><td><span class="status ${c.status}">${c.status}</span></td><td style="font-size:12px;max-width:250px;"><strong>Por:</strong> ${c.criado_por_nome || 'N/A'}<br><small style="color:#999;">${new Date(c.created_at).toLocaleString('pt-BR')}</small><p style="margin:8px 0 0 0;">${c.descricao}</p><button class="btn" onclick="app.abrirCronologia(${c.id})" style="font-size:11px;padding:4px 6px;margin-top:8px;">📋 Cronologia</button></td></tr>`); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  async carregarAuditoria(){ try{ const tbody = document.getElementById('listaAuditoria'); tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#999;">Use a pesquisa para filtrar registros</td></tr>'; }catch(e){console.error(e);} },
-  async filtrarAuditoria(){ try{ const {data, error} = await sb.from('auditoria').select('*').order('data_acao',{ascending:false}).limit(1000); if(error) return this.mostrarErro('Erro: '+error.message); let resultados = data || []; const usuarioFiltro = document.getElementById('auditFiltroUsuario').value.trim().toLowerCase(); if(usuarioFiltro){ resultados = resultados.filter(a => a.usuario_nome.toLowerCase().includes(usuarioFiltro)); } const acaoFiltro = document.getElementById('auditFiltroAcao').value.trim().toLowerCase(); if(acaoFiltro){ resultados = resultados.filter(a => a.acao.toLowerCase().includes(acaoFiltro)); } const dataInicio = document.getElementById('auditFiltroDataInicio').value; const dataFim = document.getElementById('auditFiltroDataFim').value; if(dataInicio || dataFim){ resultados = resultados.filter(a => { const dataAcao = a.data_acao.substring(0, 10); if(dataInicio && dataAcao < dataInicio) return false; if(dataFim && dataAcao > dataFim) return false; return true; }); } const tbody = document.getElementById('listaAuditoria'); tbody.innerHTML = ''; if(!resultados.length) return tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;">Nenhum resultado encontrado</td></tr>'; resultados.forEach(a => { const dataFormatada = new Date(a.data_acao).toLocaleString('pt-BR'); tbody.innerHTML += `<tr><td>${dataFormatada}</td><td><strong>${a.usuario_nome}</strong></td><td>${a.acao}</td><td style="font-size:12px;color:#666;">${a.detalhes || '--'}</td></tr>`; }); }catch(e){this.mostrarErro('Erro: '+e.message);} },
-  limparAuditoria(){ document.getElementById('auditFiltroUsuario').value = ''; document.getElementById('auditFiltroAcao').value = ''; document.getElementById('auditFiltroDataInicio').value = ''; document.getElementById('auditFiltroDataFim').value = ''; const tbody = document.getElementById('listaAuditoria'); tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#999;">Use a pesquisa para filtrar registros</td></tr>'; },
-  limparFiltrosRelatorio(){
-  // Limpa todos os campos de entrada (inputs)
-  document.getElementById('fIdChamado').value = '';
-  document.getElementById('fCliente').value = '';
-  document.getElementById('fCNPJ').value = '';
-  document.getElementById('fSolicitante').value = '';
-  document.getElementById('fTecnico').value = '';
-  document.getElementById('fCategoria').value = '';
-  document.getElementById('fTipoAtendimento').value = '';
-  document.getElementById('fStatus').value = '';
-  document.getElementById('fDataInicio').value = '';
-  document.getElementById('fDataFim').value = '';
-  
-  // Limpa a tabela de resultados
-  const tbody = document.getElementById('resultadoRelatorio');
-  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:#999;">Use os filtros acima para pesquisar</td></tr>';
-},
-
-imprimirRelatorio(){
-  const nomeEmpresa = document.getElementById('nomeEmpresa').innerText;
-  const dataAtual = new Date().toLocaleDateString('pt-BR');
-  const resultados = document.getElementById('resultadoRelatorio').getElementsByTagName('tr');
-  
-  if(resultados.length === 0){
-    alert('❌ Nenhum dado para imprimir! Faça uma busca primeiro.');
-    return;
-  }
-
-  let html = `
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-      <meta charset="UTF-8">
-      <title>Relatório de Chamados</title>
-      <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; color: #333; }
-        .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #2563eb; padding-bottom: 20px; }
-        .header h1 { font-size: 24px; color: #1f2937; margin-bottom: 5px; }
-        .header p { font-size: 13px; color: #666; }
-        .filtros { background: #f3f4f6; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 12px; }
-        .filtros h3 { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #1f2937; }
-        .filtro-item { display: inline-block; margin-right: 15px; margin-bottom: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; font-size: 12px; }
-        th { background: #2563eb; color: #fff; font-weight: bold; }
-        tr:nth-child(even) { background: #f9fafb; }
-        .status-pendente { background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
-        .status-resolvido { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
-        .footer { margin-top: 30px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #ddd; padding-top: 15px; }
-        @media print {
-          body { background: white; }
-          .no-print { display: none; }
-        }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <h1>${nomeEmpresa}</h1>
-        <p>Relatório de Chamados</p>
-        <p>Gerado em ${dataAtual}</p>
-      </div>
-
-      <div class="filtros">
-        <h3>📋 Filtros Aplicados:</h3>
-        <div class="filtro-item"><strong>Cliente:</strong> ${document.getElementById('fCliente').value || 'Todos'}</div>
-        <div class="filtro-item"><strong>Técnico:</strong> ${document.getElementById('fTecnico').value || 'Todos'}</div>
-        <div class="filtro-item"><strong>Categoria:</strong> ${document.getElementById('fCategoria').value || 'Todas'}</div>
-        <div class="filtro-item"><strong>Status:</strong> ${document.getElementById('fStatus').value || 'Todos'}</div>
-        <div class="filtro-item"><strong>Tipo:</strong> ${document.getElementById('fTipoAtendimento').value || 'Todos'}</div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Data</th>
-            <th>Cliente</th>
-            <th>Solicitante</th>
-            <th>Técnico</th>
-            <th>Categoria</th>
-            <th>Tipo</th>
-            <th>Status</th>
-            <th>Descrição</th>
-          </tr>
-        </thead>
-        <tbody>
-  `;
-
-  // Adiciona linhas da tabela
-  for(let i = 1; i < resultados.length; i++){
-    const cells = resultados[i].getElementsByTagName('td');
-    if(cells.length === 0) continue;
-    
-    const id = cells[0]?.innerText || '';
-    const data = cells[1]?.innerText || '';
-    const cliente = cells[2]?.innerText || '';
-    const solicitante = cells[3]?.innerText || '';
-    const tecnico = cells[4]?.innerText || '';
-    const categoria = cells[5]?.innerText || '';
-    const tipo = cells[6]?.innerText || '';
-    const status = cells[7]?.innerText?.trim().toLowerCase() || '';
-    const descricao = cells[8]?.innerText?.split('\n')[0] || '';
-    
-    const statusClass = status === 'pendente' ? 'status-pendente' : 'status-resolvido';
-    const statusLabel = status === 'pendente' ? 'Pendente' : 'Resolvido';
-
-    html += `
-      <tr>
-        <td>${id}</td>
-        <td>${data}</td>
-        <td>${cliente}</td>
-        <td>${solicitante}</td>
-        <td>${tecnico}</td>
-        <td>${categoria}</td>
-        <td>${tipo}</td>
-        <td><span class="${statusClass}">${statusLabel}</span></td>
-        <td>${descricao.substring(0, 50)}...</td>
-      </tr>
-    `;
-  }
-
-  html += `
-        </tbody>
-      </table>
-
-      <div class="footer">
-        <p>Total de registros: ${resultados.length - 1}</p>
-        <p>Sistema de Chamados - Impressão em ${dataAtual}</p>
-      </div>
-    </body>
-    </html>
-  `;
-
-  const janelaImpressao = window.open('', '', 'width=1200,height=800');
-  janelaImpressao.document.write(html);
-  janelaImpressao.document.close();
-  janelaImpressao.print();
-},
-  async carregarChamadoDescricao(){
-  try{
-    const {data} = await sb.from('chamados').select('descricao').eq('id', this.chamadoCronologiaId).single();
-    if(!data) return;
-    
-    const descricaoDiv = document.getElementById('descricaoPrincipal');
-    if(descricaoDiv){
-      descricaoDiv.innerHTML = `
-        <div style="padding:15px;background:#e3f2fd;border-radius:6px;margin-bottom:20px;border-left:4px solid #1976d2;">
-          <h4 style="margin:0 0 10px 0;color:#1565c0;">📝 Descrição do Chamado</h4>
-          <p style="margin:0;white-space:pre-wrap;color:#333;">${data.descricao}</p>
-          <button class="btn" onclick="app.editarDescricaoChamado(${this.chamadoCronologiaId},'${(data.descricao||'').replace(/'/g,"\\'")}')" style="padding:6px 10px;font-size:11px;margin-top:10px;background:#16a34a;">✏️ Editar</button>
-          <button class="btn-danger" onclick="app.excluirDescricaoChamado()" style="padding:6px 10px;font-size:11px;margin-top:10px;margin-left:5px;">🗑️ Limpar</button>
-        </div>
-      `;
-    }
-  }catch(e){
-    console.error(e);
-  }
-},
-
-async editarDescricaoChamado(id, descricaoAtual){
-  const novaDesc = prompt('Editar descrição do chamado:', descricaoAtual);
-  if(novaDesc !== null && novaDesc.trim()){
+  async login(){
+    const email = document.getElementById('loginEmail').value.trim();
+    const senha = document.getElementById('loginSenha').value;
+    if(!email||!senha) return this.msgLogin('❌ Preencha email e senha');
     try{
-      const {error} = await sb.from('chamados').update({descricao: novaDesc.trim()}).eq('id', id);
-      if(error) return this.mostrarErro('Erro: '+error.message);
-      
-      await this.registrarAuditoria('Editou descrição do chamado', `Chamado ID: ${id} | Nova descrição: ${novaDesc.substring(0, 50)}...`);
-      this.carregarChamadoDescricao();
-    }catch(e){
-      this.mostrarErro('Erro: '+e.message);
-    }
-  }
-},
-
-async excluirDescricaoChamado(){
-  if(!confirm('Tem certeza que deseja limpar a descrição do chamado?')) return;
-  
-  try{
-    const {error} = await sb.from('chamados').update({descricao: ''}).eq('id', this.chamadoCronologiaId);
-    if(error) return this.mostrarErro('Erro: '+error.message);
-    
-    await this.registrarAuditoria('Deletou descrição do chamado', `Chamado ID: ${this.chamadoCronologiaId}`);
-    this.carregarChamadoDescricao();
-  }catch(e){
-    this.mostrarErro('Erro: '+e.message);
-  }
-},
-// Substitua a função "init" por esta versão melhorada:
-
-init(){
-  document.getElementById('btnLogin').addEventListener('click', () => this.login());
-  document.getElementById('btnLogout').addEventListener('click', () => this.logout());
-  document.getElementById('loginEmail').addEventListener('keypress', (e) => {if(e.key === 'Enter') this.login();});
-  document.getElementById('loginSenha').addEventListener('keypress', (e) => {if(e.key === 'Enter') this.login();});
-  
-  // ✅ VERIFICAR SE JÁ EXISTE SESSÃO
-  this.verificarSessao();
-  
-  const menuToggle = document.getElementById('menuToggle');
-  const sidebar = document.querySelector('.sidebar');
-  if(menuToggle && sidebar){
-    menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-    document.querySelectorAll('.menu-items button').forEach(btn => {
-      btn.addEventListener('click', () => sidebar.classList.remove('open'));
-    });
-  }
-},
-
-// ✅ ADICIONE ESTA NOVA FUNÇÃO
-async verificarSessao(){
-  try{
-    const { data: { session } } = await sb.auth.getSession();
-    
-    if(session && session.user){
-      // Usuário já está logado
-      this.usuarioAtual = session.user;
+      const {data,error} = await sb.auth.signInWithPassword({email, password:senha});
+      if(error) return this.msgLogin('❌ '+error.message);
+      this.usuarioAtual = data.user;
       this.mostrarApp();
-    } else {
-      // Nenhuma sessão, mostrar tela de login
-      document.getElementById('telaLogin').style.display = 'flex';
-      document.getElementById('appContainer').classList.add('hidden');
-    }
-  }catch(e){
-    console.error('Erro ao verificar sessão:', e);
-    document.getElementById('telaLogin').style.display = 'flex';
+    }catch(e){ this.msgLogin('❌ '+e.message); }
+  },
+
+  msgLogin(msg){
+    const div = document.getElementById('msgLogin');
+    const ok = msg.includes('✅');
+    div.innerHTML = `<div class="${ok?'msg-sucesso':'msg-erro'}">${msg}</div>`;
+    setTimeout(()=>div.innerHTML='', 5000);
+  },
+
+  async logout(){
+    await sb.auth.signOut();
+    this.usuarioAtual = null;
+    document.getElementById('telaLogin').style.display='flex';
     document.getElementById('appContainer').classList.add('hidden');
+    document.getElementById('loginEmail').value='';
+    document.getElementById('loginSenha').value='';
+  },
+
+  async mostrarApp(){
+    setTimeout(async()=>{
+      document.getElementById('telaLogin').style.display='none';
+      document.getElementById('appContainer').classList.remove('hidden');
+      const nome = this.usuarioAtual.user_metadata?.full_name || this.usuarioAtual.email;
+      document.getElementById('usuarioNome').innerText = nome;
+      document.getElementById('usuarioEmail').innerText = this.usuarioAtual.email;
+      try{
+        const {data} = await sb.from('usuarios').select('permissoes').eq('email',this.usuarioAtual.email).single();
+        const perms = data?.permissoes ? JSON.parse(data.permissoes) : {chamados:true,clientes:true,relatorios:true,excluirChamados:false,usuarios:true,auditoria:true};
+        this.salvarPermissoes(perms);
+        this.mostrarAbasPermitidas(perms);
+      }catch(e){
+        this.salvarPermissoes({chamados:true,clientes:true,relatorios:true,excluirChamados:false,usuarios:true,auditoria:true});
+      }
+      this.carregarChamados();
+      this.carregarConfig();
+    },100);
+  },
+
+  mostrarAbasPermitidas(perms){
+    document.querySelectorAll('.topbar-row2 nav button').forEach(btn=>{
+      const txt = btn.innerText;
+      let aba='';
+      if(txt.includes('Chamados')) aba='chamados';
+      else if(txt.includes('Clientes')) aba='clientes';
+      else if(txt.includes('Relatórios')) aba='relatorios';
+      else if(txt.includes('Usuários')) aba='usuarios';
+      else if(txt.includes('Auditoria')) aba='auditoria';
+      btn.style.display=(aba&&perms[aba]===false)?'none':'flex';
+    });
+  },
+
+  mostrarErro(msg){
+    const div = document.getElementById('msgErro');
+    div.innerHTML=`<div class="msg-erro">❌ ${msg}</div>`;
+    setTimeout(()=>div.innerHTML='',5000);
+  },
+
+  aba(id,btn){
+    const perms = this.obterPermissoes();
+    const ok={chamados:perms.chamados!==false,clientes:perms.clientes!==false,relatorios:perms.relatorios!==false,usuarios:perms.usuarios!==false,auditoria:perms.auditoria!==false,config:true};
+    if(!ok[id]) return alert('❌ Sem permissão');
+    document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    document.querySelectorAll('.topbar-row2 nav button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sidebar').classList.remove('open');
+    if(id==='clientes') this.carregarClientes();
+    if(id==='usuarios') this.carregarUsuarios();
+    if(id==='auditoria') this.carregarAuditoria();
+    if(id==='relatorios') this.carregarTecnicos();
+  },
+
+  obterPermissoes(){ try{ return JSON.parse(localStorage.getItem('userPermissions')||'{}'); }catch{ return {}; } },
+  salvarPermissoes(p){ localStorage.setItem('userPermissions',JSON.stringify(p)); },
+
+  /* ── CHAMADOS ── */
+  abrirModal(){
+    document.getElementById('mCliente').value = '';
+    document.getElementById('mSolicitante').value = '';
+    document.getElementById('mCategoria').value = '';
+    document.getElementById('mTipoAtendimento').value = '';
+    document.getElementById('mDescricao').value = '';
+    document.getElementById('listaClientesAutoComplete').style.display = 'none';
+    document.getElementById('modal').classList.add('active');
+    this.carregarTecnicos();
+  },
+  fecharModal(){ document.getElementById('modal').classList.remove('active'); },
+
+  async carregarTecnicos(){
+    try{
+      const {data} = await sb.from('usuarios').select('nome,email').order('nome',{ascending:true});
+      ['mTecnico','fTecnico'].forEach(id=>{
+        const sel = document.getElementById(id);
+        if(!sel) return;
+        const first = id==='mTecnico' ? '<option value="">Selecione um técnico</option>' : '<option value="">Todos os Técnicos</option>';
+        sel.innerHTML = first;
+        data.forEach(u=>{ const n=u.nome||u.email; sel.innerHTML+=`<option value="${n}">${n}</option>`; });
+      });
+    }catch(e){console.error(e);}
+  },
+
+  async carregarChamados(){
+    try{
+      const {data} = await sb.from('chamados').select('*').order('id',{ascending:false});
+      const tbody = document.getElementById('listaChamados');
+      tbody.innerHTML='';
+      if(!data||!data.length) return tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text2);">Nenhum chamado</td></tr>';
+      const hoje = new Date().toISOString().split('T')[0];
+      const filtrados = data.filter(c=>c.created_at.substring(0,10)===hoje||c.status==='pendente');
+      if(!filtrados.length) return tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text2);">Nenhum chamado pendente ou de hoje</td></tr>';
+
+      // Busca permissões frescas do banco para garantir que excluirChamados esteja atualizado
+      let podeExcluir = false;
+      try{
+        const {data:uData} = await sb.from('usuarios').select('permissoes').eq('email', this.usuarioAtual.email).single();
+        if(uData?.permissoes){
+          const p = JSON.parse(uData.permissoes);
+          podeExcluir = p.excluirChamados === true;
+          this.salvarPermissoes(p);
+        }
+      }catch(e){}
+
+      filtrados.forEach(c=>{
+        tbody.innerHTML+=`<tr>
+          <td><strong>${c.id}</strong></td>
+          <td>${new Date(c.created_at).toLocaleDateString('pt-BR')}</td>
+          <td>${new Date(c.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
+          <td>${c.cliente}</td>
+          <td>${c.solicitante}</td>
+          <td>${c.tecnico}</td>
+          <td><strong>${c.categoria||'N/A'}</strong></td>
+          <td><span class="badge badge-${c.status}" onclick="app.alterarStatus(${c.id},'${c.status}')">${c.status}</span></td>
+          <td style="display:flex;gap:6px;">
+            <button class="btn btn-info btn-icon" onclick="app.abrirCronologia(${c.id})">📋</button>
+            ${podeExcluir ? `<button class="btn btn-danger btn-icon" onclick="app.excluirChamado(${c.id})">🗑️</button>` : ''}
+          </td>
+        </tr>`;
+      });
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  async alterarStatus(id,status){
+    const novo = status==='pendente'?'resolvido':'pendente';
+    if(!confirm(`Alterar status para "${novo}"?`)) return;
+    try{
+      const {error} = await sb.from('chamados').update({status:novo}).eq('id',id);
+      if(error) return this.mostrarErro('Erro ao alterar');
+      await this.registrarHistorico(id,`Status alterado para ${novo}`);
+      await this.registrarAuditoria('Alterou status do chamado',`ID: ${id} | Novo status: ${novo}`);
+      this.carregarChamados();
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  async excluirChamado(id){
+    if(!confirm(`Tem certeza que deseja excluir o chamado #${id}?\nEsta ação não pode ser desfeita.`)) return;
+    try{
+      await sb.from('cronologia_chamados').delete().eq('chamado_id',id);
+      await sb.from('historico_chamados').delete().eq('chamado_id',id);
+      const {error} = await sb.from('chamados').delete().eq('id',id);
+      if(error) return this.mostrarErro('Erro ao excluir: '+error.message);
+      await this.registrarAuditoria('Excluiu chamado',`ID: ${id}`);
+      this.carregarChamados();
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  async buscarClientes(){
+    const valor = document.getElementById('mCliente').value.trim();
+    const lista = document.getElementById('listaClientesAutoComplete');
+    if(valor.length<1){ lista.style.display='none'; return; }
+    try{
+      const {data} = await sb.from('clientes').select('nome').ilike('nome',`%${valor}%`).limit(20);
+      lista.innerHTML='';
+      if(!data||!data.length){
+        lista.innerHTML=`<div onmousedown="app.selecionarCliente('${valor}')"><strong style="color:var(--primary);">+ Criar: ${valor}</strong></div>`;
+      } else {
+        data.forEach(c=>lista.innerHTML+=`<div onmousedown="app.selecionarCliente('${c.nome}')">${c.nome}</div>`);
+      }
+      lista.style.display='block';
+    }catch(e){console.error(e);}
+  },
+
+  selecionarCliente(nome){
+    document.getElementById('mCliente').value=nome;
+    document.getElementById('listaClientesAutoComplete').style.display='none';
+  },
+
+  async salvarChamado(){
+    const c=document.getElementById('mCliente').value.trim();
+    const s=document.getElementById('mSolicitante').value.trim();
+    const t=document.getElementById('mTecnico').value.trim();
+    const cat=document.getElementById('mCategoria').value.trim();
+    const tipo=document.getElementById('mTipoAtendimento').value.trim();
+    const d=document.getElementById('mDescricao').value.trim();
+    if(!c||!s||!t||!cat||!tipo||!d) return alert('Preencha todos os campos!');
+    try{
+      const {data:existe} = await sb.from('clientes').select('nome').eq('nome',c).single();
+      if(!existe) await sb.from('clientes').insert({nome:c});
+      const {data,error} = await sb.from('chamados').insert({
+        cliente:c,solicitante:s,tecnico:t,categoria:cat,tipo_atendimento:tipo,
+        descricao:d,status:'pendente',created_at:new Date().toISOString(),
+        criado_por_id:this.usuarioAtual.id,
+        criado_por_nome:this.usuarioAtual.user_metadata?.full_name||this.usuarioAtual.email,
+        criado_por_email:this.usuarioAtual.email
+      }).select().single();
+      if(error) return this.mostrarErro('Erro: '+error.message);
+      await this.registrarHistorico(data.id,'Chamado criado');
+      await this.registrarAuditoria('Criou chamado',`ID: ${data.id} | Cliente: ${c}`);
+      this.fecharModal();
+      this.carregarChamados();
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  /* ── CLIENTES ── */
+  async carregarClientes(){
+    try{
+      const {data} = await sb.from('clientes').select('*');
+      const div = document.getElementById('listaClientes');
+      div.innerHTML='';
+      if(!data||!data.length) return div.innerHTML='<p style="color:var(--text2);grid-column:1/-1;text-align:center;padding:20px;">Nenhum cliente cadastrado</p>';
+      data.forEach(c=>{
+        div.innerHTML+=`<div class="cliente-card">
+          <h3>👤 ${c.nome}</h3>
+          ${c.razao_social?`<p><strong>Razão:</strong> ${c.razao_social}</p>`:''}
+          ${c.cnpj?`<p><strong>CNPJ/CPF:</strong> ${c.cnpj}</p>`:''}
+          ${c.endereco?`<p><strong>Endereço:</strong> ${c.endereco}</p>`:''}
+          ${c.observacoes?`<p style="font-style:italic;margin-top:6px;">${c.observacoes}</p>`:''}
+          <div class="cliente-actions">
+            <button class="btn btn-info btn-sm" onclick="app.editarCliente('${c.nome.replace(/'/g,"\\'")}')">✏️ Editar</button>
+            <button class="btn btn-success btn-sm" onclick="app.abrirAcessos('${c.nome.replace(/'/g,"\\'")}')">🔐 Acessos</button>
+            <button class="btn btn-danger btn-sm" onclick="app.excluirCliente('${c.nome.replace(/'/g,"\\'")}')">🗑️</button>
+          </div>
+        </div>`;
+      });
+    }catch(e){ console.error(e); }
+  },
+
+  abrirModalNovoCliente(){
+    ['ncNome','ncRazao','ncCNPJ','ncEndereco','ncObservacoes'].forEach(id=>document.getElementById(id).value='');
+    delete document.getElementById('modalNovoCliente').dataset.nomeOriginal;
+    const btn = document.querySelector('#modalNovoCliente .modal-footer .btn-primary');
+    btn.innerText='💾 Salvar'; btn.onclick=()=>this.salvarNovoCliente();
+    document.querySelector('#modalNovoCliente .modal-header').innerText='👥 Novo Cliente';
+    document.getElementById('modalNovoCliente').classList.add('active');
+  },
+  fecharModalNovoCliente(){ document.getElementById('modalNovoCliente').classList.remove('active'); },
+
+  async salvarNovoCliente(){
+    const nome = document.getElementById('ncNome').value.trim();
+    if(!nome) return alert('Nome é obrigatório!');
+    try{
+      const {error} = await sb.from('clientes').insert({
+        nome, razao_social:document.getElementById('ncRazao').value.trim()||null,
+        cnpj:document.getElementById('ncCNPJ').value.trim()||null,
+        endereco:document.getElementById('ncEndereco').value.trim()||null,
+        observacoes:document.getElementById('ncObservacoes').value.trim()||null
+      });
+      if(error) return this.mostrarErro('Erro: '+error.message);
+      await this.registrarAuditoria('Criou cliente',`Nome: ${nome}`);
+      alert('✅ Cliente cadastrado!');
+      this.fecharModalNovoCliente();
+      this.carregarClientes();
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  async editarCliente(nome){
+    const {data} = await sb.from('clientes').select('*').eq('nome',nome).single();
+    if(!data) return this.mostrarErro('Cliente não encontrado');
+    document.getElementById('ncNome').value=data.nome||'';
+    document.getElementById('ncRazao').value=data.razao_social||'';
+    document.getElementById('ncCNPJ').value=data.cnpj||'';
+    document.getElementById('ncEndereco').value=data.endereco||'';
+    document.getElementById('ncObservacoes').value=data.observacoes||'';
+    document.getElementById('modalNovoCliente').dataset.nomeOriginal=nome;
+    document.querySelector('#modalNovoCliente .modal-header').innerText='✏️ Editar Cliente';
+    const btn = document.querySelector('#modalNovoCliente .modal-footer .btn-primary');
+    btn.innerText='💾 Atualizar'; btn.onclick=()=>this.salvarEdicaoCliente();
+    document.getElementById('modalNovoCliente').classList.add('active');
+  },
+
+  async salvarEdicaoCliente(){
+    const original = document.getElementById('modalNovoCliente').dataset.nomeOriginal;
+    const novo = document.getElementById('ncNome').value.trim();
+    if(!novo) return alert('Nome é obrigatório!');
+    try{
+      const {error} = await sb.from('clientes').update({
+        nome:novo, razao_social:document.getElementById('ncRazao').value.trim()||null,
+        cnpj:document.getElementById('ncCNPJ').value.trim()||null,
+        endereco:document.getElementById('ncEndereco').value.trim()||null,
+        observacoes:document.getElementById('ncObservacoes').value.trim()||null
+      }).eq('nome',original);
+      if(error) return this.mostrarErro('Erro: '+error.message);
+      alert('✅ Cliente atualizado!');
+      this.fecharModalNovoCliente();
+      this.carregarClientes();
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  async excluirCliente(nome){
+    const {data:ch} = await sb.from('chamados').select('id').eq('cliente',nome).limit(1);
+    if(ch&&ch.length) return alert('❌ Não é possível excluir!\nEste cliente possui chamados.');
+    if(!confirm(`Excluir "${nome}"?`)) return;
+    try{
+      const {error} = await sb.from('clientes').delete().eq('nome',nome);
+      if(error) return this.mostrarErro('Erro: '+error.message);
+      alert('✅ Excluído!');
+      this.carregarClientes();
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  /* ── RELATÓRIOS ── */
+  async buscarClientesFiltro(){
+    const valor = document.getElementById('fCliente').value.trim();
+    const lista = document.getElementById('listaClientesFiltro');
+    if(valor.length<1){ lista.style.display='none'; return; }
+    try{
+      const {data} = await sb.from('clientes').select('nome').ilike('nome',`%${valor}%`).limit(20);
+      lista.innerHTML='';
+      (data||[]).forEach(c=>lista.innerHTML+=`<div onmousedown="document.getElementById('fCliente').value='${c.nome}';document.getElementById('listaClientesFiltro').style.display='none';">${c.nome}</div>`);
+      lista.style.display=data&&data.length?'block':'none';
+    }catch(e){console.error(e);}
+  },
+
+  async relatorio(){
+    try{
+      let q = sb.from('chamados').select('*');
+      const id = document.getElementById('fIdChamado').value;
+      if(id) q=q.eq('id',id);
+      if(document.getElementById('fCategoria').value) q=q.eq('categoria',document.getElementById('fCategoria').value);
+      if(document.getElementById('fTipoAtendimento').value) q=q.eq('tipo_atendimento',document.getElementById('fTipoAtendimento').value);
+      if(document.getElementById('fCliente').value) q=q.ilike('cliente','%'+document.getElementById('fCliente').value+'%');
+      if(document.getElementById('fSolicitante').value) q=q.ilike('solicitante','%'+document.getElementById('fSolicitante').value+'%');
+      if(document.getElementById('fTecnico').value) q=q.ilike('tecnico','%'+document.getElementById('fTecnico').value+'%');
+      if(document.getElementById('fStatus').value) q=q.eq('status',document.getElementById('fStatus').value);
+      const {data,error} = await q.order('created_at',{ascending:false});
+      if(error) return this.mostrarErro('Erro: '+error.message);
+      let resultados = data||[];
+      const cnpj = document.getElementById('fCNPJ').value.trim();
+      if(cnpj){
+        const {data:cls} = await sb.from('clientes').select('nome,cnpj').ilike('cnpj','%'+cnpj+'%');
+        const nomes=(cls||[]).map(c=>c.nome);
+        resultados=resultados.filter(c=>nomes.includes(c.cliente));
+      }
+      const di=document.getElementById('fDataInicio').value;
+      const df=document.getElementById('fDataFim').value;
+      if(di||df) resultados=resultados.filter(c=>{ const d=c.created_at.substring(0,10); if(di&&d<di) return false; if(df&&d>df) return false; return true; });
+      const tbody=document.getElementById('resultadoRelatorio');
+      tbody.innerHTML='';
+      if(!resultados.length) return tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text2);">Nenhum resultado</td></tr>';
+      resultados.forEach(c=>{
+        tbody.innerHTML+=`<tr>
+          <td><strong>#${c.id}</strong></td>
+          <td>${new Date(c.created_at).toLocaleDateString('pt-BR')}</td>
+          <td>${c.cliente}</td>
+          <td>${c.solicitante}</td>
+          <td>${c.tecnico}</td>
+          <td>${c.categoria||'N/A'}</td>
+          <td>${c.tipo_atendimento||'N/A'}</td>
+          <td><span class="badge badge-${c.status}">${c.status}</span></td>
+          <td style="font-size:0.85em;max-width:220px;">
+            <div style="color:var(--text2);margin-bottom:4px;"><strong>Por:</strong> ${c.criado_por_nome||'N/A'}</div>
+            <div style="margin-bottom:6px;white-space:pre-wrap;">${c.descricao}</div>
+            <button class="btn btn-info btn-icon" onclick="app.abrirCronologia(${c.id})">📋 Cronologia</button>
+          </td>
+        </tr>`;
+      });
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  limparFiltrosRelatorio(){
+    ['fIdChamado','fCliente','fCNPJ','fSolicitante','fDataInicio','fDataFim'].forEach(id=>document.getElementById(id).value='');
+    ['fTecnico','fCategoria','fTipoAtendimento','fStatus'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('resultadoRelatorio').innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text2);">Use os filtros para pesquisar</td></tr>';
+  },
+
+  imprimirRelatorio(){
+    const rows = document.getElementById('resultadoRelatorio').getElementsByTagName('tr');
+    if(!rows.length){ alert('Faça uma busca primeiro!'); return; }
+    const empresa = document.getElementById('nomeEmpresa').innerText;
+    let html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;padding:30px;color:#333;}h1{color:#2563eb;margin-bottom:5px;}p{color:#666;font-size:13px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;}th,td{padding:9px;border-bottom:1px solid #ddd;font-size:12px;text-align:left;}th{background:#2563eb;color:white;}.pendente{background:#fef3c7;color:#92400e;padding:3px 8px;border-radius:999px;font-size:11px;}.resolvido{background:#dcfce7;color:#166534;padding:3px 8px;border-radius:999px;font-size:11px;}</style></head><body><h1>${empresa}</h1><p>Relatório de Chamados — ${new Date().toLocaleDateString('pt-BR')}</p><table><thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Tipo</th><th>Status</th><th>Descrição</th></tr></thead><tbody>`;
+    for(let i=0;i<rows.length;i++){
+      const cells=rows[i].getElementsByTagName('td');
+      if(!cells.length) continue;
+      const status=cells[7]?.innerText?.trim().toLowerCase()||'';
+      html+=`<tr><td>${cells[0]?.innerText}</td><td>${cells[1]?.innerText}</td><td>${cells[2]?.innerText}</td><td>${cells[3]?.innerText}</td><td>${cells[4]?.innerText}</td><td>${cells[5]?.innerText}</td><td>${cells[6]?.innerText}</td><td><span class="${status}">${status}</span></td><td>${(cells[8]?.innerText||'').substring(0,60)}...</td></tr>`;
+    }
+    html+=`</tbody></table><p style="margin-top:20px;color:#999;text-align:center;font-size:11px;">Total: ${rows.length} registros</p></body></html>`;
+    const w=window.open('','','width=1200,height=800');
+    w.document.write(html); w.document.close(); w.print();
+  },
+
+  /* ── USUÁRIOS ── */
+  async carregarUsuarios(){
+    try{
+      const {data,error}=await sb.from('usuarios').select('*').order('criado_em',{ascending:false});
+      if(error) return this.mostrarErro('Tabela "usuarios" não configurada');
+      const tbody=document.getElementById('listaUsuarios');
+      tbody.innerHTML='';
+      if(!data||!data.length) return tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text2);">Nenhum usuário</td></tr>';
+      data.forEach(u=>{
+        const perms=u.permissoes?JSON.parse(u.permissoes):{};
+        const lista=[perms.chamados&&'Chamados',perms.clientes&&'Clientes',perms.relatorios&&'Relatórios',perms.usuarios&&'Admin'].filter(Boolean).join(', ')||'—';
+        tbody.innerHTML+=`<tr>
+          <td><strong>${u.nome||u.email}</strong></td>
+          <td>${u.email}</td>
+          <td><span style="font-size:0.82em;color:var(--text2);">${lista}</span></td>
+          <td>${u.criado_em?new Date(u.criado_em).toLocaleDateString('pt-BR'):'—'}</td>
+          <td style="display:flex;gap:6px;">
+            <button class="btn btn-info btn-icon" onclick="app.editarPermissoes('${u.id}','${u.nome||u.email}')">✏️</button>
+            <button class="btn btn-danger btn-icon" onclick="app.excluirUsuario('${u.id}')">🗑️</button>
+          </td>
+        </tr>`;
+      });
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  abrirModalNovoUsuario(){
+    ['novoUsuarioNome','novoUsuarioEmail','novoUsuarioSenha','novoUsuarioConfirma'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('novoUsuarioSenha').placeholder='Mínimo 6 caracteres';
+    document.getElementById('novoUsuarioConfirma').placeholder='Confirmar senha';
+    document.getElementById('permChamados').checked=true;
+    document.getElementById('permClientes').checked=true;
+    document.getElementById('permRelatorios').checked=true;
+    document.getElementById('permExcluirChamados').checked=false;
+    document.getElementById('permUsuarios').checked=false;
+    document.getElementById('msgNovoUsuario').innerHTML='';
+    document.querySelector('#modalNovoUsuario .modal-header').innerText='👨‍💼 Novo Usuário';
+    document.getElementById('btnSalvarUsuario').innerText='💾 Criar';
+    document.getElementById('btnSalvarUsuario').onclick=()=>this.criarNovoUsuario();
+    document.getElementById('modalNovoUsuario').classList.add('active');
+    document.body.style.overflow='hidden';
+  },
+
+  fecharModalNovoUsuario(){ document.getElementById('modalNovoUsuario').classList.remove('active'); document.body.style.overflow=''; },
+
+  async criarNovoUsuario(){
+    const nome=document.getElementById('novoUsuarioNome').value.trim();
+    const email=document.getElementById('novoUsuarioEmail').value.trim();
+    const senha=document.getElementById('novoUsuarioSenha').value;
+    const conf=document.getElementById('novoUsuarioConfirma').value;
+    if(!nome||!email||!senha||!conf) return this.msgNU('❌ Preencha todos');
+    if(senha!==conf) return this.msgNU('❌ Senhas não conferem');
+    if(senha.length<6) return this.msgNU('❌ Mínimo 6 caracteres');
+    try{
+      const {data,error}=await sb.auth.signUp({email,password:senha,options:{data:{full_name:nome}}});
+      if(error) return this.msgNU('❌ '+error.message);
+      const perms={chamados:document.getElementById('permChamados').checked,clientes:document.getElementById('permClientes').checked,relatorios:document.getElementById('permRelatorios').checked,excluirChamados:document.getElementById('permExcluirChamados').checked,usuarios:document.getElementById('permUsuarios').checked};
+      const {error:dbErr}=await sb.from('usuarios').insert({id:data.user.id,nome,email,permissoes:JSON.stringify(perms),criado_em:new Date().toISOString()});
+      if(dbErr) return this.msgNU('❌ '+dbErr.message);
+      this.msgNU('✅ Usuário criado!');
+      setTimeout(()=>this.fecharModalNovoUsuario(),1500);
+      this.carregarUsuarios();
+    }catch(e){ this.msgNU('❌ '+e.message); }
+  },
+
+  msgNU(msg){
+    const div=document.getElementById('msgNovoUsuario');
+    div.innerHTML=`<div class="${msg.includes('✅')?'msg-sucesso':'msg-erro'}">${msg}</div>`;
+  },
+
+  async editarPermissoes(id,nome){
+    const {data}=await sb.from('usuarios').select('*').eq('id',id).single();
+    const perms=data.permissoes?JSON.parse(data.permissoes):{};
+    document.getElementById('novoUsuarioNome').value=data.nome||data.email;
+    document.getElementById('novoUsuarioEmail').value=data.email;
+    document.getElementById('novoUsuarioSenha').value='';
+    document.getElementById('novoUsuarioConfirma').value='';
+    document.getElementById('novoUsuarioSenha').placeholder='(deixar vazio = não alterar)';
+    document.getElementById('novoUsuarioConfirma').placeholder='(deixar vazio = não alterar)';
+    document.getElementById('permChamados').checked=perms.chamados;
+    document.getElementById('permClientes').checked=perms.clientes;
+    document.getElementById('permRelatorios').checked=perms.relatorios;
+    document.getElementById('permExcluirChamados').checked=perms.excluirChamados||false;
+    document.getElementById('permUsuarios').checked=perms.usuarios;
+    document.querySelector('#modalNovoUsuario .modal-header').innerText='✏️ Editar — '+nome;
+    document.getElementById('btnSalvarUsuario').innerText='💾 Atualizar';
+    document.getElementById('btnSalvarUsuario').onclick=()=>this.salvarEdicaoUsuario(id);
+    document.getElementById('modalNovoUsuario').classList.add('active');
+    document.body.style.overflow='hidden';
+  },
+
+  async salvarEdicaoUsuario(id){
+    const perms={chamados:document.getElementById('permChamados').checked,clientes:document.getElementById('permClientes').checked,relatorios:document.getElementById('permRelatorios').checked,excluirChamados:document.getElementById('permExcluirChamados').checked,usuarios:document.getElementById('permUsuarios').checked};
+    try{
+      const {error}=await sb.from('usuarios').update({permissoes:JSON.stringify(perms)}).eq('id',id);
+      if(error) return this.msgNU('❌ '+error.message);
+      this.msgNU('✅ Atualizado!');
+      setTimeout(()=>this.fecharModalNovoUsuario(),1500);
+      this.carregarUsuarios();
+    }catch(e){ this.msgNU('❌ '+e.message); }
+  },
+
+  async excluirUsuario(id){
+    if(!confirm('Excluir usuário?')) return;
+    const {error}=await sb.from('usuarios').delete().eq('id',id);
+    if(error) return this.mostrarErro('Erro: '+error.message);
+    this.carregarUsuarios();
+  },
+
+  /* ── ACESSOS ── */
+  abrirAcessos(cliente){
+    this.clienteAcessoAtual=cliente;
+    document.getElementById('clienteAcessoNome').innerText=cliente;
+    document.getElementById('arNome').value='';
+    document.getElementById('arDescricao').value='';
+    document.getElementById('modalAcessos').classList.add('active');
+    this.carregarAcessos();
+  },
+  fecharAcessos(){ document.getElementById('modalAcessos').classList.remove('active'); },
+
+  async carregarAcessos(){
+    const {data}=await sb.from('acessos_remotos').select('*').eq('cliente_nome',this.clienteAcessoAtual).order('id',{ascending:false});
+    const lista=document.getElementById('listaAcessosRemoto');
+    lista.innerHTML='';
+    if(!data||!data.length) return lista.innerHTML='<p style="text-align:center;color:var(--text2);padding:16px;">Nenhum acesso cadastrado</p>';
+    data.forEach(a=>{
+      lista.innerHTML+=`<div class="acesso-item">
+        <strong>${a.nome}</strong>
+        <p style="white-space:pre-wrap;margin:6px 0;font-size:0.85em;">${a.descricao||'(sem dados)'}</p>
+        <button class="btn btn-info btn-icon" onclick="app.editarAcesso(${a.id},'${a.nome.replace(/'/g,"\\'")}','${(a.descricao||'').replace(/'/g,"\\'")}')">✏️</button>
+        <button class="btn btn-danger btn-icon" onclick="app.excluirAcesso(${a.id})">🗑️</button>
+      </div>`;
+    });
+  },
+
+  async salvarAcessoRemoto(){
+    const nome=document.getElementById('arNome').value.trim();
+    if(!nome) return alert('Nome é obrigatório!');
+    const {error}=await sb.from('acessos_remotos').insert({cliente_nome:this.clienteAcessoAtual,nome,descricao:document.getElementById('arDescricao').value.trim()||null});
+    if(error) return this.mostrarErro('Erro: '+error.message);
+    document.getElementById('arNome').value='';
+    document.getElementById('arDescricao').value='';
+    this.carregarAcessos();
+  },
+
+  editarAcesso(id,nome,desc){ const n=prompt(`Editar: ${nome}`,desc); if(n!==null) this.salvarEditAcesso(id,n); },
+  async salvarEditAcesso(id,desc){ await sb.from('acessos_remotos').update({descricao:desc||null}).eq('id',id); this.carregarAcessos(); },
+  async excluirAcesso(id){ if(!confirm('Excluir?')) return; await sb.from('acessos_remotos').delete().eq('id',id); this.carregarAcessos(); },
+
+  /* ── CRONOLOGIA ── */
+  abrirCronologia(id){
+    this.chamadoCronologiaId=id;
+    document.getElementById('idCronologia').innerText=id;
+    document.getElementById('descricaoCronologia').value='';
+    this.carregarChamadoDescricao();
+    this.carregarCronologia();
+    document.getElementById('modalCronologia').classList.add('active');
+  },
+  fecharCronologia(){ document.getElementById('modalCronologia').classList.remove('active'); },
+
+  async carregarChamadoDescricao(){
+    const {data}=await sb.from('chamados').select('descricao').eq('id',this.chamadoCronologiaId).single();
+    if(!data) return;
+    document.getElementById('descricaoPrincipal').innerHTML=`
+      <div style="padding:14px;background:rgba(37,99,235,0.07);border-radius:10px;border-left:4px solid var(--primary);margin-bottom:12px;">
+        <div style="font-weight:700;color:var(--primary);margin-bottom:6px;font-size:0.88em;">📝 DESCRIÇÃO DO CHAMADO</div>
+        <p style="white-space:pre-wrap;font-size:0.9em;color:var(--text);">${data.descricao}</p>
+        <div style="margin-top:10px;display:flex;gap:6px;">
+          <button class="btn btn-success btn-icon" onclick="app.editarDescricaoChamado(${this.chamadoCronologiaId},'${(data.descricao||'').replace(/'/g,"\\'")}')">✏️ Editar</button>
+          <button class="btn btn-danger btn-icon" onclick="app.excluirDescricaoChamado()">🗑️ Limpar</button>
+        </div>
+      </div>`;
+  },
+
+  async editarDescricaoChamado(id,desc){
+    const n=prompt('Editar descrição:',desc);
+    if(n!==null&&n.trim()){
+      await sb.from('chamados').update({descricao:n.trim()}).eq('id',id);
+      await this.registrarAuditoria('Editou descrição',`Chamado ID: ${id}`);
+      this.carregarChamadoDescricao();
+    }
+  },
+
+  async excluirDescricaoChamado(){
+    if(!confirm('Limpar descrição?')) return;
+    await sb.from('chamados').update({descricao:''}).eq('id',this.chamadoCronologiaId);
+    this.carregarChamadoDescricao();
+  },
+
+  async carregarCronologia(){
+    const {data}=await sb.from('cronologia_chamados').select('*').eq('chamado_id',this.chamadoCronologiaId).order('data',{ascending:true});
+    const lista=document.getElementById('listaCronologia');
+    lista.innerHTML='';
+    if(!data||!data.length) return lista.innerHTML='<p style="text-align:center;color:var(--text2);padding:16px;">Nenhuma atualização</p>';
+    data.forEach(c=>{
+      lista.innerHTML+=`<div class="crono-item">
+        <div class="crono-date">${new Date(c.data).toLocaleString('pt-BR')}</div>
+        <div class="crono-author">Por: ${c.usuario_nome||'N/A'}${c.editado_por?` · Editado por: ${c.editado_por}`:''}</div>
+        <p style="white-space:pre-wrap;">${c.descricao}</p>
+        <div style="margin-top:8px;display:flex;gap:6px;">
+          <button class="btn btn-success btn-icon" onclick="app.editarCronologia(${c.id},'${(c.descricao||'').replace(/'/g,"\\'")}')">✏️</button>
+          <button class="btn btn-danger btn-icon" onclick="app.excluirCronologia(${c.id})">🗑️</button>
+        </div>
+      </div>`;
+    });
+  },
+
+  async salvarCronologia(){
+    const desc=document.getElementById('descricaoCronologia').value.trim();
+    if(!desc) return alert('Digite uma atualização!');
+    const {error}=await sb.from('cronologia_chamados').insert({chamado_id:this.chamadoCronologiaId,descricao:desc,usuario_nome:this.usuarioAtual.user_metadata?.full_name||this.usuarioAtual.email,data:new Date().toISOString()});
+    if(error) return this.mostrarErro('Erro: '+error.message);
+    await this.registrarAuditoria('Adicionou cronologia',`Chamado ID: ${this.chamadoCronologiaId}`);
+    document.getElementById('descricaoCronologia').value='';
+    this.carregarCronologia();
+  },
+
+  editarCronologia(id,desc){ const n=prompt('Editar:',desc); if(n!==null&&n.trim()) this.salvarEditCronologia(id,n.trim()); },
+  async salvarEditCronologia(id,desc){
+    await sb.from('cronologia_chamados').update({descricao:desc,editado_por:this.usuarioAtual.user_metadata?.full_name||this.usuarioAtual.email,data_edicao:new Date().toISOString()}).eq('id',id);
+    this.carregarCronologia();
+  },
+  async excluirCronologia(id){ if(!confirm('Excluir?')) return; await sb.from('cronologia_chamados').delete().eq('id',id); this.carregarCronologia(); },
+
+  /* ── AUDITORIA ── */
+  async carregarAuditoria(){
+    document.getElementById('listaAuditoria').innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2);">Use a pesquisa para filtrar registros</td></tr>';
+  },
+
+  async filtrarAuditoria(){
+    const {data,error}=await sb.from('auditoria').select('*').order('data_acao',{ascending:false}).limit(1000);
+    if(error) return this.mostrarErro('Erro: '+error.message);
+    let r=data||[];
+    const u=document.getElementById('auditFiltroUsuario').value.trim().toLowerCase();
+    if(u) r=r.filter(a=>a.usuario_nome.toLowerCase().includes(u));
+    const ac=document.getElementById('auditFiltroAcao').value.trim().toLowerCase();
+    if(ac) r=r.filter(a=>a.acao.toLowerCase().includes(ac));
+    const di=document.getElementById('auditFiltroDataInicio').value;
+    const df=document.getElementById('auditFiltroDataFim').value;
+    if(di||df) r=r.filter(a=>{ const d=a.data_acao.substring(0,10); if(di&&d<di)return false; if(df&&d>df)return false; return true; });
+    const tbody=document.getElementById('listaAuditoria');
+    tbody.innerHTML='';
+    if(!r.length) return tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2);">Nenhum resultado</td></tr>';
+    r.forEach(a=>{
+      tbody.innerHTML+=`<tr>
+        <td>${new Date(a.data_acao).toLocaleString('pt-BR')}</td>
+        <td><strong>${a.usuario_nome}</strong></td>
+        <td>${a.acao}</td>
+        <td style="font-size:0.82em;color:var(--text2);">${a.detalhes||'—'}</td>
+      </tr>`;
+    });
+  },
+
+  limparAuditoria(){
+    ['auditFiltroUsuario','auditFiltroAcao','auditFiltroDataInicio','auditFiltroDataFim'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('listaAuditoria').innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2);">Use a pesquisa para filtrar registros</td></tr>';
+  },
+
+  /* ── CONFIG ── */
+  async salvarConfig(){
+    const nome=document.getElementById('confEmpresa').value.trim();
+    const logo=document.getElementById('confLogo').value.trim();
+    try{
+      const {error}=await sb.from('configuracoes').upsert({id:1, empresa:nome||null, logo_url:logo||null});
+      if(error) return this.mostrarErro('Erro ao salvar: '+error.message);
+      if(nome) document.getElementById('nomeEmpresa').innerText=nome;
+      if(logo){
+        const img=document.getElementById('logoEmpresa');
+        img.src=logo; img.classList.remove('hidden');
+        const icon=document.getElementById('logoIcon');
+        if(icon) icon.style.display='none';
+      }
+      alert('✅ Configurações salvas!');
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  async carregarConfig(){
+    try{
+      const {data}=await sb.from('configuracoes').select('*').eq('id',1).single();
+      if(!data) return;
+      document.getElementById('confEmpresa').value=data.empresa||'';
+      document.getElementById('confLogo').value=data.logo_url||'';
+      if(data.empresa) document.getElementById('nomeEmpresa').innerText=data.empresa;
+      if(data.logo_url){
+        const img=document.getElementById('logoEmpresa');
+        img.src=data.logo_url; img.classList.remove('hidden');
+        const icon=document.getElementById('logoIcon');
+        if(icon) icon.style.display='none';
+      }
+    }catch(e){ console.error(e); }
+  },
+
+  /* ── HELPERS ── */
+  async registrarHistorico(chamadoId,acao){
+    try{ await sb.from('historico_chamados').insert({chamado_id:chamadoId,acao,usuario_id:this.usuarioAtual?.id||null,usuario_nome:this.usuarioAtual?.user_metadata?.full_name||this.usuarioAtual?.email||'Sistema',created_at:new Date().toISOString()}); }catch(e){}
+  },
+  async registrarAuditoria(acao,detalhes=''){
+    try{ await sb.from('auditoria').insert({usuario_id:this.usuarioAtual?.id||null,usuario_nome:this.usuarioAtual?.user_metadata?.full_name||this.usuarioAtual?.email||'Sistema',acao,detalhes,data_acao:new Date().toISOString()}); }catch(e){}
+  },
+
+  /* ── INIT ── */
+  init(){
+    initDarkMode();
+    setupThemeToggle();
+    document.getElementById('btnLogin').addEventListener('click',()=>this.login());
+    document.getElementById('btnLogout').addEventListener('click',()=>this.logout());
+    document.getElementById('loginEmail').addEventListener('keypress',e=>{if(e.key==='Enter')this.login();});
+    document.getElementById('loginSenha').addEventListener('keypress',e=>{if(e.key==='Enter')this.login();});
+    document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+    this.verificarSessao();
+  },
+
+  async verificarSessao(){
+    try{
+      const {data:{session}}=await sb.auth.getSession();
+      if(session&&session.user){ this.usuarioAtual=session.user; this.mostrarApp(); }
+      else { document.getElementById('telaLogin').style.display='flex'; }
+    }catch(e){ document.getElementById('telaLogin').style.display='flex'; }
   }
-}
 };
-window.addEventListener('load', () => app.init());
+
+function abrirInstalacoes(botao) {
+  document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
+  document.querySelectorAll('.topbar-row2 nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('instalacoesSection').classList.remove('hidden');
+  const iframe = document.getElementById('iframeInstalacoes');
+  if (!iframe.getAttribute('data-loaded')) {
+    iframe.setAttribute('data-loaded', '1');
+    iframe.src = 'instalacao.html';
+  }
+  iframe.onload = function() {};
+  botao.classList.add('active');
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+window.addEventListener('load',()=>app.init());
 </script>
 </body>
 </html>
