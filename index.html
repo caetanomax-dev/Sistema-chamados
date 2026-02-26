@@ -523,26 +523,62 @@
     /* ── HIDDEN ── */
     .hidden { display: none !important; }
 
-    /* ── MENU TOGGLE (mobile) ── */
-    .menu-toggle-btn { display: none; }
-
     /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
+    @media (max-width: 960px) {
       .topbar { margin: 10px 12px 0; top: 10px; border-radius: 14px; }
-      .topbar-row1 { padding: 0 16px; height: 56px; }
+      .topbar-row1 { padding: 0 12px; height: 56px; gap: 10px; }
       .topbar-brand h1 { font-size: 1em; }
       .topbar-brand-icon { width: 34px; height: 34px; font-size: 1em; }
-      .topbar-row2 { display: none; flex-direction: column; align-items: flex-start; padding: 8px 12px 12px; height: auto; }
-      .topbar-row2 nav { flex-direction: column; width: 100%; gap: 2px; }
-      .topbar-row2 nav button { width: 100%; justify-content: flex-start; }
-      .topbar.open .topbar-row2 { display: flex; }
-      .topbar-user .user-info-wrap { display: none; }
-      .menu-toggle-btn {
-        display: flex; flex-direction: column; justify-content: center; align-items: center;
-        background: none; border: none; color: #9ca3af; cursor: pointer; padding: 8px; gap: 4px;
-        margin-right: 4px;
+
+      /* Menu dropdown mobile */
+      .topbar-row2 {
+        display: none;
       }
-      .menu-toggle-btn span { display: block; width: 20px; height: 2px; background: currentColor; border-radius: 2px; }
+      .topbar-row2.aberto, .topbar.open .topbar-row2 {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 6px 10px 12px;
+        height: auto;
+        border-top: 1px solid var(--border);
+      }
+      .topbar-row2 nav { flex-direction: column; width: 100%; gap: 3px; }
+      .topbar-row2 nav button {
+        width: 100%; justify-content: flex-start;
+        padding: 11px 14px; font-size: 0.92em; border-radius: 10px;
+        height: auto;
+      }
+      .topbar-user .user-info-wrap { display: none; }
+
+      /* Botão hambúrguer — 4 listrinhas */
+      .menu-toggle-btn {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text);
+        cursor: pointer;
+        padding: 7px 9px;
+        gap: 4px;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+        width: 40px;
+        height: 40px;
+      }
+      .menu-toggle-btn:hover { background: var(--border); }
+      .menu-toggle-btn span {
+        display: block; width: 18px; height: 2px;
+        background: currentColor; border-radius: 2px;
+        transition: all 0.2s ease;
+      }
+      /* Animação X quando aberto */
+      .topbar.open .menu-toggle-btn span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+      .topbar.open .menu-toggle-btn span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+      .topbar.open .menu-toggle-btn span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+      .topbar.open .menu-toggle-btn span:nth-child(4) { opacity: 0; transform: scaleX(0); }
       .content { padding: 12px; }
       .form-grid { grid-template-columns: 1fr; }
       .cards-grid { grid-template-columns: 1fr; }
@@ -574,6 +610,9 @@
     <header class="topbar" id="sidebar">
       <!-- Linha 1: Logo + Usuário -->
       <div class="topbar-row1">
+        <button class="menu-toggle-btn" id="menuToggle" aria-label="Menu">
+          <span></span><span></span><span></span><span></span>
+        </button>
         <div class="topbar-brand">
           <div class="topbar-brand-icon" id="logoWrap">
             <img id="logoEmpresa" class="hidden" style="width:100%;height:100%;object-fit:contain;border-radius:8px;">
@@ -594,9 +633,6 @@
       </div>
       <!-- Linha 2: Navegação -->
       <div class="topbar-row2">
-        <button class="menu-toggle-btn" id="menuToggle">
-          <span></span><span></span><span></span>
-        </button>
         <nav>
           <button class="active" onclick="app.aba('chamados',this)">📋 Chamados</button>
           <button onclick="app.aba('clientes',this)">👥 Clientes</button>
@@ -1737,6 +1773,14 @@ const app = {
     document.getElementById('loginEmail').addEventListener('keypress',e=>{if(e.key==='Enter')this.login();});
     document.getElementById('loginSenha').addEventListener('keypress',e=>{if(e.key==='Enter')this.login();});
     document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+    // Fechar menu mobile ao clicar fora
+    document.addEventListener('click', function(e){
+      const sidebar = document.getElementById('sidebar');
+      const menuBtn = document.getElementById('menuToggle');
+      if(sidebar && menuBtn && !sidebar.contains(e.target)){
+        sidebar.classList.remove('open');
+      }
+    });
     this.verificarSessao();
   },
 
