@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Implantação ERP</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL = 'https://boendmrotsttljydigld.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvZW5kbXJvdHN0dGxqeWRpZ2xkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1OTI5NTksImV4cCI6MjA4MjE2ODk1OX0.k6vVvD6kNV8r-a9lR6jaTcAm1wz5c_jbTDnjKlpo0cE'; 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-</script>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         :root {
@@ -156,21 +150,108 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         .status-in-progress { background: rgba(245,158,11,0.15); color: var(--warning); }
         .status-pending { background: rgba(239,68,68,0.15); color: var(--danger); }
         .chart-container { position: relative; height: 400px; margin: 30px 0; padding: 20px; background: var(--card); border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.3s ease; }
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
-        .modal-content { background: var(--card); margin: 5% auto; padding: 30px; border-radius: 16px; width: 90%; max-width: 700px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; transition: background 0.3s ease; display: flex; flex-direction: column; }
-        .modal-header { font-size: 1.5em; margin-bottom: 25px; color: var(--text); border-bottom: 3px solid var(--primary); padding-bottom: 15px; }
-        .modal-body { margin-bottom: 25px; }
-        .edit-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
-        .edit-section h4 { margin-bottom: 15px; color: var(--text); font-size: 1.05em; }
-        .edit-item { margin-bottom: 20px; padding: 15px; background: var(--bg2); border-radius: 8px; transition: background 0.3s ease; }
-        .edit-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            animation: modalFadeIn 0.2s ease-out;
+        }
+        @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes modalSlideUp { from { opacity: 0; transform: translateY(24px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .modal-content {
+            background: var(--card);
+            margin: 4% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%; max-width: 700px;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.25), 0 4px 16px rgba(0,0,0,0.1);
+            max-height: 90vh; overflow: hidden;
+            display: flex; flex-direction: column;
+            transition: background 0.3s ease;
+            animation: modalSlideUp 0.25s ease-out;
+            border: 1px solid var(--border);
+        }
+        .modal-header {
+            font-size: 1.25em; font-weight: 700;
+            color: var(--text);
+            padding: 24px 30px 20px;
+            background: linear-gradient(135deg, var(--bg2), var(--card));
+            border-bottom: 2px solid var(--border);
+            border-radius: 20px 20px 0 0;
+            display: flex; align-items: center; gap: 10px;
+            letter-spacing: 0.01em;
+        }
+        .modal-header::before {
+            content: '';
+            display: block; width: 5px; height: 28px;
+            background: linear-gradient(180deg, var(--primary), var(--dark));
+            border-radius: 4px; flex-shrink: 0;
+        }
+        .modal-body {
+            padding: 26px 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .edit-section {
+            margin-bottom: 24px; padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .edit-section:last-child { border-bottom: none; margin-bottom: 0; }
+        .edit-section h4 {
+            margin-bottom: 16px; color: var(--text);
+            font-size: 1em; font-weight: 700;
+            padding: 10px 14px;
+            background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(37,99,235,0.03));
+            border-left: 3px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+        }
+        .edit-item {
+            margin-bottom: 14px; padding: 14px 16px;
+            background: var(--bg2); border-radius: 10px;
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+        .edit-item:hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(37,99,235,0.08); }
+        .edit-item-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 10px;
+        }
+        .edit-item-header span {
+            font-size: 0.8em; font-weight: 700; color: var(--text2);
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
         .edit-item-fields { display: flex; flex-direction: column; gap: 10px; }
         .edit-item-fields input { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9em; background: var(--card); color: var(--text); }
-        .modal-footer { display: flex; gap: 15px; justify-content: flex-end; margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); position: sticky; bottom: 0; background: var(--card); }
-        .close-modal { background: var(--border); color: var(--text); padding: 12px 28px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        body.dark-mode .close-modal { background: #475569; color: #f1f5f9; }
-        .save-modal { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; padding: 12px 28px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .save-modal:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.3); }
+        .modal-footer {
+            display: flex; gap: 12px; justify-content: flex-end;
+            padding: 18px 30px;
+            border-top: 1px solid var(--border);
+            background: var(--bg2);
+            border-radius: 0 0 20px 20px;
+        }
+        .close-modal {
+            background: transparent;
+            color: var(--text2);
+            padding: 10px 24px; border: 2px solid var(--border);
+            border-radius: 8px; font-weight: 600; font-size: 0.9em;
+            cursor: pointer; transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+        .close-modal:hover { background: var(--border); color: var(--text); }
+        body.dark-mode .close-modal { border-color: #475569; color: #94a3b8; }
+        body.dark-mode .close-modal:hover { background: #475569; color: #f1f5f9; }
+        .save-modal {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white; padding: 10px 28px;
+            border: none; border-radius: 8px;
+            font-weight: 700; font-size: 0.9em;
+            cursor: pointer; transition: all 0.25s ease;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+        }
+        .save-modal:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(37,99,235,0.35); }
         @media (max-width: 768px) { .theme-toggle { top: 80px; } .form-grid, .timeline-container, .phases-container, .client-info-display { grid-template-columns: 1fr; } .button-group { flex-direction: column; } .button-group .btn { width: 100%; margin-right: 0; } .modal-content { width: 95%; margin: 20% auto; padding: 20px; max-height: 85vh; } .modal-footer { padding: 15px 0 0 0; } .modal-footer button { font-size: 0.85em; padding: 10px 16px; } .chart-container { height: 300px; } .project-card-buttons { flex-direction: column; } }
     </style>
 </head>
@@ -259,6 +340,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             <h2>Cronograma de Implantação</h2>
             <div style="margin-bottom: 20px;">
                 <button class="btn btn-secondary" onclick="openTimelineEditor()">✏️ Editar Cronograma</button>
+                <button class="btn btn-success" onclick="openNewTimelineEntry()" style="width: auto;">+ Nova Etapa</button>
             </div>
             <div class="timeline-container" id="timelineContainer"></div>
         </section>
@@ -267,6 +349,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             <h2>Checklists por Fase</h2>
             <div style="margin-bottom: 20px;">
                 <button class="btn btn-secondary" onclick="openChecklistEditor()">✏️ Editar Checklists</button>
+                <button class="btn btn-success" onclick="addNewPhase()" style="width: auto;">+ Nova Fase</button>
             </div>
             <div class="phases-container" id="phasesContainer"></div>
         </section>
@@ -277,8 +360,38 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             <div class="modal-header">✏️ Editar Cronograma</div>
             <div class="modal-body" id="timelineModalBody"></div>
             <div class="modal-footer">
-                <button class="close-modal" onclick="closeTimelineEditor()">Cancelar</button>
-                <button class="save-modal" onclick="saveTimelineChanges()">Salvar Alterações</button>
+                <button class="close-modal" onclick="closeTimelineEditor()">✕ Cancelar</button>
+                <button class="save-modal" onclick="saveTimelineChanges()">💾 Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="newTimelineModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">➕ Nova Etapa na Cronologia</div>
+            <div class="modal-body">
+                <div class="form-group" style="margin-bottom: 18px;">
+                    <label>Título da Etapa</label>
+                    <input type="text" id="newTimeline_title" placeholder="Ex: Validação Final">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;">
+                    <div class="form-group">
+                        <label>Data Início</label>
+                        <input type="date" id="newTimeline_start">
+                    </div>
+                    <div class="form-group">
+                        <label>Data Fim</label>
+                        <input type="date" id="newTimeline_end">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descrição <span style="font-weight:400; color:var(--text2);">(opcional)</span></label>
+                    <textarea id="newTimeline_description" rows="3" placeholder="Detalhes sobre esta etapa..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="close-modal" onclick="document.getElementById('newTimelineModal').style.display='none'">✕ Cancelar</button>
+                <button class="save-modal" onclick="saveNewTimelineEntry()">💾 Salvar Etapa</button>
             </div>
         </div>
     </div>
@@ -288,8 +401,8 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             <div class="modal-header">✏️ Editar Checklists</div>
             <div class="modal-body" id="checklistModalBody"></div>
             <div class="modal-footer">
-                <button class="close-modal" onclick="closeChecklistEditor()">Cancelar</button>
-                <button class="save-modal" onclick="saveChecklistChanges()">Salvar Alterações</button>
+                <button class="close-modal" onclick="closeChecklistEditor()">✕ Cancelar</button>
+                <button class="save-modal" onclick="saveChecklistChanges()">💾 Salvar Alterações</button>
             </div>
         </div>
     </div>
@@ -332,7 +445,6 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let weeks = JSON.parse(JSON.stringify(defaultWeeks));
         let currentProjectId = null;
         let currentProjectData = null;
-        let currentSupabaseId = null;
         let deliveryChart = null;
 
         function initializeProject() {
@@ -347,7 +459,6 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
             const defaultDates = generateDefaultDates(startDate);
             currentProjectId = Date.now().toString();
-            currentSupabaseId = null;
 
             currentProjectData = {
                 id: currentProjectId,
@@ -418,7 +529,11 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     `${formatDate(weekDates.start)} até ${formatDate(weekDates.end)}` : 
                     'Sem datas definidas';
 
-                div.innerHTML = `<h3>${week.title}</h3><div class="timeline-dates">${dateStr}</div>`;
+                let extra = '';
+                if (week.description) extra = `<p style="font-size:0.88em; color:var(--text2); margin-top:8px;">${week.description}</p>`;
+                const deleteBtn = `<button class="btn btn-danger" onclick="removeTimelineEntry('${week.id}')" style="padding:4px 10px; font-size:0.8em; margin-top:10px; width:auto;">✕ Remover</button>`;
+
+                div.innerHTML = `<h3>${week.title}</h3><div class="timeline-dates">${dateStr}</div>${extra}${deleteBtn}`;
                 container.appendChild(div);
             });
         }
@@ -459,6 +574,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                         updatePhaseCounter(phase.id);
                         renderDeliveryChart();
                         
+                        // Mostrar/esconder campo de data
                         const wrapper = li.querySelector('.checklist-date-wrapper');
                         if (wrapper) {
                             wrapper.style.display = input.checked ? 'block' : 'none';
@@ -491,6 +607,22 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     dateWrapper.appendChild(dateLabel);
                     dateWrapper.appendChild(dateInput);
                     li.appendChild(dateWrapper);
+
+                    // Campo de observação
+                    const noteWrapper = document.createElement('div');
+                    noteWrapper.style.cssText = 'padding-left: 30px; margin-top: 6px;';
+                    const noteInput = document.createElement('textarea');
+                    noteInput.placeholder = 'Observação...';
+                    noteInput.rows = 2;
+                    noteInput.style.cssText = 'width: 100%; padding: 8px 10px; font-size: 0.85em; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); font-family: inherit; resize: vertical; min-height: 52px; line-height: 1.5; overflow-wrap: break-word; word-break: break-word;';
+                    noteInput.id = `note-${itemId}`;
+                    // Carregar nota salva
+                    if (currentProjectData.checklistNotes && currentProjectData.checklistNotes[phase.id] && currentProjectData.checklistNotes[phase.id][itemIndex] !== undefined) {
+                        noteInput.value = currentProjectData.checklistNotes[phase.id][itemIndex];
+                    }
+                    noteInput.oninput = () => { saveChecklistNote(phase.id, itemIndex, noteInput.value); };
+                    noteWrapper.appendChild(noteInput);
+                    li.appendChild(noteWrapper);
 
                     checklist.appendChild(li);
                 });
@@ -575,6 +707,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     if (checkbox) {
                         checkbox.checked = currentProjectData.checklistStates[phaseId][itemIndex];
                         
+                        // Mostrar/esconder campo de data quando carregar
                         const li = checkbox.closest('.checklist-item');
                         if (li) {
                             const wrapper = li.querySelector('.checklist-date-wrapper');
@@ -661,7 +794,22 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 
                 const section = document.createElement('div');
                 section.className = 'edit-section';
-                section.innerHTML = `<h4>${week.title}</h4><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;"><div><label style="font-weight: 600; margin-bottom: 5px; display: block;">Data Início</label><input type="date" id="edit_${week.id}_start" value="${dates.start || ''}" style="width: 100%;"></div><div><label style="font-weight: 600; margin-bottom: 5px; display: block;">Data Fim</label><input type="date" id="edit_${week.id}_end" value="${dates.end || ''}" style="width: 100%;"></div></div><div><label style="font-weight: 600; margin-bottom: 5px; display: block;">Título</label><input type="text" id="edit_${week.id}_title" value="${week.title}" style="width: 100%;"></div>`;
+                section.innerHTML = `
+                    <h4>${week.title}</h4>
+                    <div style="margin-bottom: 14px;">
+                        <label style="font-weight: 600; margin-bottom: 6px; display: block; font-size:0.9em; color:var(--text);">Título da Etapa</label>
+                        <input type="text" id="edit_${week.id}_title" value="${week.title}" style="width: 100%;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                        <div>
+                            <label style="font-weight: 600; margin-bottom: 6px; display: block; font-size:0.9em; color:var(--text);">📅 Data Início</label>
+                            <input type="date" id="edit_${week.id}_start" value="${dates.start || ''}" style="width: 100%;">
+                        </div>
+                        <div>
+                            <label style="font-weight: 600; margin-bottom: 6px; display: block; font-size:0.9em; color:var(--text);">📅 Data Fim</label>
+                            <input type="date" id="edit_${week.id}_end" value="${dates.end || ''}" style="width: 100%;">
+                        </div>
+                    </div>`;
 
                 modalBody.appendChild(section);
             });
@@ -711,10 +859,34 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 
                 let itemsHtml = '';
                 phase.items.forEach((item, itemIndex) => {
-                    itemsHtml += `<div class="edit-item"><div class="edit-item-header"><span>Item ${itemIndex + 1}</span><button class="btn btn-danger" onclick="removeChecklistItem('${phase.id}', ${itemIndex})">✕ Remover</button></div><input type="text" id="edit_phase_${phase.id}_item_${itemIndex}" value="${item}" style="width: 100%;"></div>`;
+                    const noteVal = (currentProjectData.checklistNotes && currentProjectData.checklistNotes[phase.id] && currentProjectData.checklistNotes[phase.id][itemIndex]) ? currentProjectData.checklistNotes[phase.id][itemIndex] : '';
+                    itemsHtml += `
+                        <div class="edit-item">
+                            <div class="edit-item-header">
+                                <span>Item ${itemIndex + 1}</span>
+                                <button onclick="removeChecklistItem('${phase.id}', ${itemIndex})" title="Remover item" style="background:none; border:1px solid var(--border); border-radius:6px; padding:4px 7px; cursor:pointer; color:var(--danger); font-size:0.95em; line-height:1; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(239,68,68,0.1)'; this.style.borderColor='var(--danger)'" onmouseout="this.style.background='none'; this.style.borderColor='var(--border)'">🗑</button>
+                            </div>
+                            <label style="font-size:0.82em; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px; display:block; margin-bottom:5px;">Descrição do item</label>
+                            <input type="text" id="edit_phase_${phase.id}_item_${itemIndex}" value="${item}" style="width: 100%; margin-bottom: 10px;">
+                            <label style="font-size:0.82em; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px; display:block; margin-bottom:5px;">💬 Observação</label>
+                            <input type="text" id="edit_phase_${phase.id}_note_${itemIndex}" value="${noteVal.replace(/"/g, '&quot;')}" placeholder="Observação sobre este item..." style="width: 100%; font-size:0.9em;">
+                        </div>`;
                 });
 
-                section.innerHTML = `<h4 style="margin-bottom: 15px;">Fase ${phase.phaseNumber}: ${phase.name}</h4><div style="margin-bottom: 15px;"><label style="font-weight: 600; margin-bottom: 5px; display: block;">Nome da Fase</label><input type="text" id="edit_phase_${phase.id}_name" value="${phase.name}" style="width: 100%;"></div><div style="margin-bottom: 15px;"><label style="font-weight: 600; margin-bottom: 10px; display: block;">Itens do Checklist:</label>${itemsHtml}</div><button class="btn btn-success" onclick="addChecklistItem('${phase.id}')" style="width: 100%; margin-top: 10px; padding: 10px;">+ Adicionar Item</button>`;
+                section.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <h4 style="margin:0;">Fase ${phase.phaseNumber}: ${phase.name}</h4>
+                        <button class="btn btn-danger" onclick="removePhase('${phase.id}')" style="padding:6px 14px; font-size:0.8em; width:auto; margin:0;">🗑 Excluir Fase</button>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-weight: 700; margin-bottom: 6px; display: block; font-size:0.9em; color:var(--text);">Nome da Fase</label>
+                        <input type="text" id="edit_phase_${phase.id}_name" value="${phase.name}" style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label style="font-weight: 700; margin-bottom: 10px; display: block; font-size:0.9em; color:var(--text);">Itens do Checklist</label>
+                        ${itemsHtml}
+                    </div>
+                    <button class="btn btn-success" onclick="addChecklistItem('${phase.id}')" style="width: 100%; margin-top: 6px; padding: 10px; font-size:0.9em;">+ Adicionar Item</button>`;
 
                 modalBody.appendChild(section);
             });
@@ -726,7 +898,24 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             document.getElementById('checklistModal').style.display = 'none';
         }
 
+        function flushChecklistEditorState() {
+            // Salva o que está digitado no modal antes de reabrir
+            phases.forEach(phase => {
+                const nameInput = document.getElementById(`edit_phase_${phase.id}_name`);
+                if (nameInput && nameInput.value.trim()) phase.name = nameInput.value.trim();
+                if (!currentProjectData.checklistNotes) currentProjectData.checklistNotes = {};
+                if (!currentProjectData.checklistNotes[phase.id]) currentProjectData.checklistNotes[phase.id] = {};
+                phase.items = phase.items.map((item, index) => {
+                    const input = document.getElementById(`edit_phase_${phase.id}_item_${index}`);
+                    const noteInput = document.getElementById(`edit_phase_${phase.id}_note_${index}`);
+                    if (noteInput) currentProjectData.checklistNotes[phase.id][index] = noteInput.value;
+                    return input ? (input.value || item) : item;
+                });
+            });
+        }
+
         function addChecklistItem(phaseId) {
+            flushChecklistEditorState();
             const phase = phases.find(p => p.id === phaseId);
             if (phase) {
                 phase.items.push('Novo item');
@@ -735,30 +924,45 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         }
 
         function removeChecklistItem(phaseId, itemIndex) {
-            if (confirm('Deseja remover este item?')) {
-                const phase = phases.find(p => p.id === phaseId);
-                if (phase) {
-                    phase.items.splice(itemIndex, 1);
-                    openChecklistEditor();
+            if (!confirm('Deseja remover este item?')) return;
+            flushChecklistEditorState();
+            const phase = phases.find(p => p.id === phaseId);
+            if (phase) {
+                phase.items.splice(itemIndex, 1);
+                // Reindexar notas da fase
+                if (currentProjectData.checklistNotes && currentProjectData.checklistNotes[phaseId]) {
+                    const notes = currentProjectData.checklistNotes[phaseId];
+                    const newNotes = {};
+                    Object.keys(notes).forEach(k => {
+                        const ki = parseInt(k);
+                        if (ki < itemIndex) newNotes[ki] = notes[k];
+                        else if (ki > itemIndex) newNotes[ki - 1] = notes[k];
+                    });
+                    currentProjectData.checklistNotes[phaseId] = newNotes;
                 }
+                openChecklistEditor();
             }
         }
 
         function saveChecklistChanges() {
+            if (!currentProjectData.checklistNotes) currentProjectData.checklistNotes = {};
+
             phases.forEach(phase => {
-                const newName = document.getElementById(`edit_phase_${phase.id}_name`).value;
-                if (!newName) {
-                    alert('Nome da fase não pode estar vazio!');
-                    return;
-                }
+                const nameInput = document.getElementById(`edit_phase_${phase.id}_name`);
+                if (!nameInput) return;
+                const newName = nameInput.value;
+                if (!newName) { alert('Nome da fase não pode estar vazio!'); return; }
                 phase.name = newName;
+
+                if (!currentProjectData.checklistNotes[phase.id]) currentProjectData.checklistNotes[phase.id] = {};
 
                 phase.items = phase.items.map((item, index) => {
                     const newValue = document.getElementById(`edit_phase_${phase.id}_item_${index}`).value;
-                    if (!newValue) {
-                        alert('Itens não podem estar vazios!');
-                        return null;
-                    }
+                    if (!newValue) { alert('Itens não podem estar vazios!'); return null; }
+
+                    const noteInput = document.getElementById(`edit_phase_${phase.id}_note_${index}`);
+                    if (noteInput) currentProjectData.checklistNotes[phase.id][index] = noteInput.value;
+
                     return newValue;
                 }).filter(item => item !== null);
             });
@@ -769,7 +973,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             closeChecklistEditor();
         }
 
-        async function saveProject() {
+        function saveProject() {
             if (!currentProjectId) {
                 alert('Nenhum projeto em edição!');
                 return;
@@ -779,31 +983,9 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             currentProjectData.weeks = weeks;
             currentProjectData.savedAt = new Date().toLocaleString('pt-BR');
 
-            // Se já existe no banco (currentSupabaseId definido), faz UPDATE
-            if (currentSupabaseId) {
-                const { error } = await sb.from('instalacoes').update({
-                    nome_projeto: currentProjectData.clientName,
-                    dados: currentProjectData
-                }).eq('id', currentSupabaseId);
-
-                if (error) {
-                    alert('Erro ao atualizar: ' + error.message);
-                    return;
-                }
-            } else {
-                // Projeto novo, faz INSERT e guarda o id retornado
-                const { data, error } = await sb.from('instalacoes').insert({
-                    nome_projeto: currentProjectData.clientName,
-                    dados: currentProjectData
-                }).select().single();
-
-                if (error) {
-                    alert('Erro ao salvar: ' + error.message);
-                    return;
-                }
-
-                currentSupabaseId = data.id;
-            }
+            const allProjects = JSON.parse(localStorage.getItem('allProjects') || '{}');
+            allProjects[currentProjectId] = currentProjectData;
+            localStorage.setItem('allProjects', JSON.stringify(allProjects));
 
             alert('✓ Projeto salvo com sucesso!');
             backToProjects();
@@ -876,30 +1058,23 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             }, 300);
         }
 
-        async function loadProjectsList() {
+        function loadProjectsList() {
+            const allProjects = JSON.parse(localStorage.getItem('allProjects') || '{}');
             const projectsList = document.getElementById('projectsList');
             projectsList.innerHTML = '';
 
-            const { data, error } = await sb.from('instalacoes').select('*');
-
-            if (error) {
-                projectsList.innerHTML = '<p style="color: var(--text2); text-align: center; grid-column: 1/-1;">Erro ao carregar projetos</p>';
-                return;
-            }
-
-            if (!data || data.length === 0) {
+            if (Object.keys(allProjects).length === 0) {
                 projectsList.innerHTML = '<p style="color: var(--text2); text-align: center; grid-column: 1/-1;">Nenhum projeto salvo ainda</p>';
                 return;
             }
 
-            data.forEach((row) => {
-                const project = row.dados;
+            Object.entries(allProjects).forEach(([projectId, project]) => {
                 const card = document.createElement('div');
                 card.className = 'project-card';
-
+                
                 const progressData = calculateProjectProgress(project);
 
-                card.innerHTML = `<h3>${project.clientName}</h3><p><strong>Responsável:</strong> ${project.responsible}</p><p><strong>Início:</strong> ${formatDate(project.startDate)}</p><p><strong>Progresso:</strong> ${progressData}%</p><p style="font-size: 0.85em; color: var(--text2);">Salvo em: ${project.savedAt}</p><div class="project-card-buttons"><button class="btn btn-secondary" onclick="loadProject(${row.id})">Abrir</button><button class="btn btn-danger" onclick="deleteProject(${row.id})">Deletar</button></div>`;
+                card.innerHTML = `<h3>${project.clientName}</h3><p><strong>Responsável:</strong> ${project.responsible}</p><p><strong>Início:</strong> ${formatDate(project.startDate)}</p><p><strong>Progresso:</strong> ${progressData}%</p><p style="font-size: 0.85em; color: var(--text2);">Salvo em: ${project.savedAt}</p><div class="project-card-buttons"><button class="btn btn-secondary" onclick="loadProject('${projectId}')">Abrir</button><button class="btn btn-danger" onclick="deleteProject('${projectId}')">Deletar</button></div>`;
                 projectsList.appendChild(card);
             });
         }
@@ -927,18 +1102,16 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             return totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
         }
 
-        async function loadProject(projectId) {
-            const { data, error } = await sb.from('instalacoes').select('*').eq('id', projectId).single();
+        function loadProject(projectId) {
+            const allProjects = JSON.parse(localStorage.getItem('allProjects') || '{}');
+            const projectData = allProjects[projectId];
 
-            if (error || !data) {
+            if (!projectData) {
                 alert('Projeto não encontrado!');
                 return;
             }
 
-            const projectData = data.dados;
-
-            currentProjectId = projectData.id;
-            currentSupabaseId = data.id;
+            currentProjectId = projectId;
             currentProjectData = JSON.parse(JSON.stringify(projectData));
             phases = JSON.parse(JSON.stringify(projectData.phases || defaultPhases));
             weeks = JSON.parse(JSON.stringify(projectData.weeks || defaultWeeks));
@@ -956,15 +1129,11 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             renderDeliveryChart();
         }
 
-        async function deleteProject(projectId) {
+        function deleteProject(projectId) {
             if (confirm('Deseja deletar este projeto? Esta ação não pode ser desfeita!')) {
-                const { error } = await sb.from('instalacoes').delete().eq('id', projectId);
-
-                if (error) {
-                    alert('Erro ao deletar: ' + error.message);
-                    return;
-                }
-
+                const allProjects = JSON.parse(localStorage.getItem('allProjects') || '{}');
+                delete allProjects[projectId];
+                localStorage.setItem('allProjects', JSON.stringify(allProjects));
                 loadProjectsList();
             }
         }
@@ -976,7 +1145,6 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             document.getElementById('chartSection').style.display = 'none';
             document.getElementById('timelineSection').style.display = 'none';
             document.getElementById('checklistsSection').style.display = 'none';
-            currentSupabaseId = null;
             loadProjectsList();
         }
 
@@ -991,7 +1159,6 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             document.getElementById('checklistsSection').style.display = 'none';
             currentProjectId = null;
             currentProjectData = null;
-            currentSupabaseId = null;
             phases = JSON.parse(JSON.stringify(defaultPhases));
             weeks = JSON.parse(JSON.stringify(defaultWeeks));
             if (deliveryChart) deliveryChart.destroy();
@@ -1006,16 +1173,91 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             });
         }
 
+        // ===== NOVA ETAPA NA CRONOLOGIA =====
+        function openNewTimelineEntry() {
+            document.getElementById('newTimeline_title').value = '';
+            document.getElementById('newTimeline_start').value = '';
+            document.getElementById('newTimeline_end').value = '';
+            document.getElementById('newTimeline_description').value = '';
+            document.getElementById('newTimelineModal').style.display = 'block';
+        }
+
+        function saveNewTimelineEntry() {
+            const title = document.getElementById('newTimeline_title').value.trim();
+            const start = document.getElementById('newTimeline_start').value;
+            const end = document.getElementById('newTimeline_end').value;
+            const description = document.getElementById('newTimeline_description').value.trim();
+
+            if (!title) { alert('O título da etapa é obrigatório!'); return; }
+            if (start && end && new Date(start) > new Date(end)) {
+                alert('Data de início não pode ser maior que a data fim!');
+                return;
+            }
+
+            const newId = 'custom-' + Date.now();
+            const newWeek = { id: newId, title, phaseNumber: '', custom: true, description };
+            weeks.push(newWeek);
+
+            if (!currentProjectData.dates) currentProjectData.dates = {};
+            if (start || end) {
+                currentProjectData.dates[newId] = { start: start || '', end: end || '' };
+            }
+            currentProjectData.weeks = weeks;
+
+            renderTimeline(currentProjectData.dates);
+            document.getElementById('newTimelineModal').style.display = 'none';
+        }
+
+        // ===== FUNÇÕES EXTRAS DA CRONOLOGIA (editar/excluir etapa custom) =====
+        function removeTimelineEntry(weekId) {
+            if (!confirm('Deseja remover esta etapa?')) return;
+            weeks = weeks.filter(w => w.id !== weekId);
+            if (currentProjectData.dates) delete currentProjectData.dates[weekId];
+            currentProjectData.weeks = weeks;
+            renderTimeline(currentProjectData.dates || {});
+        }
+
+        // ===== NOVA FASE NO CHECKLIST =====
+        function addNewPhase() {
+            const newPhaseNumber = phases.length + 1;
+            const newPhase = {
+                id: 'phase-' + Date.now(),
+                name: 'Nova Fase',
+                phaseNumber: String(newPhaseNumber),
+                items: []
+            };
+            phases.push(newPhase);
+            openChecklistEditor();
+        }
+
+        // ===== EXCLUIR FASE INTEIRA =====
+        function removePhase(phaseId) {
+            if (!confirm('Deseja remover esta fase inteira e todos os seus itens?')) return;
+            flushChecklistEditorState();
+            phases = phases.filter(p => p.id !== phaseId);
+            if (currentProjectData.checklistStates) delete currentProjectData.checklistStates[phaseId];
+            if (currentProjectData.checklistDates) delete currentProjectData.checklistDates[phaseId];
+            if (currentProjectData.checklistNotes) delete currentProjectData.checklistNotes[phaseId];
+            openChecklistEditor();
+        }
+
+        // ===== SALVAR OBSERVAÇÃO DE ITEM =====
+        function saveChecklistNote(phaseId, itemIndex, note) {
+            if (!currentProjectData.checklistNotes) currentProjectData.checklistNotes = {};
+            if (!currentProjectData.checklistNotes[phaseId]) currentProjectData.checklistNotes[phaseId] = {};
+            currentProjectData.checklistNotes[phaseId][itemIndex] = note;
+        }
+
         window.onclick = function(event) {
             const timelineModal = document.getElementById('timelineModal');
             const checklistModal = document.getElementById('checklistModal');
+            const newTimelineModal = document.getElementById('newTimelineModal');
             if (event.target === timelineModal) timelineModal.style.display = 'none';
             if (event.target === checklistModal) checklistModal.style.display = 'none';
+            if (event.target === newTimelineModal) newTimelineModal.style.display = 'none';
         };
 
         document.addEventListener('DOMContentLoaded', loadProjectsList);
     </script>
 </body>
 </html>
-
-
