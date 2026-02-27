@@ -508,6 +508,48 @@
             return true;
         }
         // =====================================================================
+        // ALTERAÇÃO: Autocomplete de clientes buscando da tabela clientes do Supabase
+        // =====================================================================
+        async function buscarClienteAutocomplete() {
+            const valor = document.getElementById('clientName').value.trim();
+            const lista = document.getElementById('clienteAutoCompleteList');
+            if (valor.length < 1) { lista.style.display = 'none'; return; }
+            try {
+                const { data } = await _supabase
+                    .from('clientes')
+                    .select('nome, razao_social, cnpj')
+                    .ilike('nome', '%' + valor + '%')
+                    .limit(20);
+                lista.innerHTML = '';
+                if (!data || !data.length) {
+                    lista.innerHTML = '<div style="padding:10px 14px;font-size:0.9em;color:var(--text2);">Nenhum cliente encontrado. Digite livremente.</div>';
+                    lista.style.display = 'block';
+                    return;
+                }
+                data.forEach(function(c) {
+                    const div = document.createElement('div');
+                    div.style.cssText = 'padding:10px 14px;cursor:pointer;font-size:0.9em;border-bottom:1px solid var(--border);color:var(--text);transition:background 0.15s;';
+                    div.onmouseover = function() { div.style.background = 'rgba(37,99,235,0.08)'; };
+                    div.onmouseout  = function() { div.style.background = ''; };
+                    div.innerHTML = '<strong>' + c.nome + '</strong>'
+                        + (c.razao_social ? ' <span style="color:var(--text2);font-size:0.85em;">— ' + c.razao_social + '</span>' : '')
+                        + (c.cnpj ? ' <span style="color:var(--text2);font-size:0.82em;">(CNPJ: ' + c.cnpj + ')</span>' : '');
+                    div.onmousedown = function() {
+                        document.getElementById('clientName').value = c.nome;
+                        lista.style.display = 'none';
+                    };
+                    lista.appendChild(div);
+                });
+                lista.style.display = 'block';
+            } catch(e) { console.error('Erro autocomplete:', e); }
+        }
+
+        document.addEventListener('click', function(e) {
+            const lista = document.getElementById('clienteAutoCompleteList');
+            const input = document.getElementById('clientName');
+            if (lista && input && e.target !== input) lista.style.display = 'none';
+        });
+        // =====================================================================
         // FIM DAS FUNÇÕES INTERNAS DE PERSISTÊNCIA
         // =====================================================================
     </script>
@@ -1376,64 +1418,7 @@
 
         document.addEventListener('DOMContentLoaded', loadProjectsList);
 
-        // =====================================================================
-        // ALTERAÇÃO: Autocomplete de clientes buscando da tabela clientes do Supabase
-        // =====================================================================
-        async function buscarClienteAutocomplete() {
-            const valor = document.getElementById('clientName').value.trim();
-            const lista = document.getElementById('clienteAutoCompleteList');
 
-            if (valor.length < 1) {
-                lista.style.display = 'none';
-                return;
-            }
-
-            try {
-                const { data, error } = await _supabase
-                    .from('clientes')
-                    .select('nome, razao_social, cnpj')
-                    .ilike('nome', `%${valor}%`)
-                    .limit(20);
-
-                lista.innerHTML = '';
-
-                if (!data || !data.length) {
-                    // Nenhum cliente encontrado — permite digitar livremente
-                    lista.innerHTML = `<div style="padding:10px 14px; font-size:0.9em; color:var(--text2); border-bottom:1px solid var(--border);">Nenhum cliente encontrado. Digite o nome livremente.</div>`;
-                    lista.style.display = 'block';
-                    return;
-                }
-
-                data.forEach(c => {
-                    const div = document.createElement('div');
-                    div.style.cssText = 'padding:10px 14px; cursor:pointer; font-size:0.9em; border-bottom:1px solid var(--border); color:var(--text); transition:background 0.15s;';
-                    div.onmouseover = () => div.style.background = 'rgba(37,99,235,0.08)';
-                    div.onmouseout  = () => div.style.background = '';
-                    div.innerHTML = `<strong>${c.nome}</strong>${c.razao_social ? ` <span style="color:var(--text2);font-size:0.85em;">— ${c.razao_social}</span>` : ''}${c.cnpj ? ` <span style="color:var(--text2);font-size:0.82em;">(CNPJ: ${c.cnpj})</span>` : ''}`;
-                    div.onmousedown = () => {
-                        document.getElementById('clientName').value = c.nome;
-                        lista.style.display = 'none';
-                    };
-                    lista.appendChild(div);
-                });
-
-                lista.style.display = 'block';
-            } catch(e) {
-                console.error('Erro ao buscar clientes:', e);
-            }
-        }
-
-        // Fechar lista ao clicar fora
-        document.addEventListener('click', function(e) {
-            const lista = document.getElementById('clienteAutoCompleteList');
-            const input = document.getElementById('clientName');
-            if (lista && input && !input.contains(e.target) && !lista.contains(e.target)) {
-                lista.style.display = 'none';
-            }
-        });
-        // =====================================================================
-        // FIM DA ALTERAÇÃO: Autocomplete de clientes
-        // =====================================================================
     </script>
 </body>
 </html>
