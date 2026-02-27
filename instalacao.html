@@ -369,6 +369,28 @@
         </section>
     </div>
 
+    <!-- NOVO MODAL: Nova Fase -->
+    <div id="newPhaseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">➕ Nova Fase</div>
+            <div class="modal-body">
+                <div class="form-group" style="margin-bottom:18px;">
+                    <label>Nome da Fase</label>
+                    <input type="text" id="newPhase_name" placeholder="Ex: Validação Final">
+                </div>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <label>Itens do Checklist <span style="font-weight:400;color:var(--text2);font-size:0.9em;">(um por linha)</span></label>
+                    <textarea id="newPhase_items" rows="6" placeholder="Item 1&#10;Item 2&#10;Item 3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="close-modal" onclick="document.getElementById('newPhaseModal').style.display='none'">✕ Cancelar</button>
+                <button class="save-modal" onclick="saveNewPhase()">💾 Salvar Fase</button>
+            </div>
+        </div>
+    </div>
+    <!-- FIM NOVO MODAL: Nova Fase -->
+
     <div id="timelineModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">✏️ Editar Cronograma</div>
@@ -1412,15 +1434,31 @@
 
         // ===== NOVA FASE NO CHECKLIST =====
         function addNewPhase() {
-            const newPhaseNumber = phases.length + 1;
+            document.getElementById('newPhase_name').value = '';
+            document.getElementById('newPhase_items').value = '';
+            document.getElementById('newPhaseModal').style.display = 'block';
+        }
+
+        function saveNewPhase() {
+            const name = document.getElementById('newPhase_name').value.trim();
+            if (!name) { alert('Nome da fase é obrigatório!'); return; }
+
+            const itemsRaw = document.getElementById('newPhase_items').value;
+            const items = itemsRaw.split('
+').map(i => i.trim()).filter(i => i.length > 0);
+            if (!items.length) { alert('Adicione pelo menos um item!'); return; }
+
             const newPhase = {
                 id: 'phase-' + Date.now(),
-                name: 'Nova Fase',
-                phaseNumber: String(newPhaseNumber),
-                items: []
+                name: name,
+                phaseNumber: String(phases.length + 1),
+                items: items
             };
             phases.push(newPhase);
-            openChecklistEditor();
+            currentProjectData.phases = phases;
+            renderChecklists();
+            renderDeliveryChart();
+            document.getElementById('newPhaseModal').style.display = 'none';
         }
 
         // ===== EXCLUIR FASE INTEIRA =====
@@ -1445,9 +1483,11 @@
             const timelineModal = document.getElementById('timelineModal');
             const checklistModal = document.getElementById('checklistModal');
             const newTimelineModal = document.getElementById('newTimelineModal');
+            const newPhaseModal = document.getElementById('newPhaseModal');
             if (event.target === timelineModal) timelineModal.style.display = 'none';
             if (event.target === checklistModal) checklistModal.style.display = 'none';
             if (event.target === newTimelineModal) newTimelineModal.style.display = 'none';
+            if (event.target === newPhaseModal) newPhaseModal.style.display = 'none';
         };
 
         document.addEventListener('DOMContentLoaded', loadProjectsList);
