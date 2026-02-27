@@ -1800,7 +1800,7 @@ function abrirInstalacoes(botao) {
   const iframe = document.getElementById('iframeInstalacoes');
   if (!iframe.getAttribute('data-loaded')) {
     iframe.setAttribute('data-loaded', '1');
-    iframe.src = 'instalacao.html';
+    iframe.src = './instalacao.html';
   }
   iframe.onload = function() {};
   botao.classList.add('active');
