@@ -407,6 +407,102 @@
         </div>
     </div>
 
+    <!-- =====================================================================
+         ALTERAÇÃO DE ARMAZENAMENTO: Supabase Client SDK
+         Substituição: localStorage → Supabase
+         ===================================================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // =====================================================================
+        // CONFIGURAÇÃO SUPABASE — altere apenas SUPABASE_URL e SUPABASE_ANON_KEY
+        // =====================================================================
+        const SUPABASE_URL  = 'https://SEU_PROJETO.supabase.co';       // <- substitua
+        const SUPABASE_ANON_KEY = 'SUA_CHAVE_ANONIMA_AQUI';            // <- substitua
+
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // =====================================================================
+        // FUNÇÕES INTERNAS DE PERSISTÊNCIA (substituem localStorage para projetos)
+        // Todas as chamadas externas continuam idênticas — apenas o mecanismo mudou
+        // =====================================================================
+
+        /**
+         * Busca todos os projetos do Supabase e retorna no mesmo formato
+         * que localStorage.getItem('allProjects') retornava: { [id]: project }
+         */
+        async function _dbGetAllProjects() {
+            const { data, error } = await _supabase
+                .from('erp_projects')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) { console.error('Supabase getAll error:', error); return {}; }
+
+            const result = {};
+            (data || []).forEach(row => {
+                result[row.project_id] = {
+                    id:               row.project_id,
+                    clientName:       row.client_name,
+                    startDate:        row.start_date,
+                    responsible:      row.responsible,
+                    dates:            row.dates            || {},
+                    phases:           row.phases           || [],
+                    weeks:            row.weeks            || [],
+                    checklistStates:  row.checklist_states || {},
+                    checklistDates:   row.checklist_dates  || {},
+                    checklistNotes:   row.checklist_notes  || {},
+                    createdAt:        row.created_at,
+                    savedAt:          row.saved_at
+                };
+            });
+            return result;
+        }
+
+        /**
+         * Salva (upsert) um projeto no Supabase.
+         * Recebe o mesmo objeto que antes ia para localStorage.
+         */
+        async function _dbSaveProject(projectData) {
+            const row = {
+                project_id:       projectData.id,
+                client_name:      projectData.clientName,
+                start_date:       projectData.startDate,
+                responsible:      projectData.responsible,
+                dates:            projectData.dates            || {},
+                phases:           projectData.phases           || [],
+                weeks:            projectData.weeks            || [],
+                checklist_states: projectData.checklistStates || {},
+                checklist_dates:  projectData.checklistDates  || {},
+                checklist_notes:  projectData.checklistNotes  || {},
+                saved_at:         projectData.savedAt
+            };
+
+            const { error } = await _supabase
+                .from('erp_projects')
+                .upsert(row, { onConflict: 'project_id' });
+
+            if (error) { console.error('Supabase save error:', error); return false; }
+            return true;
+        }
+
+        /**
+         * Exclui um projeto do Supabase pelo ID.
+         */
+        async function _dbDeleteProject(projectId) {
+            const { error } = await _supabase
+                .from('erp_projects')
+                .delete()
+                .eq('project_id', projectId);
+
+            if (error) { console.error('Supabase delete error:', error); return false; }
+            return true;
+        }
+        // =====================================================================
+        // FIM DAS FUNÇÕES INTERNAS DE PERSISTÊNCIA
+        // =====================================================================
+    </script>
+    <!-- FIM DA ALTERAÇÃO DE ARMAZENAMENTO -->
+
     <script>
         function initDarkMode() {
             const isDarkMode = localStorage.getItem('darkMode') === 'true';
@@ -973,19 +1069,21 @@
             closeChecklistEditor();
         }
 
-        function saveProject() {
+        // ALTERAÇÃO DE ARMAZENAMENTO: localStorage → Supabase
+        async function saveProject() {
             if (!currentProjectId) {
                 alert('Nenhum projeto em edição!');
                 return;
             }
 
-            currentProjectData.phases = phases;
-            currentProjectData.weeks = weeks;
+            currentProjectData.phases  = phases;
+            currentProjectData.weeks   = weeks;
             currentProjectData.savedAt = new Date().toLocaleString('pt-BR');
 
-            const allProjects = JSON.parse(localStorage.getItem('allProjects') || '{}');
-            allProjects[currentProjectId] = currentProjectData;
-            localStorage.setItem('allProjects', JSON.stringify(allProjects));
+            // ANTES: localStorage.setItem('allProjects', ...)
+            // AGORA:  _dbSaveProject salva/atualiza no Supabase
+            const ok = await _dbSaveProject(currentProjectData);
+            if (!ok) { alert('Erro ao salvar no banco de dados. Verifique o console.'); return; }
 
             alert('✓ Projeto salvo com sucesso!');
             backToProjects();
@@ -1058,9 +1156,14 @@
             }, 300);
         }
 
-        function loadProjectsList() {
-            const allProjects = JSON.parse(localStorage.getItem('allProjects') || '{}');
+        // ALTERAÇÃO DE ARMAZENAMENTO: localStorage → Supabase
+        async function loadProjectsList() {
             const projectsList = document.getElementById('projectsList');
+            projectsList.innerHTML = '<p style="color: var(--text2); text-align: center; grid-column: 1/-1;">Carregando projetos...</p>';
+
+            // ANTES: JSON.parse(localStorage.getItem('allProjects') || '{}')
+            // AGORA:  busca do Supabase
+            const allProjects = await _dbGetAllProjects();
             projectsList.innerHTML = '';
 
             if (Object.keys(allProjects).length === 0) {
@@ -1102,8 +1205,11 @@
             return totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
         }
 
-        function loadProject(projectId) {
-            const allProjects = JSON.parse(localStorage.getItem('allProjects') || '{}');
+        // ALTERAÇÃO DE ARMAZENAMENTO: localStorage → Supabase
+        async function loadProject(projectId) {
+            // ANTES: JSON.parse(localStorage.getItem('allProjects') || '{}')
+            // AGORA:  busca do Supabase
+            const allProjects = await _dbGetAllProjects();
             const projectData = allProjects[projectId];
 
             if (!projectData) {
@@ -1129,11 +1235,12 @@
             renderDeliveryChart();
         }
 
-        function deleteProject(projectId) {
+        // ALTERAÇÃO DE ARMAZENAMENTO: localStorage → Supabase
+        async function deleteProject(projectId) {
             if (confirm('Deseja deletar este projeto? Esta ação não pode ser desfeita!')) {
-                const allProjects = JSON.parse(localStorage.getItem('allProjects') || '{}');
-                delete allProjects[projectId];
-                localStorage.setItem('allProjects', JSON.stringify(allProjects));
+                // ANTES: JSON.parse(localStorage.getItem('allProjects') || '{}') + setItem
+                // AGORA:  remove do Supabase
+                await _dbDeleteProject(projectId);
                 loadProjectsList();
             }
         }
