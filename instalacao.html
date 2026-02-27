@@ -447,7 +447,7 @@
          ALTERAÇÃO DE ARMAZENAMENTO: Supabase Client SDK
          Substituição: localStorage → Supabase
          ===================================================================== -->
-   // <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // =====================================================================
         // CONFIGURAÇÃO SUPABASE — altere apenas SUPABASE_URL e SUPABASE_ANON_KEY
@@ -1444,8 +1444,7 @@
             if (!name) { alert('Nome da fase é obrigatório!'); return; }
 
             const itemsRaw = document.getElementById('newPhase_items').value;
-            const items = itemsRaw.split('
-').map(i => i.trim()).filter(i => i.length > 0);
+            const items = itemsRaw.split('').map(i => i.trim()).filter(i => i.length > 0);
             if (!items.length) { alert('Adicione pelo menos um item!'); return; }
 
             const newPhase = {
@@ -1496,5 +1495,4 @@
     </script>
 </body>
 </html>
-
 
