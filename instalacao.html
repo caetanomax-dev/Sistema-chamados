@@ -497,8 +497,10 @@
 
         function filtrarProjetos() {
             const termo = document.getElementById('projetosBusca').value.trim().toLowerCase();
+            // Enquanto campo vazio, mostra estado inicial (sem projetos visíveis)
             if (!termo) {
-                _renderizarProjetos(_todosOsProjetos, null);
+                document.getElementById('projectsList').innerHTML = '<div class="projetos-vazio"><div class="vazio-icon">🔍</div><p>Use o campo de busca acima ou clique em <strong>Filtrar</strong> para ver os projetos.</p></div>';
+                document.getElementById('projetosResultadoInfo').style.display = 'none';
                 return;
             }
             const filtrados = {};
@@ -514,19 +516,22 @@
         }
 
         function mostrarTodosProjetos() {
-            // Botão "Filtrar" sem texto = mostra todos
+            // Botão "Filtrar" — sempre mostra (todos ou filtrado)
             const termo = document.getElementById('projetosBusca').value.trim();
-            if (!termo) {
-                _renderizarProjetos(_todosOsProjetos, null);
-                return;
-            }
-            filtrarProjetos();
+            _renderizarProjetos(termo ? Object.fromEntries(
+                Object.entries(_todosOsProjetos).filter(([id, p]) => {
+                    const nome = (p.clientName || '').toLowerCase();
+                    const cnpj = (p.clientCNPJ || '').toLowerCase();
+                    const resp = (p.responsible || '').toLowerCase();
+                    return nome.includes(termo.toLowerCase()) || cnpj.includes(termo.toLowerCase()) || resp.includes(termo.toLowerCase());
+                })
+            ) : _todosOsProjetos, termo || null);
         }
 
         function limparFiltroProjetos() {
             document.getElementById('projetosBusca').value = '';
             document.getElementById('projetosResultadoInfo').style.display = 'none';
-            _renderizarProjetos(_todosOsProjetos, null);
+            document.getElementById('projectsList').innerHTML = '<div class="projetos-vazio"><div class="vazio-icon">🔍</div><p>Use o campo de busca acima ou clique em <strong>Filtrar</strong> para ver os projetos.</p></div>';
         }
 
         function _highlight(texto, termo) {
@@ -1026,9 +1031,10 @@
 
         async function loadProjectsList() {
             const projectsList = document.getElementById('projectsList');
-            projectsList.innerHTML = '<p style="color:var(--text2);text-align:center;grid-column:1/-1;padding:20px;">Carregando projetos...</p>';
+            projectsList.innerHTML = '<div class="projetos-vazio"><div class="vazio-icon">🔍</div><p>Use o campo de busca acima ou clique em <strong>Filtrar</strong> para ver os projetos.</p></div>';
+            document.getElementById('projetosResultadoInfo').style.display = 'none';
             _todosOsProjetos = await _dbGetAllProjects();
-            _renderizarProjetos(_todosOsProjetos, null);
+            // Não renderiza nada — aguarda o usuário buscar ou clicar em Filtrar
         }
 
         function calculateProjectProgress(project) {
