@@ -1098,7 +1098,11 @@ const app = {
   ════════════════════════════════════════════ */
 
   abrirModal(){
-    document.getElementById('mCliente').value = '';
+    const mCliente = document.getElementById('mCliente');
+    mCliente.value = '';
+    mCliente.style.display = '';
+    mCliente.style.borderColor = '';
+    mCliente.style.background = '';
     document.getElementById('mClienteValor').value = '';
     document.getElementById('mSolicitante').value = '';
     document.getElementById('mCategoria').value = '';
@@ -1107,7 +1111,6 @@ const app = {
     document.getElementById('clienteDropdown').classList.remove('show');
     document.getElementById('clienteDropdown').innerHTML = '';
     document.getElementById('clienteChip').style.display = 'none';
-    document.getElementById('mCliente').style.display = '';
     document.getElementById('modal').classList.add('active');
     this.carregarTecnicos();
   },
@@ -1177,7 +1180,7 @@ const app = {
           <div class="cliente-actions" style="margin-top:14px;">
             <button class="btn btn-success btn-sm"
               style="width:100%;text-align:center;"
-              onmousedown="event.preventDefault(); app.selecionarClienteRich(${JSON.stringify(JSON.stringify(c))})">
+              onclick="app.selecionarClienteRich(${JSON.stringify(JSON.stringify(c))})">
               ✓ Selecionar este cliente
             </button>
           </div>
@@ -1218,38 +1221,31 @@ const app = {
   },
 
   selecionarClienteRich(clienteJson){
-    this._dropdownMouseDown = false;
     const c = JSON.parse(clienteJson);
-    document.getElementById('clienteDropdown').classList.remove('show');
-    document.getElementById('mCliente').style.display = 'none';
+    // Coloca o nome direto no input visível
+    const input = document.getElementById('mCliente');
+    input.value = c.nome;
+    input.style.display = '';
+    input.style.borderColor = 'var(--success)';
+    input.style.background = 'rgba(16,185,129,0.07)';
+    // Também salva no campo oculto por segurança
     document.getElementById('mClienteValor').value = c.nome;
-
-    // Monta meta do chip
-    const metaParts = [];
-    if(c.cnpj) metaParts.push(`🪪 ${c.cnpj}`);
-    if(c.razao_social) metaParts.push(`🏢 ${c.razao_social}`);
-
-    const chip = document.getElementById('clienteChip');
-    chip.innerHTML = `
-      <div class="cliente-chip">
-        <div class="cliente-chip-icon">✅</div>
-        <div class="cliente-chip-info">
-          <div class="cliente-chip-nome">${c.nome}</div>
-          ${metaParts.length ? `<div class="cliente-chip-meta">${metaParts.join(' · ')}</div>` : ''}
-        </div>
-        <button class="cliente-chip-remove" onclick="app.limparClienteSelecionado()">✕ Trocar</button>
-      </div>
-    `;
-    chip.style.display = 'block';
+    // Fecha dropdown
+    document.getElementById('clienteDropdown').classList.remove('show');
+    document.getElementById('clienteDropdown').innerHTML = '';
+    document.getElementById('clienteChip').style.display = 'none';
   },
 
   limparClienteSelecionado(){
-    document.getElementById('mCliente').value = '';
+    const inp = document.getElementById('mCliente');
+    inp.value = '';
+    inp.style.borderColor = '';
+    inp.style.background = '';
+    inp.style.display = '';
     document.getElementById('mClienteValor').value = '';
-    document.getElementById('mCliente').style.display = '';
     document.getElementById('clienteChip').style.display = 'none';
     document.getElementById('clienteDropdown').classList.remove('show');
-    setTimeout(()=> document.getElementById('mCliente').focus(), 50);
+    setTimeout(()=> inp.focus(), 50);
   },
 
   _abrirCadastroNovoClienteDoChamado(nome){
@@ -1284,31 +1280,8 @@ const app = {
     }catch(e){ this.mostrarErro('Erro: '+e.message); }
   },
 
-  /* Fecha dropdown ao clicar fora — usa flag para evitar fechar ao clicar no dropdown */
-  _dropdownMouseDown: false,
-
   _setupClienteDropdownBlur(){
-    const input = document.getElementById('mCliente');
-    const dropdown = document.getElementById('clienteDropdown');
-
-    // Quando mouse pressiona em qualquer parte do dropdown, marca flag
-    dropdown.addEventListener('mousedown', ()=>{
-      this._dropdownMouseDown = true;
-    });
-
-    // Quando mouse solta, limpa flag
-    dropdown.addEventListener('mouseup', ()=>{
-      setTimeout(()=>{ this._dropdownMouseDown = false; }, 300);
-    });
-
-    // Blur do input só fecha se NÃO foi clique no dropdown
-    input.addEventListener('blur', ()=>{
-      setTimeout(()=>{
-        if(!this._dropdownMouseDown){
-          dropdown.classList.remove('show');
-        }
-      }, 150);
-    });
+    // Nada — o fechamento é feito apenas pelo click fora (no handler global)
   },
 
   /* ── CHAMADOS ── */
@@ -1389,10 +1362,7 @@ const app = {
   },
 
   async salvarChamado(){
-    // Usa o valor do campo oculto (cliente selecionado via rich dropdown)
-    // mClienteValor é preenchido pelo selecionarClienteRich
-    const c = (document.getElementById('mClienteValor').value || '').trim() ||
-              (document.getElementById('mCliente').value || '').trim();
+    const c = (document.getElementById('mCliente').value || '').trim();
     const s = document.getElementById('mSolicitante').value.trim();
     const t = document.getElementById('mTecnico').value.trim();
     const cat = document.getElementById('mCategoria').value.trim();
