@@ -17,13 +17,10 @@
       --border: #334155; --card: #1e293b;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    /* ── NORMALIZA TODOS OS CAMPOS DO SISTEMA ── */
     input, select, textarea {
       box-sizing: border-box;
       font-family: 'Segoe UI', Arial, sans-serif;
     }
-    /* Garante que input sem type= também tenha altura padrão */
     input:not([type="checkbox"]):not([type="radio"]):not([type="file"]) {
       height: 44px;
       line-height: 44px;
@@ -41,7 +38,6 @@
     @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ── THEME TOGGLE ── integrado no topbar, sem position fixed */
     .theme-toggle {
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: 50%; width: 36px; height: 36px; min-width: 36px;
@@ -95,8 +91,6 @@
     body.dark-mode .topbar {
       box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 1px rgba(37,99,235,0.2);
     }
-
-    /* Linha 1: brand + user */
     .topbar-row1 {
       display: flex;
       align-items: center;
@@ -138,8 +132,6 @@
       transition: all 0.2s ease; white-space: nowrap; flex-shrink: 0;
     }
     .topbar-user .btn-logout:hover { background: var(--danger); color: white; transform: translateY(-1px); }
-
-    /* Linha 2: nav */
     .topbar-row2 {
       display: flex;
       align-items: center;
@@ -163,22 +155,7 @@
       background: linear-gradient(135deg, var(--primary), var(--dark));
       color: white; box-shadow: 0 4px 12px rgba(37,99,235,0.3); font-weight: 600;
     }
-
-    /* ── THEME TOGGLE ── */
-    .theme-toggle {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 50%; width: 36px; height: 36px; min-width: 36px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.3s ease; flex-shrink: 0;
-    }
-    .theme-toggle:hover { background: var(--border); transform: scale(1.1); }
-    .theme-icon { font-size: 16px; transition: transform 0.3s ease; line-height: 1; }
-    .theme-toggle:hover .theme-icon { transform: rotate(20deg); }
-
-    /* ── MENU TOGGLE MOBILE ── */
     .menu-toggle-btn { display: none; }
-
-    /* ── CONTENT ── */
     .content { flex: 1; padding: 0; overflow-y: auto; }
 
     /* ── SECTION / CARD ── */
@@ -285,7 +262,7 @@
     }
     .modal-content.wide { max-width: 700px; }
 
-    /* ── MODAL USUÁRIO — CORREÇÃO ESTRUTURAL ── */
+    /* ── MODAL USUÁRIO ── */
     #modalNovoUsuario {
       position: fixed !important;
       top: 0 !important; left: 0 !important;
@@ -301,57 +278,28 @@
     }
     #modalNovoUsuario.active { display: flex !important; }
     #modalNovoUsuario > .modal-content {
-      width: 100% !important;
-      max-width: 480px !important;
-      max-height: 85vh !important;
-      height: auto !important;
-      overflow: hidden !important;
-      display: flex !important;
-      flex-direction: column !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      border-radius: 16px !important;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.4) !important;
-      position: relative !important;
+      width: 100% !important; max-width: 480px !important; max-height: 85vh !important;
+      height: auto !important; overflow: hidden !important;
+      display: flex !important; flex-direction: column !important;
+      padding: 0 !important; margin: 0 !important; border-radius: 16px !important;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4) !important; position: relative !important;
     }
-    #modalNovoUsuario > .modal-content > .modal-header {
-      padding: 24px 24px 16px !important;
-      flex-shrink: 0 !important;
-      position: static !important;
-    }
-    #modalNovoUsuario > .modal-content > #msgNovoUsuario {
-      padding: 0 24px !important;
-      flex-shrink: 0 !important;
-    }
+    #modalNovoUsuario > .modal-content > .modal-header { padding: 24px 24px 16px !important; flex-shrink: 0 !important; position: static !important; }
+    #modalNovoUsuario > .modal-content > #msgNovoUsuario { padding: 0 24px !important; flex-shrink: 0 !important; }
     #modalNovoUsuario .modal-usuario-body {
-      flex: 1 1 auto !important;
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
-      padding: 8px 24px 16px !important;
-      display: flex !important;
-      flex-direction: column !important;
-      gap: 14px !important;
-      min-height: 0 !important;
+      flex: 1 1 auto !important; overflow-y: auto !important; overflow-x: hidden !important;
+      padding: 8px 24px 16px !important; display: flex !important; flex-direction: column !important;
+      gap: 14px !important; min-height: 0 !important;
     }
     #modalNovoUsuario > .modal-content > .modal-footer {
-      padding: 14px 24px !important;
-      flex-shrink: 0 !important;
-      position: static !important;
-      margin-top: 0 !important;
-      bottom: auto !important;
+      padding: 14px 24px !important; flex-shrink: 0 !important; position: static !important;
+      margin-top: 0 !important; bottom: auto !important;
     }
     #modalNovoUsuario input[type="checkbox"] {
-      width: 18px !important;
-      height: 18px !important;
-      min-height: unset !important;
-      line-height: normal !important;
-      padding: 0 !important;
-      border: none !important;
-      box-shadow: none !important;
-      background: none !important;
-      flex-shrink: 0 !important;
+      width: 18px !important; height: 18px !important; min-height: unset !important;
+      line-height: normal !important; padding: 0 !important; border: none !important;
+      box-shadow: none !important; background: none !important; flex-shrink: 0 !important;
     }
-    /* grid de 2 colunas dentro dos modais */
     .modal-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;
     }
@@ -367,81 +315,44 @@
       padding-top: 20px; border-top: 1px solid var(--border);
       position: sticky; bottom: 0; background: var(--card); margin-top: auto;
     }
-    /* ── CAMPO PADRÃO UNIVERSAL ── */
     .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      width: 100%;
+      display: flex; flex-direction: column; gap: 6px; width: 100%;
     }
     .field label {
-      font-weight: 600;
-      font-size: 0.88em;
-      color: var(--text);
-      display: block;
+      font-weight: 600; font-size: 0.88em; color: var(--text); display: block;
     }
     .field input,
     .field select,
     .field textarea,
     .field .autocomplete-wrap input {
-      width: 100% !important;
-      height: 44px !important;
-      padding: 0 14px !important;
-      border: 2px solid var(--border) !important;
-      border-radius: 8px !important;
-      font-size: 0.92em !important;
-      font-family: inherit !important;
-      background: var(--bg2) !important;
-      color: var(--text) !important;
-      box-sizing: border-box !important;
-      transition: all 0.3s ease !important;
-      appearance: auto !important;
-      -webkit-appearance: auto !important;
+      width: 100% !important; height: 44px !important; padding: 0 14px !important;
+      border: 2px solid var(--border) !important; border-radius: 8px !important;
+      font-size: 0.92em !important; font-family: inherit !important;
+      background: var(--bg2) !important; color: var(--text) !important;
+      box-sizing: border-box !important; transition: all 0.3s ease !important;
+      appearance: auto !important; -webkit-appearance: auto !important;
       line-height: normal !important;
     }
     .field textarea {
-      height: auto !important;
-      min-height: 90px !important;
-      padding: 12px 14px !important;
-      resize: vertical !important;
+      height: auto !important; min-height: 90px !important;
+      padding: 12px 14px !important; resize: vertical !important;
     }
-    .field input:focus,
-    .field select:focus,
-    .field textarea:focus {
-      outline: none !important;
-      border-color: var(--primary) !important;
-      background: var(--card) !important;
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none !important; border-color: var(--primary) !important;
+      background: var(--card) !important; box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
     }
-
-    /* modal label legado */
     .modal-content label { font-weight: 600; font-size: 0.88em; color: var(--text); display: block; margin-bottom: 6px; }
-    /* garante que divs dentro do modal ocupem 100% */
     .modal-content > div { width: 100%; }
-
-    /* form-group nos filtros também usa .field */
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100% !important;
-      height: 44px !important;
-      padding: 0 14px !important;
-      border: 2px solid var(--border) !important;
-      border-radius: 8px !important;
-      font-size: 0.92em !important;
-      font-family: inherit !important;
-      background: var(--bg2) !important;
-      color: var(--text) !important;
-      box-sizing: border-box !important;
-      transition: all 0.3s ease !important;
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100% !important; height: 44px !important; padding: 0 14px !important;
+      border: 2px solid var(--border) !important; border-radius: 8px !important;
+      font-size: 0.92em !important; font-family: inherit !important;
+      background: var(--bg2) !important; color: var(--text) !important;
+      box-sizing: border-box !important; transition: all 0.3s ease !important;
     }
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none !important;
-      border-color: var(--primary) !important;
-      background: var(--card) !important;
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none !important; border-color: var(--primary) !important;
+      background: var(--card) !important; box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
     }
 
     /* ── INFO CARDS ── */
@@ -484,7 +395,7 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     }
 
-    /* ── AUTOCOMPLETE ── */
+    /* ── AUTOCOMPLETE (outros) ── */
     .autocomplete-wrap { position: relative; width: 100%; }
     .autocomplete-wrap input { width: 100% !important; }
     .autocomplete-list {
@@ -498,6 +409,128 @@
       color: var(--text); transition: background 0.15s;
     }
     .autocomplete-list div:hover { background: rgba(37,99,235,0.08); }
+
+    /* ════════════════════════════════════════════
+       NOVO: CLIENTE DROPDOWN RICH CARDS (modal chamado)
+    ════════════════════════════════════════════ */
+    .cliente-search-wrap { position: relative; width: 100%; }
+    .cliente-search-wrap input { width: 100% !important; }
+
+    .cliente-dropdown {
+      position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+      background: var(--card); border: 2px solid var(--primary); border-radius: 14px;
+      max-height: 360px; overflow-y: auto; z-index: 3000; display: none;
+      box-shadow: 0 16px 40px rgba(37,99,235,0.18); padding: 8px;
+    }
+    .cliente-dropdown.show { display: block; animation: fadeIn 0.15s ease-out; }
+
+    /* Item de cliente encontrado */
+    .cliente-dropdown-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; border-radius: 10px;
+      border: 1px solid var(--border); margin-bottom: 6px;
+      background: var(--bg2); transition: all 0.18s ease; gap: 12px;
+    }
+    .cliente-dropdown-item:last-of-type { margin-bottom: 0; }
+    .cliente-dropdown-item:hover {
+      background: rgba(37,99,235,0.06); border-color: var(--primary);
+      transform: translateX(2px); box-shadow: 0 2px 8px rgba(37,99,235,0.1);
+    }
+    .cliente-dropdown-icon {
+      width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1em; box-shadow: 0 2px 6px rgba(37,99,235,0.25);
+    }
+    .cliente-dropdown-info { flex: 1; min-width: 0; }
+    .cliente-dropdown-nome {
+      font-weight: 700; font-size: 0.93em; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .cliente-dropdown-meta {
+      font-size: 0.77em; color: var(--text2); margin-top: 2px;
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .cliente-dropdown-meta span {
+      display: flex; align-items: center; gap: 3px;
+    }
+    .cliente-dropdown-btn-sel {
+      padding: 6px 14px; border-radius: 20px; font-weight: 700;
+      font-size: 0.78em; border: none; cursor: pointer; font-family: inherit;
+      white-space: nowrap; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--success), #059669);
+      color: white; transition: all 0.18s ease;
+      box-shadow: 0 2px 6px rgba(16,185,129,0.3);
+    }
+    .cliente-dropdown-btn-sel:hover {
+      transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,185,129,0.4);
+    }
+
+    /* Separador */
+    .cliente-dropdown-sep {
+      border: none; border-top: 1px solid var(--border); margin: 6px 0;
+    }
+
+    /* Opção de cadastrar novo */
+    .cliente-dropdown-novo {
+      display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+      border-radius: 10px; border: 2px dashed rgba(37,99,235,0.4); margin-top: 2px;
+      background: rgba(37,99,235,0.03); cursor: pointer; transition: all 0.2s ease;
+    }
+    .cliente-dropdown-novo:hover {
+      background: rgba(37,99,235,0.09); border-color: var(--primary);
+    }
+    .cliente-dropdown-novo-icon {
+      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+      background: rgba(37,99,235,0.12); display: flex; align-items: center;
+      justify-content: center; font-size: 1.1em; color: var(--primary);
+    }
+    .cliente-dropdown-novo-text strong {
+      display: block; font-size: 0.9em; color: var(--primary); font-weight: 700;
+    }
+    .cliente-dropdown-novo-text span {
+      font-size: 0.76em; color: var(--text2);
+    }
+
+    /* Sem resultados */
+    .cliente-dropdown-vazio {
+      padding: 20px; text-align: center; color: var(--text2); font-size: 0.88em;
+    }
+
+    /* Loading */
+    .cliente-dropdown-loading {
+      padding: 16px; text-align: center; color: var(--text2); font-size: 0.88em;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 16px; height: 16px; border: 2px solid var(--border);
+      border-top-color: var(--primary); border-radius: 50%;
+      animation: spin 0.6s linear infinite; flex-shrink: 0;
+    }
+
+    /* ── Chip do cliente selecionado ── */
+    .cliente-chip {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      background: rgba(16,185,129,0.08); border: 2px solid rgba(16,185,129,0.5);
+      border-radius: 10px; margin-top: 8px; animation: fadeIn 0.2s ease;
+    }
+    .cliente-chip-icon {
+      width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, #10b981, #059669);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1em; box-shadow: 0 2px 6px rgba(16,185,129,0.3);
+    }
+    .cliente-chip-info { flex: 1; min-width: 0; }
+    .cliente-chip-nome { font-weight: 700; color: #059669; font-size: 0.92em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cliente-chip-meta { font-size: 0.75em; color: var(--text2); margin-top: 1px; }
+    .cliente-chip-remove {
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      color: #ef4444; cursor: pointer; font-size: 0.78em; padding: 5px 11px;
+      border-radius: 8px; font-weight: 700; font-family: inherit; white-space: nowrap;
+      transition: all 0.18s ease;
+    }
+    .cliente-chip-remove:hover { background: #ef4444; color: white; }
 
     /* ── MSGS ── */
     .msg-erro { color: #dc2626; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px; border-left: 4px solid var(--danger); margin-bottom: 16px; font-size: 0.9em; }
@@ -520,7 +553,6 @@
     .tabela-scroll { max-height: 450px; overflow-y: auto; border-radius: 12px; }
     .tabela-scroll thead th { position: sticky; top: 0; background: var(--bg2); z-index: 2; }
 
-    /* ── HIDDEN ── */
     .hidden { display: none !important; }
 
     /* ── RESPONSIVE ── */
@@ -529,52 +561,22 @@
       .topbar-row1 { padding: 0 12px; height: 56px; gap: 10px; }
       .topbar-brand h1 { font-size: 1em; }
       .topbar-brand-icon { width: 34px; height: 34px; font-size: 1em; }
-
-      /* Menu dropdown mobile */
-      .topbar-row2 {
-        display: none;
-      }
+      .topbar-row2 { display: none; }
       .topbar-row2.aberto, .topbar.open .topbar-row2 {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        padding: 6px 10px 12px;
-        height: auto;
-        border-top: 1px solid var(--border);
+        display: flex; flex-direction: column; align-items: stretch;
+        padding: 6px 10px 12px; height: auto; border-top: 1px solid var(--border);
       }
       .topbar-row2 nav { flex-direction: column; width: 100%; gap: 3px; }
-      .topbar-row2 nav button {
-        width: 100%; justify-content: flex-start;
-        padding: 11px 14px; font-size: 0.92em; border-radius: 10px;
-        height: auto;
-      }
+      .topbar-row2 nav button { width: 100%; justify-content: flex-start; padding: 11px 14px; font-size: 0.92em; border-radius: 10px; height: auto; }
       .topbar-user .user-info-wrap { display: none; }
-
-      /* Botão hambúrguer — 4 listrinhas */
       .menu-toggle-btn {
-        display: flex !important;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        background: var(--bg2);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        color: var(--text);
-        cursor: pointer;
-        padding: 7px 9px;
-        gap: 4px;
-        flex-shrink: 0;
-        transition: all 0.2s ease;
-        width: 40px;
-        height: 40px;
+        display: flex !important; flex-direction: column; justify-content: center;
+        align-items: center; background: var(--bg2); border: 1px solid var(--border);
+        border-radius: 10px; color: var(--text); cursor: pointer; padding: 7px 9px;
+        gap: 4px; flex-shrink: 0; transition: all 0.2s ease; width: 40px; height: 40px;
       }
       .menu-toggle-btn:hover { background: var(--border); }
-      .menu-toggle-btn span {
-        display: block; width: 18px; height: 2px;
-        background: currentColor; border-radius: 2px;
-        transition: all 0.2s ease;
-      }
-      /* Animação X quando aberto */
+      .menu-toggle-btn span { display: block; width: 18px; height: 2px; background: currentColor; border-radius: 2px; transition: all 0.2s ease; }
       .topbar.open .menu-toggle-btn span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
       .topbar.open .menu-toggle-btn span:nth-child(2) { opacity: 0; transform: scaleX(0); }
       .topbar.open .menu-toggle-btn span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
@@ -608,7 +610,6 @@
 
     <!-- TOPBAR -->
     <header class="topbar" id="sidebar">
-      <!-- Linha 1: Logo + Usuário -->
       <div class="topbar-row1">
         <button class="menu-toggle-btn" id="menuToggle" aria-label="Menu">
           <span></span><span></span><span></span><span></span>
@@ -631,7 +632,6 @@
           <button class="btn-logout" id="btnLogout">Sair</button>
         </div>
       </div>
-      <!-- Linha 2: Navegação -->
       <div class="topbar-row2">
         <nav>
           <button class="active" onclick="app.aba('chamados',this)">📋 Chamados</button>
@@ -703,10 +703,7 @@
         <div class="filtros-box section">
           <h2>Filtros</h2>
           <div class="form-grid">
-            <div class="form-group">
-              <label>ID do Chamado</label>
-              <input id="fIdChamado" type="number" placeholder="Filtrar por ID">
-            </div>
+            <div class="form-group"><label>ID do Chamado</label><input id="fIdChamado" type="number" placeholder="Filtrar por ID"></div>
             <div class="form-group">
               <label>Cliente</label>
               <div class="autocomplete-wrap">
@@ -714,18 +711,9 @@
                 <div class="autocomplete-list" id="listaClientesFiltro"></div>
               </div>
             </div>
-            <div class="form-group">
-              <label>CNPJ</label>
-              <input id="fCNPJ" type="text" placeholder="Filtrar por CNPJ">
-            </div>
-            <div class="form-group">
-              <label>Solicitante</label>
-              <input id="fSolicitante" type="text" placeholder="Filtrar por solicitante">
-            </div>
-            <div class="form-group">
-              <label>Técnico</label>
-              <select id="fTecnico"><option value="">Todos os Técnicos</option></select>
-            </div>
+            <div class="form-group"><label>CNPJ</label><input id="fCNPJ" type="text" placeholder="Filtrar por CNPJ"></div>
+            <div class="form-group"><label>Solicitante</label><input id="fSolicitante" type="text" placeholder="Filtrar por solicitante"></div>
+            <div class="form-group"><label>Técnico</label><select id="fTecnico"><option value="">Todos os Técnicos</option></select></div>
             <div class="form-group">
               <label>Categoria</label>
               <select id="fCategoria">
@@ -737,27 +725,14 @@
             </div>
             <div class="form-group">
               <label>Tipo de Atendimento</label>
-              <select id="fTipoAtendimento">
-                <option value="">Todos os Tipos</option>
-                <option>Remoto</option><option>Presencial</option>
-              </select>
+              <select id="fTipoAtendimento"><option value="">Todos os Tipos</option><option>Remoto</option><option>Presencial</option></select>
             </div>
             <div class="form-group">
               <label>Status</label>
-              <select id="fStatus">
-                <option value="">Todos</option>
-                <option value="pendente">Pendente</option>
-                <option value="resolvido">Resolvido</option>
-              </select>
+              <select id="fStatus"><option value="">Todos</option><option value="pendente">Pendente</option><option value="resolvido">Resolvido</option></select>
             </div>
-            <div class="form-group">
-              <label>Data Início</label>
-              <input id="fDataInicio" type="date">
-            </div>
-            <div class="form-group">
-              <label>Data Fim</label>
-              <input id="fDataFim" type="date">
-            </div>
+            <div class="form-group"><label>Data Início</label><input id="fDataInicio" type="date"></div>
+            <div class="form-group"><label>Data Fim</label><input id="fDataFim" type="date"></div>
           </div>
           <div class="btn-toolbar" style="justify-content:center;margin-top:10px;">
             <button class="btn btn-primary" onclick="app.relatorio()">🔍 Filtrar</button>
@@ -839,30 +814,42 @@
 
       <!-- INSTALAÇÕES -->
       <section id="instalacoesSection" class="hidden" style="overflow:visible;">
-        <iframe
-          id="iframeInstalacoes"
-          src=""
-          scrolling="auto"
-          style="width:100%; height:calc(100vh - 75px); border:none; display:block;">
-        </iframe>
+        <iframe id="iframeInstalacoes" src="" scrolling="auto"
+          style="width:100%; height:calc(100vh - 75px); border:none; display:block;"></iframe>
       </section>
 
     </main>
   </div>
 </div>
 
-<!-- MODAL NOVO CHAMADO -->
+<!-- ═══════════════════════════════════════════════
+     MODAL NOVO CHAMADO — com busca rich de clientes
+═══════════════════════════════════════════════ -->
 <div id="modal" class="modal">
   <div class="modal-content wide">
     <div class="modal-header">📋 Novo Chamado</div>
     <div class="modal-grid">
+
+      <!-- Campo de busca de cliente — NOVO DESIGN -->
       <div class="field field-full">
         <label>Cliente *</label>
-        <div class="autocomplete-wrap">
-          <input id="mCliente" placeholder="Digite o cliente" autocomplete="off" oninput="app.buscarClientes()" onblur="setTimeout(()=>{document.getElementById('listaClientesAutoComplete').style.display='none'},200)">
-          <div class="autocomplete-list" id="listaClientesAutoComplete"></div>
+        <div class="cliente-search-wrap" id="clienteSearchWrap">
+          <input
+            id="mCliente"
+            type="text"
+            placeholder="🔍 Digite o nome ou CNPJ do cliente..."
+            autocomplete="off"
+            oninput="app.buscarClientesRich()"
+          >
+          <!-- Dropdown rico -->
+          <div class="cliente-dropdown" id="clienteDropdown"></div>
         </div>
+        <!-- Chip do cliente selecionado -->
+        <div id="clienteChip" style="display:none;"></div>
+        <!-- Campo oculto que armazena o nome real selecionado -->
+        <input type="hidden" id="mClienteValor">
       </div>
+
       <div class="field">
         <label>Solicitante *</label>
         <input id="mSolicitante" type="text" placeholder="Nome do solicitante">
@@ -904,27 +891,13 @@
   <div class="modal-content">
     <div class="modal-header">👨‍💼 Usuário</div>
     <div id="msgNovoUsuario"></div>
-
     <div class="modal-usuario-body">
-      <div class="field field-full">
-        <label>Nome *</label>
-        <input id="novoUsuarioNome" type="text" placeholder="Nome completo">
-      </div>
-      <div class="field field-full">
-        <label>Email *</label>
-        <input id="novoUsuarioEmail" type="email" placeholder="Email">
-      </div>
+      <div class="field field-full"><label>Nome *</label><input id="novoUsuarioNome" type="text" placeholder="Nome completo"></div>
+      <div class="field field-full"><label>Email *</label><input id="novoUsuarioEmail" type="email" placeholder="Email"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="field">
-          <label>Senha *</label>
-          <input id="novoUsuarioSenha" type="password" placeholder="Mínimo 6 caracteres">
-        </div>
-        <div class="field">
-          <label>Confirmar Senha *</label>
-          <input id="novoUsuarioConfirma" type="password" placeholder="Confirmar senha">
-        </div>
+        <div class="field"><label>Senha *</label><input id="novoUsuarioSenha" type="password" placeholder="Mínimo 6 caracteres"></div>
+        <div class="field"><label>Confirmar Senha *</label><input id="novoUsuarioConfirma" type="password" placeholder="Confirmar senha"></div>
       </div>
-
       <div class="field field-full">
         <label>Permissões</label>
         <div style="background:var(--bg2);border-radius:10px;border:1px solid var(--border);padding:8px 16px;">
@@ -951,7 +924,6 @@
         </div>
       </div>
     </div>
-
     <div class="modal-footer">
       <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.fecharModalNovoUsuario()">Cancelar</button>
       <button class="btn btn-primary" id="btnSalvarUsuario" onclick="app.criarNovoUsuario()">💾 Criar</button>
@@ -1019,7 +991,6 @@ function initDarkMode(){
   const dark = localStorage.getItem('darkMode') === 'true';
   if(dark){ document.body.classList.add('dark-mode'); document.querySelector('.theme-icon').textContent='☀️'; }
 }
-
 function setupThemeToggle(){
   const btn = document.getElementById('themeToggle');
   if(!btn) return;
@@ -1033,6 +1004,7 @@ function setupThemeToggle(){
 
 const app = {
   usuarioAtual: null, clienteAcessoAtual: null, chamadoCronologiaId: null,
+  _richSearchTimer: null,
 
   async login(){
     const email = document.getElementById('loginEmail').value.trim();
@@ -1119,19 +1091,196 @@ const app = {
   obterPermissoes(){ try{ return JSON.parse(localStorage.getItem('userPermissions')||'{}'); }catch{ return {}; } },
   salvarPermissoes(p){ localStorage.setItem('userPermissions',JSON.stringify(p)); },
 
-  /* ── CHAMADOS ── */
+  /* ════════════════════════════════════════════
+     MODAL CHAMADO — BUSCA RICH DE CLIENTES
+  ════════════════════════════════════════════ */
+
   abrirModal(){
     document.getElementById('mCliente').value = '';
+    document.getElementById('mClienteValor').value = '';
     document.getElementById('mSolicitante').value = '';
     document.getElementById('mCategoria').value = '';
     document.getElementById('mTipoAtendimento').value = '';
     document.getElementById('mDescricao').value = '';
-    document.getElementById('listaClientesAutoComplete').style.display = 'none';
+    document.getElementById('clienteDropdown').classList.remove('show');
+    document.getElementById('clienteDropdown').innerHTML = '';
+    document.getElementById('clienteChip').style.display = 'none';
+    document.getElementById('mCliente').style.display = '';
     document.getElementById('modal').classList.add('active');
     this.carregarTecnicos();
   },
-  fecharModal(){ document.getElementById('modal').classList.remove('active'); },
 
+  fecharModal(){
+    document.getElementById('modal').classList.remove('active');
+    document.getElementById('clienteDropdown').classList.remove('show');
+  },
+
+  /* Busca rich: nome OU CNPJ */
+  async buscarClientesRich(){
+    const valor = document.getElementById('mCliente').value.trim();
+    const dropdown = document.getElementById('clienteDropdown');
+
+    clearTimeout(this._richSearchTimer);
+
+    if(valor.length < 1){
+      dropdown.classList.remove('show');
+      dropdown.innerHTML = '';
+      return;
+    }
+
+    // Loading
+    dropdown.innerHTML = `<div class="cliente-dropdown-loading"><div class="spinner"></div> Buscando clientes...</div>`;
+    dropdown.classList.add('show');
+
+    this._richSearchTimer = setTimeout(async()=>{
+      try{
+        // Busca por nome OU cnpj
+        const {data} = await sb.from('clientes')
+          .select('*')
+          .or(`nome.ilike.%${valor}%,cnpj.ilike.%${valor}%,razao_social.ilike.%${valor}%`)
+          .order('nome', {ascending: true})
+          .limit(10);
+
+        this._renderClienteDropdown(data || [], valor);
+      }catch(e){
+        dropdown.innerHTML = `<div class="cliente-dropdown-vazio">❌ Erro ao buscar clientes</div>`;
+      }
+    }, 280);
+  },
+
+  _renderClienteDropdown(clientes, termoBusca){
+    const dropdown = document.getElementById('clienteDropdown');
+    dropdown.innerHTML = '';
+
+    if(clientes.length > 0){
+      clientes.forEach(c => {
+        const metaParts = [];
+        if(c.cnpj) metaParts.push(`🪪 ${c.cnpj}`);
+        if(c.razao_social) metaParts.push(`🏢 ${c.razao_social}`);
+        if(c.endereco) metaParts.push(`📍 ${c.endereco}`);
+
+        const item = document.createElement('div');
+        item.className = 'cliente-dropdown-item';
+        item.innerHTML = `
+          <div class="cliente-dropdown-icon">👤</div>
+          <div class="cliente-dropdown-info">
+            <div class="cliente-dropdown-nome">${this._highlight(c.nome, termoBusca)}</div>
+            ${metaParts.length ? `<div class="cliente-dropdown-meta">${metaParts.map(p=>`<span>${p}</span>`).join('')}</div>` : ''}
+          </div>
+          <button class="cliente-dropdown-btn-sel" onmousedown="event.preventDefault(); app.selecionarClienteRich(${JSON.stringify(JSON.stringify(c))})">
+            ✓ Selecionar
+          </button>
+        `;
+        dropdown.appendChild(item);
+      });
+
+      // Separador + opção criar novo
+      const sep = document.createElement('hr');
+      sep.className = 'cliente-dropdown-sep';
+      dropdown.appendChild(sep);
+    }
+
+    // Opção cadastrar novo
+    const novo = document.createElement('div');
+    novo.className = 'cliente-dropdown-novo';
+    novo.innerHTML = `
+      <div class="cliente-dropdown-novo-icon">➕</div>
+      <div class="cliente-dropdown-novo-text">
+        <strong>Cadastrar "${termoBusca}" como novo cliente</strong>
+        <span>Abre o formulário de cadastro com este nome preenchido</span>
+      </div>
+    `;
+    novo.addEventListener('mousedown', (e)=>{
+      e.preventDefault();
+      this._abrirCadastroNovoClienteDoChamado(termoBusca);
+    });
+    dropdown.appendChild(novo);
+
+    dropdown.classList.add('show');
+  },
+
+  _highlight(texto, termo){
+    if(!termo) return texto;
+    const re = new RegExp(`(${termo.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+    return texto.replace(re, '<mark style="background:rgba(37,99,235,0.15);color:var(--primary);border-radius:3px;padding:0 2px;">$1</mark>');
+  },
+
+  selecionarClienteRich(clienteJson){
+    const c = JSON.parse(clienteJson);
+    document.getElementById('clienteDropdown').classList.remove('show');
+    document.getElementById('mCliente').style.display = 'none';
+    document.getElementById('mClienteValor').value = c.nome;
+
+    // Monta meta do chip
+    const metaParts = [];
+    if(c.cnpj) metaParts.push(`🪪 ${c.cnpj}`);
+    if(c.razao_social) metaParts.push(`🏢 ${c.razao_social}`);
+
+    const chip = document.getElementById('clienteChip');
+    chip.innerHTML = `
+      <div class="cliente-chip">
+        <div class="cliente-chip-icon">✅</div>
+        <div class="cliente-chip-info">
+          <div class="cliente-chip-nome">${c.nome}</div>
+          ${metaParts.length ? `<div class="cliente-chip-meta">${metaParts.join(' · ')}</div>` : ''}
+        </div>
+        <button class="cliente-chip-remove" onclick="app.limparClienteSelecionado()">✕ Trocar</button>
+      </div>
+    `;
+    chip.style.display = 'block';
+  },
+
+  limparClienteSelecionado(){
+    document.getElementById('mCliente').value = '';
+    document.getElementById('mClienteValor').value = '';
+    document.getElementById('mCliente').style.display = '';
+    document.getElementById('clienteChip').style.display = 'none';
+    document.getElementById('clienteDropdown').classList.remove('show');
+    setTimeout(()=> document.getElementById('mCliente').focus(), 50);
+  },
+
+  _abrirCadastroNovoClienteDoChamado(nome){
+    // Fecha o dropdown mas MANTÉM o modal de chamado aberto
+    document.getElementById('clienteDropdown').classList.remove('show');
+    // Preenche o nome no modal de cliente
+    ['ncNome','ncRazao','ncCNPJ','ncEndereco','ncObservacoes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('ncNome').value = nome;
+    delete document.getElementById('modalNovoCliente').dataset.nomeOriginal;
+    const btn = document.querySelector('#modalNovoCliente .modal-footer .btn-primary');
+    btn.innerText='💾 Salvar'; btn.onclick=()=>this._salvarNovoClienteDoChamado();
+    document.querySelector('#modalNovoCliente .modal-header').innerText='👥 Novo Cliente';
+    document.getElementById('modalNovoCliente').classList.add('active');
+  },
+
+  async _salvarNovoClienteDoChamado(){
+    const nome = document.getElementById('ncNome').value.trim();
+    if(!nome) return alert('Nome é obrigatório!');
+    try{
+      const {data, error} = await sb.from('clientes').insert({
+        nome,
+        razao_social: document.getElementById('ncRazao').value.trim()||null,
+        cnpj: document.getElementById('ncCNPJ').value.trim()||null,
+        endereco: document.getElementById('ncEndereco').value.trim()||null,
+        observacoes: document.getElementById('ncObservacoes').value.trim()||null
+      }).select().single();
+      if(error) return this.mostrarErro('Erro: '+error.message);
+      await this.registrarAuditoria('Criou cliente (via chamado)',`Nome: ${nome}`);
+      // Fecha modal cliente e seleciona automaticamente no chamado
+      document.getElementById('modalNovoCliente').classList.remove('active');
+      this.selecionarClienteRich(JSON.stringify(data));
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  /* Fecha dropdown ao clicar fora */
+  _setupClienteDropdownBlur(){
+    document.getElementById('mCliente').addEventListener('blur', ()=>{
+      setTimeout(()=>{
+        document.getElementById('clienteDropdown').classList.remove('show');
+      }, 200);
+    });
+  },
+
+  /* ── CHAMADOS ── */
   async carregarTecnicos(){
     try{
       const {data} = await sb.from('usuarios').select('nome,email').order('nome',{ascending:true});
@@ -1155,7 +1304,6 @@ const app = {
       const filtrados = data.filter(c=>c.created_at.substring(0,10)===hoje||c.status==='pendente');
       if(!filtrados.length) return tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text2);">Nenhum chamado pendente ou de hoje</td></tr>';
 
-      // Busca permissões frescas do banco para garantir que excluirChamados esteja atualizado
       let podeExcluir = false;
       try{
         const {data:uData} = await sb.from('usuarios').select('permissoes').eq('email', this.usuarioAtual.email).single();
@@ -1209,44 +1357,25 @@ const app = {
     }catch(e){ this.mostrarErro('Erro: '+e.message); }
   },
 
-  async buscarClientes(){
-    const valor = document.getElementById('mCliente').value.trim();
-    const lista = document.getElementById('listaClientesAutoComplete');
-    if(valor.length<1){ lista.style.display='none'; return; }
-    try{
-      const {data} = await sb.from('clientes').select('nome').ilike('nome',`%${valor}%`).limit(20);
-      lista.innerHTML='';
-      if(!data||!data.length){
-        lista.innerHTML=`<div onmousedown="app.selecionarCliente('${valor}')"><strong style="color:var(--primary);">+ Criar: ${valor}</strong></div>`;
-      } else {
-        data.forEach(c=>lista.innerHTML+=`<div onmousedown="app.selecionarCliente('${c.nome}')">${c.nome}</div>`);
-      }
-      lista.style.display='block';
-    }catch(e){console.error(e);}
-  },
-
-  selecionarCliente(nome){
-    document.getElementById('mCliente').value=nome;
-    document.getElementById('listaClientesAutoComplete').style.display='none';
-  },
-
   async salvarChamado(){
-    const c=document.getElementById('mCliente').value.trim();
-    const s=document.getElementById('mSolicitante').value.trim();
-    const t=document.getElementById('mTecnico').value.trim();
-    const cat=document.getElementById('mCategoria').value.trim();
-    const tipo=document.getElementById('mTipoAtendimento').value.trim();
-    const d=document.getElementById('mDescricao').value.trim();
+    // Usa o valor do campo oculto (cliente selecionado via rich dropdown)
+    const c = document.getElementById('mClienteValor').value.trim() ||
+              document.getElementById('mCliente').value.trim();
+    const s = document.getElementById('mSolicitante').value.trim();
+    const t = document.getElementById('mTecnico').value.trim();
+    const cat = document.getElementById('mCategoria').value.trim();
+    const tipo = document.getElementById('mTipoAtendimento').value.trim();
+    const d = document.getElementById('mDescricao').value.trim();
     if(!c||!s||!t||!cat||!tipo||!d) return alert('Preencha todos os campos!');
     try{
       const {data:existe} = await sb.from('clientes').select('nome').eq('nome',c).single();
       if(!existe) await sb.from('clientes').insert({nome:c});
       const {data,error} = await sb.from('chamados').insert({
-        cliente:c,solicitante:s,tecnico:t,categoria:cat,tipo_atendimento:tipo,
-        descricao:d,status:'pendente',created_at:new Date().toISOString(),
-        criado_por_id:this.usuarioAtual.id,
-        criado_por_nome:this.usuarioAtual.user_metadata?.full_name||this.usuarioAtual.email,
-        criado_por_email:this.usuarioAtual.email
+        cliente:c, solicitante:s, tecnico:t, categoria:cat, tipo_atendimento:tipo,
+        descricao:d, status:'pendente', created_at:new Date().toISOString(),
+        criado_por_id: this.usuarioAtual.id,
+        criado_por_nome: this.usuarioAtual.user_metadata?.full_name||this.usuarioAtual.email,
+        criado_por_email: this.usuarioAtual.email
       }).select().single();
       if(error) return this.mostrarErro('Erro: '+error.message);
       await this.registrarHistorico(data.id,'Chamado criado');
@@ -1258,7 +1387,6 @@ const app = {
 
   /* ── CLIENTES ── */
   async carregarClientes(){
-    // Ao entrar na aba, apenas limpa — não carrega tudo automaticamente
     document.getElementById('listaClientes').style.display = 'none';
     document.getElementById('clientesEstadoVazio').style.display = 'block';
     document.getElementById('pesquisaCliente').value = '';
@@ -1773,14 +1901,20 @@ const app = {
     document.getElementById('loginEmail').addEventListener('keypress',e=>{if(e.key==='Enter')this.login();});
     document.getElementById('loginSenha').addEventListener('keypress',e=>{if(e.key==='Enter')this.login();});
     document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
-    // Fechar menu mobile ao clicar fora
     document.addEventListener('click', function(e){
       const sidebar = document.getElementById('sidebar');
       const menuBtn = document.getElementById('menuToggle');
       if(sidebar && menuBtn && !sidebar.contains(e.target)){
         sidebar.classList.remove('open');
       }
+      // Fecha dropdown de cliente se clicar fora
+      const wrap = document.getElementById('clienteSearchWrap');
+      const dropdown = document.getElementById('clienteDropdown');
+      if(wrap && dropdown && !wrap.contains(e.target)){
+        dropdown.classList.remove('show');
+      }
     });
+    this._setupClienteDropdownBlur();
     this.verificarSessao();
   },
 
@@ -1802,7 +1936,6 @@ function abrirInstalacoes(botao) {
     iframe.setAttribute('data-loaded', '1');
     iframe.src = './instalacao.html';
   }
-  iframe.onload = function() {};
   botao.classList.add('active');
   document.getElementById('sidebar').classList.remove('open');
 }
