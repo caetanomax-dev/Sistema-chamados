@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Painel de Implantação ERP</title>
-    <!-- v20260301-fix-save-cnpj -->
+    <!-- v20260301-fix-finalize-badge -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         :root {
@@ -351,7 +351,7 @@
                 <div class="info-card"><label>Data de Início</label><p id="displayStartDate">-</p></div>
                 <div class="info-card"><label>Responsável</label><p id="displayResponsible">-</p></div>
             </div>
-            <div id="projectStatusBanner" style="display:none; margin-bottom:20px; padding:16px 20px; border-radius:12px; background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.04)); border:2px solid rgba(16,185,129,0.3); display:none; align-items:center; gap:12px;">
+            <div id="projectStatusBanner" style="display:none; margin-bottom:20px; padding:16px 20px; border-radius:12px; background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.04)); border:2px solid rgba(16,185,129,0.3); align-items:center; gap:12px;">
                 <span style="font-size:1.8em;">✅</span>
                 <div>
                     <p style="font-weight:700; color:#10b981; font-size:1.05em; margin:0;">Projeto Finalizado</p>
@@ -623,6 +623,9 @@
                     + '<p style="font-size: 0.85em; color: var(--text2);">Salvo em: ' + (project.savedAt || '—') + '</p>'
                     + '<div class="project-card-buttons">'
                     + '<button class="btn btn-secondary" onclick="loadProject(\'' + projectId + '\')">📂 Abrir</button>'
+                    + (project.finalizado
+                        ? '<button class="btn" style="background:linear-gradient(135deg,#6b7280,#4b5563);color:white;font-size:0.82em;padding:8px 10px;" onclick="finalizarDiretoDaLista(\'' + projectId + '\', false)">🔄 Reabrir</button>'
+                        : '<button class="btn" style="background:linear-gradient(135deg,#10b981,#059669);color:white;font-size:0.82em;padding:8px 10px;" onclick="finalizarDiretoDaLista(\'' + projectId + '\', true)">✅ Finalizar</button>')
                     + '<button class="btn btn-danger" onclick="deleteProject(\'' + projectId + '\')">🗑️ Deletar</button>'
                     + '</div>';
                 projectsList.appendChild(card);
@@ -1153,6 +1156,22 @@
             renderChecklists();
             renderDeliveryChart();
             _atualizarBannerFinalizado();
+        }
+
+        async function finalizarDiretoDaLista(projectId, finalizar) {
+            const p = _todosOsProjetos[projectId];
+            if (!p) return;
+            const msg = finalizar ? 'Deseja finalizar o projeto de ' + p.clientName + '?' : 'Deseja reabrir o projeto de ' + p.clientName + '?';
+            if (!confirm(msg)) return;
+            p.finalizado   = finalizar;
+            p.finalizadoEm = finalizar ? new Date().toLocaleString('pt-BR') : '';
+            p.savedAt      = new Date().toLocaleString('pt-BR');
+            const ok = await _dbSaveProject(p);
+            if (!ok) { alert('Erro ao salvar.'); return; }
+            _todosOsProjetos[projectId] = p;
+            // Re-render mantendo o filtro atual
+            const termo = document.getElementById('projetosBusca').value.trim();
+            mostrarTodosProjetos();
         }
 
         async function deleteProject(projectId) {
