@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Painel de Implantação ERP</title>
+    <!-- v20260301-fix-save-cnpj -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         :root {
@@ -457,11 +461,15 @@
             if (error) { console.error('Supabase getAll error:', error); return {}; }
             const result = {};
             (data || []).forEach(row => {
+                const datesRaw = row.dates || {};
+                const clientCNPJ = datesRaw._clientCNPJ || '';
+                const datesClean = Object.assign({}, datesRaw);
+                delete datesClean._clientCNPJ;
                 result[row.project_id] = {
                     id: row.project_id, clientName: row.client_name,
-                    clientCNPJ: row.client_cnpj || '',
+                    clientCNPJ: clientCNPJ,
                     startDate: row.start_date, responsible: row.responsible,
-                    dates: row.dates || {}, phases: row.phases || [],
+                    dates: datesClean, phases: row.phases || [],
                     weeks: row.weeks || {}, checklistStates: row.checklist_states || {},
                     checklistDates: row.checklist_dates || {}, checklistNotes: row.checklist_notes || {},
                     createdAt: row.created_at, savedAt: row.saved_at
@@ -471,11 +479,15 @@
         }
 
         async function _dbSaveProject(projectData) {
+            // Armazena clientCNPJ dentro do campo dates como metadado extra
+            // (evita necessidade de coluna client_cnpj na tabela)
+            const datesComMeta = Object.assign({}, projectData.dates || {}, {
+                _clientCNPJ: projectData.clientCNPJ || ''
+            });
             const row = {
                 project_id: projectData.id, client_name: projectData.clientName,
-                client_cnpj: projectData.clientCNPJ || '',
                 start_date: projectData.startDate, responsible: projectData.responsible,
-                dates: projectData.dates || {}, phases: projectData.phases || [],
+                dates: datesComMeta, phases: projectData.phases || [],
                 weeks: projectData.weeks || [], checklist_states: projectData.checklistStates || {},
                 checklist_dates: projectData.checklistDates || {}, checklist_notes: projectData.checklistNotes || {},
                 saved_at: projectData.savedAt
