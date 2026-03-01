@@ -1218,6 +1218,7 @@ const app = {
   },
 
   selecionarClienteRich(clienteJson){
+    this._dropdownMouseDown = false;
     const c = JSON.parse(clienteJson);
     document.getElementById('clienteDropdown').classList.remove('show');
     document.getElementById('mCliente').style.display = 'none';
@@ -1283,12 +1284,30 @@ const app = {
     }catch(e){ this.mostrarErro('Erro: '+e.message); }
   },
 
-  /* Fecha dropdown ao clicar fora */
+  /* Fecha dropdown ao clicar fora — usa flag para evitar fechar ao clicar no dropdown */
+  _dropdownMouseDown: false,
+
   _setupClienteDropdownBlur(){
-    document.getElementById('mCliente').addEventListener('blur', ()=>{
+    const input = document.getElementById('mCliente');
+    const dropdown = document.getElementById('clienteDropdown');
+
+    // Quando mouse pressiona em qualquer parte do dropdown, marca flag
+    dropdown.addEventListener('mousedown', ()=>{
+      this._dropdownMouseDown = true;
+    });
+
+    // Quando mouse solta, limpa flag
+    dropdown.addEventListener('mouseup', ()=>{
+      setTimeout(()=>{ this._dropdownMouseDown = false; }, 300);
+    });
+
+    // Blur do input só fecha se NÃO foi clique no dropdown
+    input.addEventListener('blur', ()=>{
       setTimeout(()=>{
-        document.getElementById('clienteDropdown').classList.remove('show');
-      }, 200);
+        if(!this._dropdownMouseDown){
+          dropdown.classList.remove('show');
+        }
+      }, 150);
     });
   },
 
@@ -1371,8 +1390,9 @@ const app = {
 
   async salvarChamado(){
     // Usa o valor do campo oculto (cliente selecionado via rich dropdown)
-    const c = document.getElementById('mClienteValor').value.trim() ||
-              document.getElementById('mCliente').value.trim();
+    // mClienteValor é preenchido pelo selecionarClienteRich
+    const c = (document.getElementById('mClienteValor').value || '').trim() ||
+              (document.getElementById('mCliente').value || '').trim();
     const s = document.getElementById('mSolicitante').value.trim();
     const t = document.getElementById('mTecnico').value.trim();
     const cat = document.getElementById('mCategoria').value.trim();
@@ -1919,10 +1939,10 @@ const app = {
       if(sidebar && menuBtn && !sidebar.contains(e.target)){
         sidebar.classList.remove('open');
       }
-      // Fecha dropdown de cliente se clicar fora
+      // Fecha dropdown de cliente se clicar fora (mas não se clicar dentro)
       const wrap = document.getElementById('clienteSearchWrap');
       const dropdown = document.getElementById('clienteDropdown');
-      if(wrap && dropdown && !wrap.contains(e.target)){
+      if(wrap && dropdown && !wrap.contains(e.target) && !dropdown.contains(e.target)){
         dropdown.classList.remove('show');
       }
     });
