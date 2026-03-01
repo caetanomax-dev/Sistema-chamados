@@ -21,15 +21,10 @@
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: var(--text);
-            line-height: 1.6;
-            min-height: 100vh;
-            padding: 20px;
-            transition: background 0.3s ease, color 0.3s ease;
+            color: var(--text); line-height: 1.6; min-height: 100vh;
+            padding: 20px; transition: background 0.3s ease, color 0.3s ease;
         }
-        body.dark-mode {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
+        body.dark-mode { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
         .container { max-width: 1400px; margin: 0 auto; }
         .theme-toggle {
             position: fixed; top: 20px; right: 20px;
@@ -39,9 +34,7 @@
             cursor: pointer; transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 999;
         }
-        .theme-toggle:hover {
-            transform: scale(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
+        .theme-toggle:hover { transform: scale(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .theme-icon { font-size: 24px; transition: transform 0.3s ease; }
         .theme-toggle:hover .theme-icon { transform: rotate(20deg); }
         header {
@@ -81,10 +74,7 @@
             transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
             display: inline-block; margin-right: 10px; margin-bottom: 10px;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--dark));
-            color: white; width: 100%;
-        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; width: 100%; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.3); }
         .btn-secondary { background: var(--info); color: white; }
         .btn-secondary:hover { background: #0891b2; transform: translateY(-2px); }
@@ -92,12 +82,50 @@
         .btn-success:hover { background: #059669; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-danger:hover { background: #dc2626; }
-        .btn-reset {
-            background: var(--border); color: var(--text);
-            margin-top: 20px; width: 100%;
-        }
+        .btn-reset { background: var(--border); color: var(--text); margin-top: 20px; width: 100%; }
         body.dark-mode .btn-reset { background: #475569; color: #f1f5f9; }
         .button-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+
+        /* ── FILTRO DE PROJETOS ── */
+        .projetos-filtro {
+            display: flex; gap: 12px; flex-wrap: wrap;
+            margin-bottom: 24px; align-items: center;
+        }
+        .projetos-filtro-input-wrap {
+            flex: 1; min-width: 220px; position: relative;
+        }
+        .projetos-filtro-input-wrap input {
+            width: 100%; padding-left: 16px; height: 46px;
+        }
+        .projetos-filtro .btn-filtrar {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white; border: none; border-radius: 8px;
+            padding: 0 24px; height: 46px; font-size: 0.9em; font-weight: 700;
+            cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
+            font-family: inherit; letter-spacing: 0.3px; margin: 0;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.2);
+        }
+        .projetos-filtro .btn-filtrar:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(37,99,235,0.35); }
+        .projetos-filtro .btn-limpar {
+            background: var(--bg2); color: var(--text2); border: 2px solid var(--border);
+            border-radius: 8px; padding: 0 18px; height: 46px; font-size: 0.9em;
+            font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+            white-space: nowrap; font-family: inherit; margin: 0;
+        }
+        .projetos-filtro .btn-limpar:hover { border-color: var(--primary); color: var(--primary); background: rgba(37,99,235,0.05); }
+        .projetos-vazio {
+            text-align: center; padding: 40px 20px; color: var(--text2);
+            grid-column: 1 / -1;
+        }
+        .projetos-vazio .vazio-icon { font-size: 3em; margin-bottom: 12px; }
+        .projetos-vazio p { font-size: 1.05em; }
+        .projetos-resultado-info {
+            font-size: 0.85em; color: var(--text2); margin-bottom: 16px;
+            padding: 8px 14px; background: rgba(37,99,235,0.06);
+            border-radius: 8px; border-left: 3px solid var(--primary);
+            display: none;
+        }
+
         .projects-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .project-card {
             background: var(--card); padding: 20px; border-radius: 12px;
@@ -154,105 +182,84 @@
             display: none; position: fixed; z-index: 1000; left: 0; top: 0;
             width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
             animation: modalFadeIn 0.2s ease-out;
         }
         @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes modalSlideUp { from { opacity: 0; transform: translateY(24px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .modal-content {
-            background: var(--card);
-            margin: 4% auto;
-            padding: 0;
-            border-radius: 20px;
-            width: 90%; max-width: 700px;
+            background: var(--card); margin: 4% auto; padding: 0;
+            border-radius: 20px; width: 90%; max-width: 700px;
             box-shadow: 0 24px 64px rgba(0,0,0,0.25), 0 4px 16px rgba(0,0,0,0.1);
-            max-height: 90vh; overflow: hidden;
-            display: flex; flex-direction: column;
-            transition: background 0.3s ease;
-            animation: modalSlideUp 0.25s ease-out;
+            max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;
+            transition: background 0.3s ease; animation: modalSlideUp 0.25s ease-out;
             border: 1px solid var(--border);
         }
         .modal-header {
-            font-size: 1.25em; font-weight: 700;
-            color: var(--text);
+            font-size: 1.25em; font-weight: 700; color: var(--text);
             padding: 24px 30px 20px;
             background: linear-gradient(135deg, var(--bg2), var(--card));
-            border-bottom: 2px solid var(--border);
-            border-radius: 20px 20px 0 0;
-            display: flex; align-items: center; gap: 10px;
-            letter-spacing: 0.01em;
+            border-bottom: 2px solid var(--border); border-radius: 20px 20px 0 0;
+            display: flex; align-items: center; gap: 10px; letter-spacing: 0.01em;
         }
         .modal-header::before {
-            content: '';
-            display: block; width: 5px; height: 28px;
+            content: ''; display: block; width: 5px; height: 28px;
             background: linear-gradient(180deg, var(--primary), var(--dark));
             border-radius: 4px; flex-shrink: 0;
         }
-        .modal-body {
-            padding: 26px 30px;
-            overflow-y: auto;
-            flex: 1;
-        }
-        .edit-section {
-            margin-bottom: 24px; padding-bottom: 24px;
-            border-bottom: 1px solid var(--border);
-        }
+        .modal-body { padding: 26px 30px; overflow-y: auto; flex: 1; }
+        .edit-section { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
         .edit-section:last-child { border-bottom: none; margin-bottom: 0; }
         .edit-section h4 {
-            margin-bottom: 16px; color: var(--text);
-            font-size: 1em; font-weight: 700;
+            margin-bottom: 16px; color: var(--text); font-size: 1em; font-weight: 700;
             padding: 10px 14px;
             background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(37,99,235,0.03));
-            border-left: 3px solid var(--primary);
-            border-radius: 0 8px 8px 0;
+            border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0;
         }
         .edit-item {
-            margin-bottom: 14px; padding: 14px 16px;
-            background: var(--bg2); border-radius: 10px;
-            border: 1px solid var(--border);
-            transition: all 0.2s ease;
+            margin-bottom: 14px; padding: 14px 16px; background: var(--bg2);
+            border-radius: 10px; border: 1px solid var(--border); transition: all 0.2s ease;
         }
         .edit-item:hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(37,99,235,0.08); }
-        .edit-item-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 10px;
-        }
-        .edit-item-header span {
-            font-size: 0.8em; font-weight: 700; color: var(--text2);
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
+        .edit-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .edit-item-header span { font-size: 0.8em; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
         .edit-item-fields { display: flex; flex-direction: column; gap: 10px; }
         .edit-item-fields input { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9em; background: var(--card); color: var(--text); }
         .modal-footer {
             display: flex; gap: 12px; justify-content: flex-end;
-            padding: 18px 30px;
-            border-top: 1px solid var(--border);
-            background: var(--bg2);
-            border-radius: 0 0 20px 20px;
+            padding: 18px 30px; border-top: 1px solid var(--border);
+            background: var(--bg2); border-radius: 0 0 20px 20px;
         }
         .close-modal {
-            background: transparent;
-            color: var(--text2);
+            background: transparent; color: var(--text2);
             padding: 10px 24px; border: 2px solid var(--border);
             border-radius: 8px; font-weight: 600; font-size: 0.9em;
-            cursor: pointer; transition: all 0.2s ease;
-            letter-spacing: 0.3px;
+            cursor: pointer; transition: all 0.2s ease; letter-spacing: 0.3px;
         }
         .close-modal:hover { background: var(--border); color: var(--text); }
         body.dark-mode .close-modal { border-color: #475569; color: #94a3b8; }
         body.dark-mode .close-modal:hover { background: #475569; color: #f1f5f9; }
         .save-modal {
             background: linear-gradient(135deg, var(--primary), var(--dark));
-            color: white; padding: 10px 28px;
-            border: none; border-radius: 8px;
-            font-weight: 700; font-size: 0.9em;
-            cursor: pointer; transition: all 0.25s ease;
-            letter-spacing: 0.3px;
-            box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+            color: white; padding: 10px 28px; border: none; border-radius: 8px;
+            font-weight: 700; font-size: 0.9em; cursor: pointer; transition: all 0.25s ease;
+            letter-spacing: 0.3px; box-shadow: 0 2px 8px rgba(37,99,235,0.25);
         }
         .save-modal:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(37,99,235,0.35); }
-        @media (max-width: 768px) { .theme-toggle { top: 80px; } .form-grid, .timeline-container, .phases-container, .client-info-display { grid-template-columns: 1fr; } .button-group { flex-direction: column; } .button-group .btn { width: 100%; margin-right: 0; } .modal-content { width: 95%; margin: 20% auto; padding: 20px; max-height: 85vh; } .modal-footer { padding: 15px 0 0 0; } .modal-footer button { font-size: 0.85em; padding: 10px 16px; } .chart-container { height: 300px; } .project-card-buttons { flex-direction: column; } }
+        @media (max-width: 768px) {
+            .theme-toggle { top: 80px; }
+            .form-grid, .timeline-container, .phases-container, .client-info-display { grid-template-columns: 1fr; }
+            .button-group { flex-direction: column; }
+            .button-group .btn { width: 100%; margin-right: 0; }
+            .modal-content { width: 95%; margin: 20% auto; padding: 20px; max-height: 85vh; }
+            .modal-footer { padding: 15px 0 0 0; }
+            .modal-footer button { font-size: 0.85em; padding: 10px 16px; }
+            .chart-container { height: 300px; }
+            .project-card-buttons { flex-direction: column; }
+            .projetos-filtro { flex-direction: column; }
+            .projetos-filtro .btn-filtrar,
+            .projetos-filtro .btn-limpar { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -268,6 +275,24 @@
 
         <section class="section" id="projectsSection">
             <h2>Meus Projetos</h2>
+
+            <!-- ── FILTRO DE PROJETOS ── -->
+            <div class="projetos-filtro">
+                <div class="projetos-filtro-input-wrap">
+                    <input
+                        type="text"
+                        id="projetosBusca"
+                        placeholder="🔍 Buscar por nome do cliente ou CNPJ..."
+                        oninput="filtrarProjetos()"
+                        autocomplete="off"
+                    >
+                </div>
+                <button class="btn-filtrar" onclick="mostrarTodosProjetos()">🔍 Filtrar</button>
+                <button class="btn-limpar" onclick="limparFiltroProjetos()">🧹 Limpar</button>
+            </div>
+            <div id="projetosResultadoInfo" class="projetos-resultado-info"></div>
+            <!-- ── FIM FILTRO ── -->
+
             <div class="projects-list" id="projectsList"></div>
             <hr style="margin: 30px 0; border: none; border-top: 1px solid var(--border);">
             <h2 style="margin-top: 30px;">Novo Projeto</h2>
@@ -278,16 +303,14 @@
             <div class="form-grid">
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label for="clientName">Nome do Cliente</label>
-                    <!-- ALTERAÇÃO: busca por nome ou CNPJ com cards -->
                     <input type="text" id="clientName" placeholder="Cliente selecionado aparecerá aqui" readonly style="background:var(--bg2); cursor:default;">
                     <div style="margin-top:10px; display:flex; gap:10px; align-items:center;">
                         <input type="text" id="clienteBusca" placeholder="🔍 Buscar por nome ou CNPJ..." autocomplete="off" oninput="buscarClienteCards()" style="flex:1;">
                         <button type="button" onclick="limparSelecaoCliente()" class="btn btn-reset" style="margin:0; width:auto; padding:10px 18px; font-size:0.85em;">✕ Limpar</button>
                     </div>
-                    <div id="clienteCardsResultado" style="display:none; margin-top:12px; display:none;">
+                    <div id="clienteCardsResultado" style="display:none; margin-top:12px;">
                         <div id="clienteCardsGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:14px; max-height:340px; overflow-y:auto; padding:4px 2px;"></div>
                     </div>
-                    <!-- FIM DA ALTERAÇÃO -->
                 </div>
                 <div class="form-group">
                     <label for="startDate">Data de Início</label>
@@ -305,23 +328,10 @@
         <section class="section" id="projectSection" style="display: none;">
             <h2>Resumo do Projeto</h2>
             <div class="client-info-display">
-                <div class="info-card">
-                    <label>Cliente</label>
-                    <p id="displayClientName">-</p>
-                </div>
-                <!-- ALTERAÇÃO: card CNPJ adicionado -->
-                <div class="info-card">
-                    <label>CNPJ/CPF</label>
-                    <p id="displayClientCNPJ">-</p>
-                </div>
-                <div class="info-card">
-                    <label>Data de Início</label>
-                    <p id="displayStartDate">-</p>
-                </div>
-                <div class="info-card">
-                    <label>Responsável</label>
-                    <p id="displayResponsible">-</p>
-                </div>
+                <div class="info-card"><label>Cliente</label><p id="displayClientName">-</p></div>
+                <div class="info-card"><label>CNPJ/CPF</label><p id="displayClientCNPJ">-</p></div>
+                <div class="info-card"><label>Data de Início</label><p id="displayStartDate">-</p></div>
+                <div class="info-card"><label>Responsável</label><p id="displayResponsible">-</p></div>
             </div>
             <div class="button-group">
                 <button class="btn btn-success" onclick="printPDF()">🖨️ Imprimir PDF</button>
@@ -337,17 +347,13 @@
                     <h3>Conclusão do Projeto</h3>
                     <span class="progress-percentage"><span id="progressPercentage">0</span>%</span>
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
             </div>
         </section>
 
         <section class="section" id="chartSection" style="display: none;">
             <h2>Gráfico de Entrega dos Processos</h2>
-            <div class="chart-container">
-                <canvas id="deliveryChart"></canvas>
-            </div>
+            <div class="chart-container"><canvas id="deliveryChart"></canvas></div>
         </section>
 
         <section class="section" id="timelineSection" style="display: none;">
@@ -369,7 +375,7 @@
         </section>
     </div>
 
-    <!-- NOVO MODAL: Nova Fase -->
+    <!-- MODAL: Nova Fase -->
     <div id="newPhaseModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">➕ Nova Fase</div>
@@ -389,7 +395,6 @@
             </div>
         </div>
     </div>
-    <!-- FIM NOVO MODAL: Nova Fase -->
 
     <div id="timelineModal" class="modal">
         <div class="modal-content">
@@ -411,14 +416,8 @@
                     <input type="text" id="newTimeline_title" placeholder="Ex: Validação Final">
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;">
-                    <div class="form-group">
-                        <label>Data Início</label>
-                        <input type="date" id="newTimeline_start">
-                    </div>
-                    <div class="form-group">
-                        <label>Data Fim</label>
-                        <input type="date" id="newTimeline_end">
-                    </div>
+                    <div class="form-group"><label>Data Início</label><input type="date" id="newTimeline_start"></div>
+                    <div class="form-group"><label>Data Fim</label><input type="date" id="newTimeline_end"></div>
                 </div>
                 <div class="form-group">
                     <label>Descrição <span style="font-weight:400; color:var(--text2);">(opcional)</span></label>
@@ -443,124 +442,161 @@
         </div>
     </div>
 
-    <!-- =====================================================================
-         ALTERAÇÃO DE ARMAZENAMENTO: Supabase Client SDK
-         Substituição: localStorage → Supabase
-         ===================================================================== -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // =====================================================================
-        // CONFIGURAÇÃO SUPABASE — altere apenas SUPABASE_URL e SUPABASE_ANON_KEY
-        // =====================================================================
         const SUPABASE_URL  = 'https://boendmrotsttljydigld.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvZW5kbXJvdHN0dGxqeWRpZ2xkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1OTI5NTksImV4cCI6MjA4MjE2ODk1OX0.k6vVvD6kNV8r-a9lR6jaTcAm1wz5c_jbTDnjKlpo0cE';
-
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // =====================================================================
-        // FUNÇÕES INTERNAS DE PERSISTÊNCIA (substituem localStorage para projetos)
-        // Todas as chamadas externas continuam idênticas — apenas o mecanismo mudou
-        // =====================================================================
+        // Cache global de projetos para o filtro funcionar sem nova requisição
+        let _todosOsProjetos = {};
 
-        /**
-         * Busca todos os projetos do Supabase e retorna no mesmo formato
-         * que localStorage.getItem('allProjects') retornava: { [id]: project }
-         */
         async function _dbGetAllProjects() {
             const { data, error } = await _supabase
-                .from('erp_projects')
-                .select('*')
-                .order('created_at', { ascending: false });
-
+                .from('erp_projects').select('*').order('created_at', { ascending: false });
             if (error) { console.error('Supabase getAll error:', error); return {}; }
-
             const result = {};
             (data || []).forEach(row => {
                 result[row.project_id] = {
-                    id:               row.project_id,
-                    clientName:       row.client_name,
-                    startDate:        row.start_date,
-                    responsible:      row.responsible,
-                    dates:            row.dates            || {},
-                    phases:           row.phases           || [],
-                    weeks:            row.weeks            || [],
-                    checklistStates:  row.checklist_states || {},
-                    checklistDates:   row.checklist_dates  || {},
-                    checklistNotes:   row.checklist_notes  || {},
-                    createdAt:        row.created_at,
-                    savedAt:          row.saved_at
+                    id: row.project_id, clientName: row.client_name,
+                    clientCNPJ: row.client_cnpj || '',
+                    startDate: row.start_date, responsible: row.responsible,
+                    dates: row.dates || {}, phases: row.phases || [],
+                    weeks: row.weeks || {}, checklistStates: row.checklist_states || {},
+                    checklistDates: row.checklist_dates || {}, checklistNotes: row.checklist_notes || {},
+                    createdAt: row.created_at, savedAt: row.saved_at
                 };
             });
             return result;
         }
 
-        /**
-         * Salva (upsert) um projeto no Supabase.
-         * Recebe o mesmo objeto que antes ia para localStorage.
-         */
         async function _dbSaveProject(projectData) {
             const row = {
-                project_id:       projectData.id,
-                client_name:      projectData.clientName,
-                start_date:       projectData.startDate,
-                responsible:      projectData.responsible,
-                dates:            projectData.dates            || {},
-                phases:           projectData.phases           || [],
-                weeks:            projectData.weeks            || [],
-                checklist_states: projectData.checklistStates || {},
-                checklist_dates:  projectData.checklistDates  || {},
-                checklist_notes:  projectData.checklistNotes  || {},
-                saved_at:         projectData.savedAt
+                project_id: projectData.id, client_name: projectData.clientName,
+                client_cnpj: projectData.clientCNPJ || '',
+                start_date: projectData.startDate, responsible: projectData.responsible,
+                dates: projectData.dates || {}, phases: projectData.phases || [],
+                weeks: projectData.weeks || [], checklist_states: projectData.checklistStates || {},
+                checklist_dates: projectData.checklistDates || {}, checklist_notes: projectData.checklistNotes || {},
+                saved_at: projectData.savedAt
             };
-
-            const { error } = await _supabase
-                .from('erp_projects')
-                .upsert(row, { onConflict: 'project_id' });
-
+            const { error } = await _supabase.from('erp_projects').upsert(row, { onConflict: 'project_id' });
             if (error) { console.error('Supabase save error:', error); return false; }
             return true;
         }
 
-        /**
-         * Exclui um projeto do Supabase pelo ID.
-         */
         async function _dbDeleteProject(projectId) {
-            const { error } = await _supabase
-                .from('erp_projects')
-                .delete()
-                .eq('project_id', projectId);
-
+            const { error } = await _supabase.from('erp_projects').delete().eq('project_id', projectId);
             if (error) { console.error('Supabase delete error:', error); return false; }
             return true;
         }
-        // =====================================================================
-        // ALTERAÇÃO: Busca de clientes com cards (nome ou CNPJ) — Supabase
-        // =====================================================================
+
+        // ══════════════════════════════════════════════════════════════
+        // FILTRO DE PROJETOS
+        // ══════════════════════════════════════════════════════════════
+
+        function filtrarProjetos() {
+            const termo = document.getElementById('projetosBusca').value.trim().toLowerCase();
+            if (!termo) {
+                _renderizarProjetos(_todosOsProjetos, null);
+                return;
+            }
+            const filtrados = {};
+            Object.entries(_todosOsProjetos).forEach(([id, p]) => {
+                const nome  = (p.clientName || '').toLowerCase();
+                const cnpj  = (p.clientCNPJ || '').toLowerCase();
+                const resp  = (p.responsible || '').toLowerCase();
+                if (nome.includes(termo) || cnpj.includes(termo) || resp.includes(termo)) {
+                    filtrados[id] = p;
+                }
+            });
+            _renderizarProjetos(filtrados, termo);
+        }
+
+        function mostrarTodosProjetos() {
+            // Botão "Filtrar" sem texto = mostra todos
+            const termo = document.getElementById('projetosBusca').value.trim();
+            if (!termo) {
+                _renderizarProjetos(_todosOsProjetos, null);
+                return;
+            }
+            filtrarProjetos();
+        }
+
+        function limparFiltroProjetos() {
+            document.getElementById('projetosBusca').value = '';
+            document.getElementById('projetosResultadoInfo').style.display = 'none';
+            _renderizarProjetos(_todosOsProjetos, null);
+        }
+
+        function _highlight(texto, termo) {
+            if (!termo || !texto) return texto || '';
+            const re = new RegExp('(' + termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+            return String(texto).replace(re, '<mark style="background:rgba(37,99,235,0.15);color:var(--primary);border-radius:3px;padding:0 2px;">$1</mark>');
+        }
+
+        function _renderizarProjetos(projetos, termoBusca) {
+            const projectsList = document.getElementById('projectsList');
+            const infoBar = document.getElementById('projetosResultadoInfo');
+            projectsList.innerHTML = '';
+
+            const total = Object.keys(_todosOsProjetos).length;
+            const encontrados = Object.keys(projetos).length;
+
+            // Barra de resultado
+            if (termoBusca) {
+                infoBar.style.display = 'block';
+                infoBar.textContent = encontrados > 0
+                    ? '🔍 ' + encontrados + ' projeto(s) encontrado(s) para "' + termoBusca + '"'
+                    : '😕 Nenhum projeto encontrado para "' + termoBusca + '"';
+            } else {
+                infoBar.style.display = total > 0 ? 'none' : 'none';
+            }
+
+            if (encontrados === 0) {
+                projectsList.innerHTML = '<div class="projetos-vazio"><div class="vazio-icon">' + (termoBusca ? '😕' : '📋') + '</div><p>' + (termoBusca ? 'Nenhum projeto encontrado para "' + termoBusca + '".' : 'Nenhum projeto salvo ainda.') + '</p></div>';
+                return;
+            }
+
+            Object.entries(projetos).forEach(([projectId, project]) => {
+                const card = document.createElement('div');
+                card.className = 'project-card';
+                const progressData = calculateProjectProgress(project);
+                const nomeHL = termoBusca ? _highlight(project.clientName, termoBusca) : (project.clientName || '—');
+                const cnpjHL = termoBusca ? _highlight(project.clientCNPJ, termoBusca) : (project.clientCNPJ || '');
+                const respHL = termoBusca ? _highlight(project.responsible, termoBusca) : (project.responsible || '—');
+
+                card.innerHTML =
+                    '<h3>👤 ' + nomeHL + '</h3>'
+                    + (cnpjHL ? '<p><strong>CNPJ/CPF:</strong> ' + cnpjHL + '</p>' : '')
+                    + '<p><strong>Responsável:</strong> ' + respHL + '</p>'
+                    + '<p><strong>Início:</strong> ' + formatDate(project.startDate) + '</p>'
+                    + '<p><strong>Progresso:</strong> ' + progressData + '%</p>'
+                    + '<p style="font-size: 0.85em; color: var(--text2);">Salvo em: ' + (project.savedAt || '—') + '</p>'
+                    + '<div class="project-card-buttons">'
+                    + '<button class="btn btn-secondary" onclick="loadProject(\'' + projectId + '\')">📂 Abrir</button>'
+                    + '<button class="btn btn-danger" onclick="deleteProject(\'' + projectId + '\')">🗑️ Deletar</button>'
+                    + '</div>';
+                projectsList.appendChild(card);
+            });
+        }
+
+        // Busca de clientes para novo projeto
         async function buscarClienteCards() {
             const valor = document.getElementById('clienteBusca').value.trim();
             const resultado = document.getElementById('clienteCardsResultado');
             const grid = document.getElementById('clienteCardsGrid');
-
-            if (valor.length < 1) {
-                resultado.style.display = 'none';
-                return;
-            }
-
+            if (valor.length < 1) { resultado.style.display = 'none'; return; }
             try {
-                const { data } = await _supabase
-                    .from('clientes')
+                const { data } = await _supabase.from('clientes')
                     .select('nome, razao_social, cnpj, endereco, observacoes')
                     .or('nome.ilike.%' + valor + '%,cnpj.ilike.%' + valor + '%')
                     .limit(20);
-
                 grid.innerHTML = '';
-
                 if (!data || !data.length) {
                     grid.innerHTML = '<p style="color:var(--text2);padding:12px;">Nenhum cliente encontrado.</p>';
-                    resultado.style.display = 'block';
-                    return;
+                    resultado.style.display = 'block'; return;
                 }
-
                 data.forEach(function(c) {
                     const card = document.createElement('div');
                     card.style.cssText = 'background:var(--card);padding:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-left:4px solid var(--primary);cursor:pointer;transition:all 0.2s ease;';
@@ -573,7 +609,6 @@
                         + (c.endereco ? '<p style="font-size:0.88em;color:var(--text2);margin-bottom:4px;"><strong>Endereço:</strong> ' + c.endereco + '</p>' : '')
                         + (c.observacoes ? '<p style="font-size:0.85em;color:var(--text2);font-style:italic;margin-top:6px;">' + c.observacoes + '</p>' : '')
                         + '<div style="margin-top:10px;"><button style="background:linear-gradient(135deg,var(--primary),var(--dark));color:white;border:none;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:0.85em;font-weight:600;">✔ Selecionar</button></div>';
-
                     card.querySelector('button').onclick = function(e) {
                         e.stopPropagation();
                         const input = document.getElementById('clientName');
@@ -582,10 +617,8 @@
                         document.getElementById('clienteBusca').value = '';
                         resultado.style.display = 'none';
                     };
-
                     grid.appendChild(card);
                 });
-
                 resultado.style.display = 'block';
             } catch(e) { console.error('Erro busca clientes:', e); }
         }
@@ -597,92 +630,65 @@
             document.getElementById('clienteCardsResultado').style.display = 'none';
             document.getElementById('clienteCardsGrid').innerHTML = '';
         }
-        // =====================================================================
-        // FIM DAS FUNÇÕES INTERNAS DE PERSISTÊNCIA
-        // =====================================================================
     </script>
-    <!-- FIM DA ALTERAÇÃO DE ARMAZENAMENTO -->
 
     <script>
         function initDarkMode() {
             const isDarkMode = localStorage.getItem('darkMode') === 'true';
-            if (isDarkMode) {
-                document.body.classList.add('dark-mode');
-                document.querySelector('.theme-icon').textContent = '☀️';
-            }
+            if (isDarkMode) { document.body.classList.add('dark-mode'); document.querySelector('.theme-icon').textContent = '☀️'; }
         }
-
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const isDarkMode = document.body.classList.contains('dark-mode');
             localStorage.setItem('darkMode', isDarkMode);
             document.querySelector('.theme-icon').textContent = isDarkMode ? '☀️' : '🌙';
         }
-
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
         document.addEventListener('DOMContentLoaded', initDarkMode);
 
         const defaultPhases = [
-            {id: 'phase-1', name: 'Diagnóstico', phaseNumber: '1', items: ['Checklist operação preenchido', 'Infraestrutura validada', 'Equipamentos confirmados', 'Conversão alinhada', 'Certificado digital solicitado', 'TEF validado']},
-            {id: 'phase-2', name: 'Preparação', phaseNumber: '2', items: ['Treinamento cadastro realizado', 'Produtos cadastrados', 'Preços definidos', 'Etiquetas prontas', 'Dados revisados']},
-            {id: 'phase-3', name: 'Instalação', phaseNumber: '3', items: ['Atualização final de dados', 'Instalação dos caixas', 'Testes realizados', 'Treinamento operadores', 'Go Live realizado']},
-            {id: 'phase-4', name: 'Consolidação', phaseNumber: '4', items: ['Treinamento Comercial', 'Treinamento Financeiro', 'Treinamento Fiscal', 'Dúvidas resolvidas']},
-            {id: 'phase-5', name: 'Entrega', phaseNumber: '5', items: ['Cliente operando sozinho', 'Pendências resolvidas', 'Formalização de entrega', 'Encaminhado para suporte']}
+            {id:'phase-1',name:'Diagnóstico',phaseNumber:'1',items:['Checklist operação preenchido','Infraestrutura validada','Equipamentos confirmados','Conversão alinhada','Certificado digital solicitado','TEF validado']},
+            {id:'phase-2',name:'Preparação',phaseNumber:'2',items:['Treinamento cadastro realizado','Produtos cadastrados','Preços definidos','Etiquetas prontas','Dados revisados']},
+            {id:'phase-3',name:'Instalação',phaseNumber:'3',items:['Atualização final de dados','Instalação dos caixas','Testes realizados','Treinamento operadores','Go Live realizado']},
+            {id:'phase-4',name:'Consolidação',phaseNumber:'4',items:['Treinamento Comercial','Treinamento Financeiro','Treinamento Fiscal','Dúvidas resolvidas']},
+            {id:'phase-5',name:'Entrega',phaseNumber:'5',items:['Cliente operando sozinho','Pendências resolvidas','Formalização de entrega','Encaminhado para suporte']}
         ];
-
         const defaultWeeks = [
-            {id: 'week1', title: 'Diagnóstico e Planejamento', phaseNumber: '1'},
-            {id: 'week2', title: 'Preparação e Cadastros', phaseNumber: '2'},
-            {id: 'week3', title: 'Instalação e Go Live', phaseNumber: '3'},
-            {id: 'week4', title: 'Treinamentos Estratégicos e Entrega', phaseNumber: '4'}
+            {id:'week1',title:'Diagnóstico e Planejamento',phaseNumber:'1'},
+            {id:'week2',title:'Preparação e Cadastros',phaseNumber:'2'},
+            {id:'week3',title:'Instalação e Go Live',phaseNumber:'3'},
+            {id:'week4',title:'Treinamentos Estratégicos e Entrega',phaseNumber:'4'}
         ];
 
         let phases = JSON.parse(JSON.stringify(defaultPhases));
-        let weeks = JSON.parse(JSON.stringify(defaultWeeks));
-        let currentProjectId = null;
+        let weeks  = JSON.parse(JSON.stringify(defaultWeeks));
+        let currentProjectId   = null;
         let currentProjectData = null;
-        let deliveryChart = null;
+        let deliveryChart      = null;
 
         function initializeProject() {
             const clientName = document.getElementById('clientName').value.trim();
-            const startDate = document.getElementById('startDate').value;
+            const startDate  = document.getElementById('startDate').value;
             const responsible = document.getElementById('responsible').value.trim();
-
-            if (!clientName || !startDate || !responsible) {
-                alert('Por favor, preencha todos os campos!');
-                return;
-            }
-
+            if (!clientName || !startDate || !responsible) { alert('Por favor, preencha todos os campos!'); return; }
             const defaultDates = generateDefaultDates(startDate);
             currentProjectId = Date.now().toString();
-
-            // ALTERAÇÃO: busca CNPJ do cliente selecionado
             const clientCNPJ = document.getElementById('clientName').dataset.cnpj || '';
-
             currentProjectData = {
-                id: currentProjectId,
-                clientName,
-                clientCNPJ,
-                startDate,
-                responsible,
-                dates: defaultDates,
-                phases: JSON.parse(JSON.stringify(defaultPhases)),
+                id: currentProjectId, clientName, clientCNPJ, startDate, responsible,
+                dates: defaultDates, phases: JSON.parse(JSON.stringify(defaultPhases)),
                 weeks: JSON.parse(JSON.stringify(defaultWeeks)),
-                checklistStates: {},
-                checklistDates: {},
+                checklistStates: {}, checklistDates: {}, checklistNotes: {},
                 createdAt: new Date().toLocaleString('pt-BR')
             };
-
             phases = JSON.parse(JSON.stringify(currentProjectData.phases));
-            weeks = JSON.parse(JSON.stringify(currentProjectData.weeks));
-
-            document.getElementById('projectSection').style.display = 'block';
-            document.getElementById('progressSection').style.display = 'block';
-            document.getElementById('chartSection').style.display = 'block';
-            document.getElementById('timelineSection').style.display = 'block';
+            weeks  = JSON.parse(JSON.stringify(currentProjectData.weeks));
+            document.getElementById('projectSection').style.display   = 'block';
+            document.getElementById('progressSection').style.display  = 'block';
+            document.getElementById('chartSection').style.display     = 'block';
+            document.getElementById('timelineSection').style.display  = 'block';
             document.getElementById('checklistsSection').style.display = 'block';
-            document.getElementById('projectsSection').style.display = 'none';
-
+            document.getElementById('projectsSection').style.display  = 'none';
             displayProjectInfo(clientName, startDate, responsible, clientCNPJ);
             renderTimeline(currentProjectData.dates);
             renderChecklists();
@@ -693,49 +699,34 @@
         function generateDefaultDates(startDateStr) {
             const startDate = new Date(startDateStr);
             const dates = {};
-
             for (let week = 1; week <= 4; week++) {
                 const weekStart = new Date(startDate);
                 weekStart.setDate(weekStart.getDate() + (week - 1) * 7);
-                
                 const weekEnd = new Date(weekStart);
                 weekEnd.setDate(weekEnd.getDate() + 6);
-
-                dates[`week${week}`] = {
-                    start: weekStart.toISOString().split('T')[0],
-                    end: weekEnd.toISOString().split('T')[0]
-                };
+                dates['week' + week] = { start: weekStart.toISOString().split('T')[0], end: weekEnd.toISOString().split('T')[0] };
             }
-
             return dates;
         }
 
-        // ALTERAÇÃO: exibe também CNPJ do cliente
         function displayProjectInfo(clientName, startDate, responsible, clientCNPJ) {
-            document.getElementById('displayClientName').textContent = clientName;
-            document.getElementById('displayClientCNPJ').textContent = clientCNPJ || '—';
-            document.getElementById('displayStartDate').textContent = formatDate(startDate);
+            document.getElementById('displayClientName').textContent  = clientName;
+            document.getElementById('displayClientCNPJ').textContent  = clientCNPJ || '—';
+            document.getElementById('displayStartDate').textContent   = formatDate(startDate);
             document.getElementById('displayResponsible').textContent = responsible;
         }
 
         function renderTimeline(dates) {
             const container = document.getElementById('timelineContainer');
             container.innerHTML = '';
-
-            weeks.forEach((week) => {
+            weeks.forEach(week => {
                 const div = document.createElement('div');
-                div.className = `timeline-item`;
-                
+                div.className = 'timeline-item';
                 const weekDates = dates[week.id] || {};
-                const dateStr = weekDates.start ? 
-                    `${formatDate(weekDates.start)} até ${formatDate(weekDates.end)}` : 
-                    'Sem datas definidas';
-
-                let extra = '';
-                if (week.description) extra = `<p style="font-size:0.88em; color:var(--text2); margin-top:8px;">${week.description}</p>`;
-                const deleteBtn = `<button class="btn btn-danger" onclick="removeTimelineEntry('${week.id}')" style="padding:4px 10px; font-size:0.8em; margin-top:10px; width:auto;">✕ Remover</button>`;
-
-                div.innerHTML = `<h3>${week.title}</h3><div class="timeline-dates">${dateStr}</div>${extra}${deleteBtn}`;
+                const dateStr = weekDates.start ? formatDate(weekDates.start) + ' até ' + formatDate(weekDates.end) : 'Sem datas definidas';
+                let extra = week.description ? '<p style="font-size:0.88em;color:var(--text2);margin-top:8px;">' + week.description + '</p>' : '';
+                const deleteBtn = '<button class="btn btn-danger" onclick="removeTimelineEntry(\'' + week.id + '\')" style="padding:4px 10px;font-size:0.8em;margin-top:10px;width:auto;">✕ Remover</button>';
+                div.innerHTML = '<h3>' + week.title + '</h3><div class="timeline-dates">' + dateStr + '</div>' + extra + deleteBtn;
                 container.appendChild(div);
             });
         }
@@ -743,145 +734,88 @@
         function renderChecklists() {
             const container = document.getElementById('phasesContainer');
             container.innerHTML = '';
-
             phases.forEach(phase => {
                 const phaseDiv = document.createElement('div');
-                phaseDiv.className = `phase phase-${phase.phaseNumber}`;
+                phaseDiv.className = 'phase phase-' + phase.phaseNumber;
                 phaseDiv.id = phase.id;
-
                 const header = document.createElement('div');
                 header.className = 'phase-header';
-                header.innerHTML = `<span>Fase ${phase.phaseNumber}: ${phase.name}</span><span class="phase-counter"><span class="checked-count">0</span>/<span class="total-count">${phase.items.length}</span></span>`;
-
+                header.innerHTML = '<span>Fase ' + phase.phaseNumber + ': ' + phase.name + '</span><span class="phase-counter"><span class="checked-count">0</span>/<span class="total-count">' + phase.items.length + '</span></span>';
                 const content = document.createElement('div');
                 content.className = 'phase-content';
-
                 const checklist = document.createElement('ul');
                 checklist.className = 'checklist';
-
                 phase.items.forEach((item, itemIndex) => {
-                    const itemId = `${phase.id}-item-${itemIndex}`;
+                    const itemId = phase.id + '-item-' + itemIndex;
                     const li = document.createElement('li');
                     li.className = 'checklist-item';
-
                     const itemRow = document.createElement('div');
                     itemRow.className = 'checklist-item-row';
-
                     const input = document.createElement('input');
-                    input.type = 'checkbox';
-                    input.id = itemId;
+                    input.type = 'checkbox'; input.id = itemId;
                     input.onchange = () => {
                         saveChecklistState(phase.id, itemIndex, input.checked);
-                        updateProgress();
-                        updatePhaseCounter(phase.id);
-                        renderDeliveryChart();
-                        
-                        // Mostrar/esconder campo de data
+                        updateProgress(); updatePhaseCounter(phase.id); renderDeliveryChart();
                         const wrapper = li.querySelector('.checklist-date-wrapper');
-                        if (wrapper) {
-                            wrapper.style.display = input.checked ? 'block' : 'none';
-                        }
+                        if (wrapper) wrapper.style.display = input.checked ? 'block' : 'none';
                     };
-
                     const label = document.createElement('label');
-                    label.htmlFor = itemId;
-                    label.textContent = item;
-
-                    itemRow.appendChild(input);
-                    itemRow.appendChild(label);
+                    label.htmlFor = itemId; label.textContent = item;
+                    itemRow.appendChild(input); itemRow.appendChild(label);
                     li.appendChild(itemRow);
-
                     const dateWrapper = document.createElement('div');
                     dateWrapper.className = 'checklist-date-wrapper';
-
                     const dateLabel = document.createElement('label');
-                    dateLabel.className = 'checklist-date-label';
-                    dateLabel.textContent = 'Data de conclusão:';
-
+                    dateLabel.className = 'checklist-date-label'; dateLabel.textContent = 'Data de conclusão:';
                     const dateInput = document.createElement('input');
-                    dateInput.type = 'date';
-                    dateInput.className = 'checklist-date';
-                    dateInput.id = `date-${itemId}`;
-                    dateInput.onchange = () => {
-                        saveChecklistDate(phase.id, itemIndex, dateInput.value);
-                    };
-
-                    dateWrapper.appendChild(dateLabel);
-                    dateWrapper.appendChild(dateInput);
+                    dateInput.type = 'date'; dateInput.className = 'checklist-date'; dateInput.id = 'date-' + itemId;
+                    dateInput.onchange = () => saveChecklistDate(phase.id, itemIndex, dateInput.value);
+                    dateWrapper.appendChild(dateLabel); dateWrapper.appendChild(dateInput);
                     li.appendChild(dateWrapper);
-
-                    // Campo de observação
                     const noteWrapper = document.createElement('div');
-                    noteWrapper.style.cssText = 'padding-left: 30px; margin-top: 6px;';
+                    noteWrapper.style.cssText = 'padding-left:30px;margin-top:6px;';
                     const noteInput = document.createElement('textarea');
-                    noteInput.placeholder = 'Observação...';
-                    noteInput.rows = 2;
-                    noteInput.style.cssText = 'width: 100%; padding: 8px 10px; font-size: 0.85em; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); font-family: inherit; resize: vertical; min-height: 52px; line-height: 1.5; overflow-wrap: break-word; word-break: break-word;';
-                    noteInput.id = `note-${itemId}`;
-                    // Carregar nota salva
+                    noteInput.placeholder = 'Observação...'; noteInput.rows = 2;
+                    noteInput.style.cssText = 'width:100%;padding:8px 10px;font-size:0.85em;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-family:inherit;resize:vertical;min-height:52px;';
+                    noteInput.id = 'note-' + itemId;
                     if (currentProjectData.checklistNotes && currentProjectData.checklistNotes[phase.id] && currentProjectData.checklistNotes[phase.id][itemIndex] !== undefined) {
                         noteInput.value = currentProjectData.checklistNotes[phase.id][itemIndex];
                     }
-                    noteInput.oninput = () => { saveChecklistNote(phase.id, itemIndex, noteInput.value); };
-                    noteWrapper.appendChild(noteInput);
-                    li.appendChild(noteWrapper);
-
+                    noteInput.oninput = () => saveChecklistNote(phase.id, itemIndex, noteInput.value);
+                    noteWrapper.appendChild(noteInput); li.appendChild(noteWrapper);
                     checklist.appendChild(li);
                 });
-
                 content.appendChild(checklist);
-
                 const statusBadge = document.createElement('div');
-                statusBadge.className = 'status-badge status-pending';
-                statusBadge.textContent = 'Não iniciado';
-                statusBadge.id = `status-${phase.id}`;
+                statusBadge.className = 'status-badge status-pending'; statusBadge.textContent = 'Não iniciado';
+                statusBadge.id = 'status-' + phase.id;
                 content.appendChild(statusBadge);
-
-                phaseDiv.appendChild(header);
-                phaseDiv.appendChild(content);
-
+                phaseDiv.appendChild(header); phaseDiv.appendChild(content);
                 container.appendChild(phaseDiv);
             });
-
             loadChecklistStates();
         }
 
         function updatePhaseCounter(phaseId) {
             const phaseElement = document.getElementById(phaseId);
             const checkedItems = phaseElement.querySelectorAll('input[type="checkbox"]:checked').length;
-            const totalItems = phaseElement.querySelectorAll('input[type="checkbox"]').length;
-            
-            const counter = phaseElement.querySelector('.phase-counter');
-            counter.innerHTML = `<span class="checked-count">${checkedItems}</span>/<span class="total-count">${totalItems}</span>`;
-
-            const statusBadge = phaseElement.querySelector(`#status-${phaseId}`);
-            if (checkedItems === 0) {
-                statusBadge.className = 'status-badge status-pending';
-                statusBadge.textContent = 'Não iniciado';
-            } else if (checkedItems === totalItems) {
-                statusBadge.className = 'status-badge status-completed';
-                statusBadge.textContent = 'Concluído ✓';
-            } else {
-                statusBadge.className = 'status-badge status-in-progress';
-                statusBadge.textContent = 'Em progresso...';
-            }
+            const totalItems   = phaseElement.querySelectorAll('input[type="checkbox"]').length;
+            phaseElement.querySelector('.phase-counter').innerHTML = '<span class="checked-count">' + checkedItems + '</span>/<span class="total-count">' + totalItems + '</span>';
+            const statusBadge = phaseElement.querySelector('#status-' + phaseId);
+            if (checkedItems === 0) { statusBadge.className = 'status-badge status-pending'; statusBadge.textContent = 'Não iniciado'; }
+            else if (checkedItems === totalItems) { statusBadge.className = 'status-badge status-completed'; statusBadge.textContent = 'Concluído ✓'; }
+            else { statusBadge.className = 'status-badge status-in-progress'; statusBadge.textContent = 'Em progresso...'; }
         }
 
         function updateProgress() {
-            let totalItems = 0;
-            let checkedItems = 0;
-
+            let totalItems = 0, checkedItems = 0;
             phases.forEach(phase => {
                 const phaseElement = document.getElementById(phase.id);
                 if (phaseElement) {
-                    const checkboxes = phaseElement.querySelectorAll('input[type="checkbox"]');
-                    const checkedCheckboxes = phaseElement.querySelectorAll('input[type="checkbox"]:checked');
-                    
-                    totalItems += checkboxes.length;
-                    checkedItems += checkedCheckboxes.length;
+                    totalItems   += phaseElement.querySelectorAll('input[type="checkbox"]').length;
+                    checkedItems += phaseElement.querySelectorAll('input[type="checkbox"]:checked').length;
                 }
             });
-
             const percentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
             document.getElementById('progressPercentage').textContent = percentage;
             document.getElementById('progressFill').style.width = percentage + '%';
@@ -892,34 +826,29 @@
             if (!currentProjectData.checklistStates[phaseId]) currentProjectData.checklistStates[phaseId] = {};
             currentProjectData.checklistStates[phaseId][itemIndex] = checked;
         }
-
         function saveChecklistDate(phaseId, itemIndex, date) {
             if (!currentProjectData.checklistDates) currentProjectData.checklistDates = {};
             if (!currentProjectData.checklistDates[phaseId]) currentProjectData.checklistDates[phaseId] = {};
             currentProjectData.checklistDates[phaseId][itemIndex] = date;
         }
+        function saveChecklistNote(phaseId, itemIndex, note) {
+            if (!currentProjectData.checklistNotes) currentProjectData.checklistNotes = {};
+            if (!currentProjectData.checklistNotes[phaseId]) currentProjectData.checklistNotes[phaseId] = {};
+            currentProjectData.checklistNotes[phaseId][itemIndex] = note;
+        }
 
         function loadChecklistStates() {
             if (!currentProjectData || !currentProjectData.checklistStates) return;
-            
             Object.keys(currentProjectData.checklistStates).forEach(phaseId => {
                 Object.keys(currentProjectData.checklistStates[phaseId]).forEach(itemIndex => {
-                    const itemId = `${phaseId}-item-${itemIndex}`;
+                    const itemId = phaseId + '-item-' + itemIndex;
                     const checkbox = document.getElementById(itemId);
                     if (checkbox) {
                         checkbox.checked = currentProjectData.checklistStates[phaseId][itemIndex];
-                        
-                        // Mostrar/esconder campo de data quando carregar
                         const li = checkbox.closest('.checklist-item');
-                        if (li) {
-                            const wrapper = li.querySelector('.checklist-date-wrapper');
-                            if (wrapper) {
-                                wrapper.style.display = checkbox.checked ? 'block' : 'none';
-                            }
-                        }
+                        if (li) { const wrapper = li.querySelector('.checklist-date-wrapper'); if (wrapper) wrapper.style.display = checkbox.checked ? 'block' : 'none'; }
                     }
-                    
-                    const dateInput = document.getElementById(`date-${itemId}`);
+                    const dateInput = document.getElementById('date-' + itemId);
                     if (dateInput && currentProjectData.checklistDates && currentProjectData.checklistDates[phaseId] && currentProjectData.checklistDates[phaseId][itemIndex]) {
                         dateInput.value = currentProjectData.checklistDates[phaseId][itemIndex];
                     }
@@ -930,500 +859,273 @@
         }
 
         function renderDeliveryChart() {
-            const chartData = [];
-            const labels = [];
-            const colors = ['#8b5cf6', '#ec4899', '#f59e0b', '#06b6d4', '#10b981'];
-
+            const chartData = [], labels = [];
+            const colors = ['#8b5cf6','#ec4899','#f59e0b','#06b6d4','#10b981'];
             phases.forEach((phase, index) => {
                 const phaseElement = document.getElementById(phase.id);
-                const checkedItems = phaseElement.querySelectorAll('input[type="checkbox"]:checked').length;
-                const totalItems = phaseElement.querySelectorAll('input[type="checkbox"]').length;
-                const percentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
-
-                labels.push(`Fase ${phase.phaseNumber}: ${phase.name}`);
-                chartData.push(percentage);
+                const checked = phaseElement.querySelectorAll('input[type="checkbox"]:checked').length;
+                const total   = phaseElement.querySelectorAll('input[type="checkbox"]').length;
+                labels.push('Fase ' + phase.phaseNumber + ': ' + phase.name);
+                chartData.push(total > 0 ? Math.round((checked / total) * 100) : 0);
             });
-
             const canvas = document.getElementById('deliveryChart');
-            
             if (deliveryChart) deliveryChart.destroy();
-
             deliveryChart = new Chart(canvas, {
                 type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Progresso da Entrega (%)',
-                        data: chartData,
-                        backgroundColor: colors,
-                        borderColor: colors,
-                        borderWidth: 2,
-                        borderRadius: 8,
-                        barThickness: 40
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            labels: { font: { size: 12 } }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '%';
-                                }
-                            }
-                        }
-                    }
-                }
+                data: { labels, datasets: [{ label: 'Progresso da Entrega (%)', data: chartData, backgroundColor: colors, borderColor: colors, borderWidth: 2, borderRadius: 8, barThickness: 40 }] },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { font: { size: 12 } } } }, scales: { x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } } } }
             });
         }
 
         function openTimelineEditor() {
             const modalBody = document.getElementById('timelineModalBody');
             modalBody.innerHTML = '';
-
-            weeks.forEach((week) => {
+            weeks.forEach(week => {
                 const dates = currentProjectData.dates[week.id] || {};
-                
                 const section = document.createElement('div');
                 section.className = 'edit-section';
-                section.innerHTML = `
-                    <h4>${week.title}</h4>
-                    <div style="margin-bottom: 14px;">
-                        <label style="font-weight: 600; margin-bottom: 6px; display: block; font-size:0.9em; color:var(--text);">Título da Etapa</label>
-                        <input type="text" id="edit_${week.id}_title" value="${week.title}" style="width: 100%;">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-                        <div>
-                            <label style="font-weight: 600; margin-bottom: 6px; display: block; font-size:0.9em; color:var(--text);">📅 Data Início</label>
-                            <input type="date" id="edit_${week.id}_start" value="${dates.start || ''}" style="width: 100%;">
-                        </div>
-                        <div>
-                            <label style="font-weight: 600; margin-bottom: 6px; display: block; font-size:0.9em; color:var(--text);">📅 Data Fim</label>
-                            <input type="date" id="edit_${week.id}_end" value="${dates.end || ''}" style="width: 100%;">
-                        </div>
-                    </div>`;
-
+                section.innerHTML = '<h4>' + week.title + '</h4><div style="margin-bottom:14px;"><label style="font-weight:600;margin-bottom:6px;display:block;font-size:0.9em;color:var(--text);">Título da Etapa</label><input type="text" id="edit_' + week.id + '_title" value="' + week.title + '" style="width:100%;"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;"><div><label style="font-weight:600;margin-bottom:6px;display:block;font-size:0.9em;color:var(--text);">📅 Data Início</label><input type="date" id="edit_' + week.id + '_start" value="' + (dates.start || '') + '" style="width:100%;"></div><div><label style="font-weight:600;margin-bottom:6px;display:block;font-size:0.9em;color:var(--text);">📅 Data Fim</label><input type="date" id="edit_' + week.id + '_end" value="' + (dates.end || '') + '" style="width:100%;"></div></div>';
                 modalBody.appendChild(section);
             });
-
             document.getElementById('timelineModal').style.display = 'block';
         }
-
-        function closeTimelineEditor() {
-            document.getElementById('timelineModal').style.display = 'none';
-        }
-
+        function closeTimelineEditor() { document.getElementById('timelineModal').style.display = 'none'; }
         function saveTimelineChanges() {
             const newDates = {};
-
-            weeks.forEach(week => {
-                const start = document.getElementById(`edit_${week.id}_start`).value;
-                const end = document.getElementById(`edit_${week.id}_end`).value;
-                const title = document.getElementById(`edit_${week.id}_title`).value;
-
-                if (!start || !end || !title) {
-                    alert('Por favor, preencha todos os campos!');
-                    return;
-                }
-
-                if (new Date(start) > new Date(end)) {
-                    alert(`${week.title}: Data de início não pode ser maior que fim!`);
-                    return;
-                }
-
-                newDates[week.id] = { start, end };
-                week.title = title;
-            });
-
-            currentProjectData.dates = newDates;
-            currentProjectData.weeks = weeks;
-            renderTimeline(newDates);
-            closeTimelineEditor();
+            for (const week of weeks) {
+                const start = document.getElementById('edit_' + week.id + '_start').value;
+                const end   = document.getElementById('edit_' + week.id + '_end').value;
+                const title = document.getElementById('edit_' + week.id + '_title').value;
+                if (!start || !end || !title) { alert('Por favor, preencha todos os campos!'); return; }
+                if (new Date(start) > new Date(end)) { alert(week.title + ': Data de início não pode ser maior que fim!'); return; }
+                newDates[week.id] = { start, end }; week.title = title;
+            }
+            currentProjectData.dates = newDates; currentProjectData.weeks = weeks;
+            renderTimeline(newDates); closeTimelineEditor();
         }
 
         function openChecklistEditor() {
             const modalBody = document.getElementById('checklistModalBody');
             modalBody.innerHTML = '';
-
             phases.forEach(phase => {
                 const section = document.createElement('div');
                 section.className = 'edit-section';
-                
                 let itemsHtml = '';
                 phase.items.forEach((item, itemIndex) => {
                     const noteVal = (currentProjectData.checklistNotes && currentProjectData.checklistNotes[phase.id] && currentProjectData.checklistNotes[phase.id][itemIndex]) ? currentProjectData.checklistNotes[phase.id][itemIndex] : '';
-                    itemsHtml += `
-                        <div class="edit-item">
-                            <div class="edit-item-header">
-                                <span>Item ${itemIndex + 1}</span>
-                                <button onclick="removeChecklistItem('${phase.id}', ${itemIndex})" title="Remover item" style="background:none; border:1px solid var(--border); border-radius:6px; padding:4px 7px; cursor:pointer; color:var(--danger); font-size:0.95em; line-height:1; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(239,68,68,0.1)'; this.style.borderColor='var(--danger)'" onmouseout="this.style.background='none'; this.style.borderColor='var(--border)'">🗑</button>
-                            </div>
-                            <label style="font-size:0.82em; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px; display:block; margin-bottom:5px;">Descrição do item</label>
-                            <input type="text" id="edit_phase_${phase.id}_item_${itemIndex}" value="${item}" style="width: 100%; margin-bottom: 10px;">
-                            <label style="font-size:0.82em; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px; display:block; margin-bottom:5px;">💬 Observação</label>
-                            <input type="text" id="edit_phase_${phase.id}_note_${itemIndex}" value="${noteVal.replace(/"/g, '&quot;')}" placeholder="Observação sobre este item..." style="width: 100%; font-size:0.9em;">
-                        </div>`;
+                    itemsHtml += '<div class="edit-item"><div class="edit-item-header"><span>Item ' + (itemIndex + 1) + '</span><button onclick="removeChecklistItem(\'' + phase.id + '\',' + itemIndex + ')" style="background:none;border:1px solid var(--border);border-radius:6px;padding:4px 7px;cursor:pointer;color:var(--danger);font-size:0.95em;">🗑</button></div><label style="font-size:0.82em;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:5px;">Descrição</label><input type="text" id="edit_phase_' + phase.id + '_item_' + itemIndex + '" value="' + item + '" style="width:100%;margin-bottom:10px;"><label style="font-size:0.82em;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:5px;">💬 Observação</label><input type="text" id="edit_phase_' + phase.id + '_note_' + itemIndex + '" value="' + noteVal.replace(/"/g, '&quot;') + '" placeholder="Observação..." style="width:100%;font-size:0.9em;"></div>';
                 });
-
-                section.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                        <h4 style="margin:0;">Fase ${phase.phaseNumber}: ${phase.name}</h4>
-                        <button class="btn btn-danger" onclick="removePhase('${phase.id}')" style="padding:6px 14px; font-size:0.8em; width:auto; margin:0;">🗑 Excluir Fase</button>
-                    </div>
-                    <div style="margin-bottom: 16px;">
-                        <label style="font-weight: 700; margin-bottom: 6px; display: block; font-size:0.9em; color:var(--text);">Nome da Fase</label>
-                        <input type="text" id="edit_phase_${phase.id}_name" value="${phase.name}" style="width: 100%;">
-                    </div>
-                    <div style="margin-bottom: 12px;">
-                        <label style="font-weight: 700; margin-bottom: 10px; display: block; font-size:0.9em; color:var(--text);">Itens do Checklist</label>
-                        ${itemsHtml}
-                    </div>
-                    <button class="btn btn-success" onclick="addChecklistItem('${phase.id}')" style="width: 100%; margin-top: 6px; padding: 10px; font-size:0.9em;">+ Adicionar Item</button>`;
-
+                section.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><h4 style="margin:0;">Fase ' + phase.phaseNumber + ': ' + phase.name + '</h4><button class="btn btn-danger" onclick="removePhase(\'' + phase.id + '\')" style="padding:6px 14px;font-size:0.8em;width:auto;margin:0;">🗑 Excluir Fase</button></div><div style="margin-bottom:16px;"><label style="font-weight:700;margin-bottom:6px;display:block;font-size:0.9em;color:var(--text);">Nome da Fase</label><input type="text" id="edit_phase_' + phase.id + '_name" value="' + phase.name + '" style="width:100%;"></div><div style="margin-bottom:12px;"><label style="font-weight:700;margin-bottom:10px;display:block;font-size:0.9em;color:var(--text);">Itens do Checklist</label>' + itemsHtml + '</div><button class="btn btn-success" onclick="addChecklistItem(\'' + phase.id + '\')" style="width:100%;margin-top:6px;padding:10px;font-size:0.9em;">+ Adicionar Item</button>';
                 modalBody.appendChild(section);
             });
-
             document.getElementById('checklistModal').style.display = 'block';
         }
-
-        function closeChecklistEditor() {
-            document.getElementById('checklistModal').style.display = 'none';
-        }
-
+        function closeChecklistEditor() { document.getElementById('checklistModal').style.display = 'none'; }
         function flushChecklistEditorState() {
-            // Salva o que está digitado no modal antes de reabrir
             phases.forEach(phase => {
-                const nameInput = document.getElementById(`edit_phase_${phase.id}_name`);
+                const nameInput = document.getElementById('edit_phase_' + phase.id + '_name');
                 if (nameInput && nameInput.value.trim()) phase.name = nameInput.value.trim();
                 if (!currentProjectData.checklistNotes) currentProjectData.checklistNotes = {};
                 if (!currentProjectData.checklistNotes[phase.id]) currentProjectData.checklistNotes[phase.id] = {};
                 phase.items = phase.items.map((item, index) => {
-                    const input = document.getElementById(`edit_phase_${phase.id}_item_${index}`);
-                    const noteInput = document.getElementById(`edit_phase_${phase.id}_note_${index}`);
+                    const input = document.getElementById('edit_phase_' + phase.id + '_item_' + index);
+                    const noteInput = document.getElementById('edit_phase_' + phase.id + '_note_' + index);
                     if (noteInput) currentProjectData.checklistNotes[phase.id][index] = noteInput.value;
                     return input ? (input.value || item) : item;
                 });
             });
         }
-
         function addChecklistItem(phaseId) {
             flushChecklistEditorState();
             const phase = phases.find(p => p.id === phaseId);
-            if (phase) {
-                phase.items.push('Novo item');
-                openChecklistEditor();
-            }
+            if (phase) { phase.items.push('Novo item'); openChecklistEditor(); }
         }
-
         function removeChecklistItem(phaseId, itemIndex) {
             if (!confirm('Deseja remover este item?')) return;
             flushChecklistEditorState();
             const phase = phases.find(p => p.id === phaseId);
             if (phase) {
                 phase.items.splice(itemIndex, 1);
-                // Reindexar notas da fase
                 if (currentProjectData.checklistNotes && currentProjectData.checklistNotes[phaseId]) {
                     const notes = currentProjectData.checklistNotes[phaseId];
                     const newNotes = {};
-                    Object.keys(notes).forEach(k => {
-                        const ki = parseInt(k);
-                        if (ki < itemIndex) newNotes[ki] = notes[k];
-                        else if (ki > itemIndex) newNotes[ki - 1] = notes[k];
-                    });
+                    Object.keys(notes).forEach(k => { const ki = parseInt(k); if (ki < itemIndex) newNotes[ki] = notes[k]; else if (ki > itemIndex) newNotes[ki - 1] = notes[k]; });
                     currentProjectData.checklistNotes[phaseId] = newNotes;
                 }
                 openChecklistEditor();
             }
         }
-
         function saveChecklistChanges() {
             if (!currentProjectData.checklistNotes) currentProjectData.checklistNotes = {};
-
             phases.forEach(phase => {
-                const nameInput = document.getElementById(`edit_phase_${phase.id}_name`);
+                const nameInput = document.getElementById('edit_phase_' + phase.id + '_name');
                 if (!nameInput) return;
                 const newName = nameInput.value;
                 if (!newName) { alert('Nome da fase não pode estar vazio!'); return; }
                 phase.name = newName;
-
                 if (!currentProjectData.checklistNotes[phase.id]) currentProjectData.checklistNotes[phase.id] = {};
-
                 phase.items = phase.items.map((item, index) => {
-                    const newValue = document.getElementById(`edit_phase_${phase.id}_item_${index}`).value;
+                    const newValue = document.getElementById('edit_phase_' + phase.id + '_item_' + index).value;
                     if (!newValue) { alert('Itens não podem estar vazios!'); return null; }
-
-                    const noteInput = document.getElementById(`edit_phase_${phase.id}_note_${index}`);
+                    const noteInput = document.getElementById('edit_phase_' + phase.id + '_note_' + index);
                     if (noteInput) currentProjectData.checklistNotes[phase.id][index] = noteInput.value;
-
                     return newValue;
                 }).filter(item => item !== null);
             });
-
-            currentProjectData.phases = phases;
-            renderChecklists();
-            renderDeliveryChart();
-            closeChecklistEditor();
+            currentProjectData.phases = phases; renderChecklists(); renderDeliveryChart(); closeChecklistEditor();
         }
 
-        // ALTERAÇÃO DE ARMAZENAMENTO: localStorage → Supabase
         async function saveProject() {
-            if (!currentProjectId) {
-                alert('Nenhum projeto em edição!');
-                return;
-            }
-
+            if (!currentProjectId) { alert('Nenhum projeto em edição!'); return; }
             currentProjectData.phases  = phases;
             currentProjectData.weeks   = weeks;
             currentProjectData.savedAt = new Date().toLocaleString('pt-BR');
-
-            // ANTES: localStorage.setItem('allProjects', ...)
-            // AGORA:  _dbSaveProject salva/atualiza no Supabase
             const ok = await _dbSaveProject(currentProjectData);
-            if (!ok) { alert('Erro ao salvar no banco de dados. Verifique o console.'); return; }
-
+            if (!ok) { alert('Erro ao salvar no banco de dados.'); return; }
             alert('✓ Projeto salvo com sucesso!');
             backToProjects();
         }
 
         function printPDF() {
-            const clientName = document.getElementById('displayClientName').textContent;
-            const responsible = document.getElementById('displayResponsible').textContent;
-            const startDate = document.getElementById('displayStartDate').textContent;
-            const percentage = document.getElementById('progressPercentage').textContent;
-
-            let styles = '<style>* { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: Segoe UI, Arial, sans-serif; background: white; color: #333; line-height: 1.6; padding: 40px 30px; } .container { max-width: 950px; margin: 0 auto; } .header-top { text-align: center; margin-bottom: 40px; border-bottom: 3px solid #2563eb; padding-bottom: 25px; } .header-top h1 { color: #2563eb; font-size: 32px; margin-bottom: 5px; font-weight: 700; } .header-top p { color: #6b7280; font-size: 14px; } .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 35px; } .info-card { background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%); padding: 20px; border-left: 5px solid #2563eb; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); } .info-card label { font-weight: 700; color: #6b7280; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px; } .info-card p { color: #1f2937; font-size: 15px; font-weight: 600; } .progress-section { background: #f9fafb; padding: 25px; border-radius: 8px; margin-bottom: 35px; border: 1px solid #e5e7eb; } .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; } .progress-header h3 { font-size: 16px; color: #1f2937; font-weight: 600; margin: 0; } .progress-percentage { background: linear-gradient(135deg, #2563eb, #1e40af); color: white; padding: 10px 20px; border-radius: 25px; font-weight: 700; font-size: 18px; } .progress-bar { width: 100%; height: 12px; background: #e5e7eb; border-radius: 10px; overflow: hidden; } .progress-fill { height: 100%; background: linear-gradient(90deg, #2563eb, #10b981); border-radius: 10px; width: ' + percentage + '%; } .section-title { font-size: 18px; font-weight: 700; color: #1f2937; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin: 35px 0 20px 0; } .timeline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; } .timeline-item { border-left: 5px solid #8b5cf6; padding: 18px; background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); } .timeline-item h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #1f2937; } .timeline-dates { font-size: 13px; color: #6b7280; font-weight: 500; } .phases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 30px; } .phase { border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); } .phase-header { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 15px; font-weight: 700; font-size: 14px; } .phase-content { padding: 15px; } .phase-content ul { list-style: none; } .phase-content li { font-size: 13px; margin-bottom: 8px; padding-left: 22px; position: relative; color: #374151; line-height: 1.5; } .phase-content li:before { content: "o"; position: absolute; left: 0; color: #d1d5db; font-weight: 700; } .phase-content li.checked:before { content: "✓"; color: #10b981; } .item-date { font-size: 11px; color: #9ca3af; margin-left: 8px; } .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center; color: #9ca3af; font-size: 11px; }</style>';
-
-            let body = '<div class="container">';
-            body += '<div class="header-top"><h1>PAINEL DE IMPLANTACAO ERP</h1><p>Cronograma e Acompanhamento de Projeto</p></div>';
-            // ALTERAÇÃO: CNPJ incluído no PDF
+            const clientName     = document.getElementById('displayClientName').textContent;
+            const responsible    = document.getElementById('displayResponsible').textContent;
+            const startDate      = document.getElementById('displayStartDate').textContent;
+            const percentage     = document.getElementById('progressPercentage').textContent;
             const clientCNPJprint = document.getElementById('displayClientCNPJ').textContent;
+            let styles = '<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Segoe UI,Arial,sans-serif;background:white;color:#333;line-height:1.6;padding:40px 30px;}.container{max-width:950px;margin:0 auto;}.header-top{text-align:center;margin-bottom:40px;border-bottom:3px solid #2563eb;padding-bottom:25px;}.header-top h1{color:#2563eb;font-size:32px;margin-bottom:5px;font-weight:700;}.header-top p{color:#6b7280;font-size:14px;}.info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:35px;}.info-card{background:linear-gradient(135deg,#f3f4f6 0%,#ffffff 100%);padding:20px;border-left:5px solid #2563eb;border-radius:8px;}.info-card label{font-weight:700;color:#6b7280;font-size:11px;text-transform:uppercase;display:block;margin-bottom:8px;}.info-card p{color:#1f2937;font-size:15px;font-weight:600;}.progress-section{background:#f9fafb;padding:25px;border-radius:8px;margin-bottom:35px;border:1px solid #e5e7eb;}.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}.progress-header h3{font-size:16px;color:#1f2937;font-weight:600;margin:0;}.progress-percentage{background:linear-gradient(135deg,#2563eb,#1e40af);color:white;padding:10px 20px;border-radius:25px;font-weight:700;font-size:18px;}.progress-bar{width:100%;height:12px;background:#e5e7eb;border-radius:10px;overflow:hidden;}.progress-fill{height:100%;background:linear-gradient(90deg,#2563eb,#10b981);border-radius:10px;width:' + percentage + '%;}.section-title{font-size:18px;font-weight:700;color:#1f2937;border-bottom:2px solid #2563eb;padding-bottom:12px;margin:35px 0 20px 0;}.timeline-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}.timeline-item{border-left:5px solid #8b5cf6;padding:18px;background:linear-gradient(135deg,#f9fafb 0%,#ffffff 100%);border-radius:8px;}.timeline-item h3{font-size:14px;font-weight:700;margin-bottom:8px;color:#1f2937;}.timeline-dates{font-size:13px;color:#6b7280;font-weight:500;}.phases-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:30px;}.phase{border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;}.phase-header{background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:white;padding:15px;font-weight:700;font-size:14px;}.phase-content{padding:15px;}.phase-content ul{list-style:none;}.phase-content li{font-size:13px;margin-bottom:8px;padding-left:22px;position:relative;color:#374151;}.phase-content li:before{content:"o";position:absolute;left:0;color:#d1d5db;font-weight:700;}.phase-content li.checked:before{content:"✓";color:#10b981;}.footer{margin-top:40px;padding-top:20px;border-top:1px solid #e5e7eb;text-align:center;color:#9ca3af;font-size:11px;}</style>';
+            let body = '<div class="container"><div class="header-top"><h1>PAINEL DE IMPLANTACAO ERP</h1><p>Cronograma e Acompanhamento de Projeto</p></div>';
             body += '<div class="info-grid"><div class="info-card"><label>Cliente</label><p>' + clientName + '</p></div><div class="info-card"><label>CNPJ/CPF</label><p>' + clientCNPJprint + '</p></div><div class="info-card"><label>Responsavel</label><p>' + responsible + '</p></div><div class="info-card"><label>Data de Inicio</label><p>' + startDate + '</p></div></div>';
             body += '<div class="progress-section"><div class="progress-header"><h3>Progresso Geral do Projeto</h3><span class="progress-percentage">' + percentage + '%</span></div><div class="progress-bar"><div class="progress-fill"></div></div></div>';
-            body += '<h2 class="section-title">Cronograma de Implantacao</h2><div class="timeline-grid">';
-
-            weeks.forEach((week) => {
+            body += '<h2 class="section-title">Cronograma</h2><div class="timeline-grid">';
+            weeks.forEach(week => {
                 const dates = currentProjectData.dates[week.id] || {};
                 const dateStr = dates.start ? formatDate(dates.start) + ' ate ' + formatDate(dates.end) : 'Sem datas';
                 body += '<div class="timeline-item"><h3>' + week.title + '</h3><div class="timeline-dates">' + dateStr + '</div></div>';
             });
-
             body += '</div><h2 class="section-title">Status dos Checklists</h2><div class="phases-grid">';
-
             phases.forEach(phase => {
                 const phaseElement = document.getElementById(phase.id);
-                const checkedItems = phaseElement ? phaseElement.querySelectorAll('input[type="checkbox"]:checked').length : 0;
-                const totalItems = phaseElement ? phaseElement.querySelectorAll('input[type="checkbox"]').length : 0;
-                const phasePercentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
-
-                body += '<div class="phase"><div class="phase-header">Fase ' + phase.phaseNumber + ': ' + phase.name + ' - ' + phasePercentage + '%</div><div class="phase-content"><ul>';
-
+                const checked = phaseElement ? phaseElement.querySelectorAll('input[type="checkbox"]:checked').length : 0;
+                const total   = phaseElement ? phaseElement.querySelectorAll('input[type="checkbox"]').length : 0;
+                const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
+                body += '<div class="phase"><div class="phase-header">Fase ' + phase.phaseNumber + ': ' + phase.name + ' - ' + pct + '%</div><div class="phase-content"><ul>';
                 phase.items.forEach((item, index) => {
-                    const phaseEl = document.getElementById(phase.id);
-                    let isChecked = false;
-                    let itemDate = '';
-                    if (phaseEl) {
-                        const allCheckboxes = phaseEl.querySelectorAll('input[type="checkbox"]');
-                        if (allCheckboxes && allCheckboxes[index]) {
-                            isChecked = allCheckboxes[index].checked;
-                        }
-                        const dateInput = phaseEl.querySelector(`#date-${phase.id}-item-${index}`);
-                        if (dateInput && dateInput.value) {
-                            itemDate = ' - ' + formatDate(dateInput.value);
-                        }
-                    }
-                    body += '<li class="' + (isChecked ? 'checked' : '') + '">' + item + (isChecked && itemDate ? '<span class="item-date">' + itemDate + '</span>' : '') + '</li>';
+                    const allCheckboxes = phaseElement ? phaseElement.querySelectorAll('input[type="checkbox"]') : [];
+                    const isChecked = allCheckboxes[index] ? allCheckboxes[index].checked : false;
+                    body += '<li class="' + (isChecked ? 'checked' : '') + '">' + item + '</li>';
                 });
-
                 body += '</ul></div></div>';
             });
-
-            body += '</div><div class="footer"><p>Documento gerado em ' + new Date().toLocaleDateString('pt-BR') + ' as ' + new Date().toLocaleTimeString('pt-BR') + '</p><p>Sistema de Implantacao ERP</p></div></div>';
-
+            body += '</div><div class="footer"><p>Documento gerado em ' + new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR') + '</p></div></div>';
             const printWindow = window.open('', 'RelatorioERP');
-            if (!printWindow) {
-                alert('Permitir abas pop-up no navegador para imprimir o PDF!');
-                return;
-            }
-            
+            if (!printWindow) { alert('Permitir abas pop-up no navegador para imprimir!'); return; }
             printWindow.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">' + styles + '</head><body>' + body + '</body></html>');
             printWindow.document.close();
-            
-            setTimeout(() => {
-                printWindow.focus();
-                printWindow.print();
-            }, 300);
+            setTimeout(() => { printWindow.focus(); printWindow.print(); }, 300);
         }
 
-        // ALTERAÇÃO DE ARMAZENAMENTO: localStorage → Supabase
         async function loadProjectsList() {
             const projectsList = document.getElementById('projectsList');
-            projectsList.innerHTML = '<p style="color: var(--text2); text-align: center; grid-column: 1/-1;">Carregando projetos...</p>';
-
-            // ANTES: JSON.parse(localStorage.getItem('allProjects') || '{}')
-            // AGORA:  busca do Supabase
-            const allProjects = await _dbGetAllProjects();
-            projectsList.innerHTML = '';
-
-            if (Object.keys(allProjects).length === 0) {
-                projectsList.innerHTML = '<p style="color: var(--text2); text-align: center; grid-column: 1/-1;">Nenhum projeto salvo ainda</p>';
-                return;
-            }
-
-            Object.entries(allProjects).forEach(([projectId, project]) => {
-                const card = document.createElement('div');
-                card.className = 'project-card';
-                
-                const progressData = calculateProjectProgress(project);
-
-                card.innerHTML = `<h3>${project.clientName}</h3><p><strong>Responsável:</strong> ${project.responsible}</p><p><strong>Início:</strong> ${formatDate(project.startDate)}</p><p><strong>Progresso:</strong> ${progressData}%</p><p style="font-size: 0.85em; color: var(--text2);">Salvo em: ${project.savedAt}</p><div class="project-card-buttons"><button class="btn btn-secondary" onclick="loadProject('${projectId}')">Abrir</button><button class="btn btn-danger" onclick="deleteProject('${projectId}')">Deletar</button></div>`;
-                projectsList.appendChild(card);
-            });
+            projectsList.innerHTML = '<p style="color:var(--text2);text-align:center;grid-column:1/-1;padding:20px;">Carregando projetos...</p>';
+            _todosOsProjetos = await _dbGetAllProjects();
+            _renderizarProjetos(_todosOsProjetos, null);
         }
 
         function calculateProjectProgress(project) {
             if (!project.phases) return 0;
-
-            let totalItems = 0;
-            let checkedItems = 0;
-
-            project.phases.forEach(phase => {
-                if (phase.items && phase.items.length > 0) {
-                    totalItems += phase.items.length;
-                }
-            });
-
+            let totalItems = 0, checkedItems = 0;
+            project.phases.forEach(phase => { if (phase.items) totalItems += phase.items.length; });
             if (project.checklistStates) {
                 Object.values(project.checklistStates).forEach(phaseItems => {
-                    Object.values(phaseItems).forEach(checked => {
-                        if (checked) checkedItems++;
-                    });
+                    Object.values(phaseItems).forEach(checked => { if (checked) checkedItems++; });
                 });
             }
-
             return totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
         }
 
-        // ALTERAÇÃO DE ARMAZENAMENTO: localStorage → Supabase
         async function loadProject(projectId) {
-            // ANTES: JSON.parse(localStorage.getItem('allProjects') || '{}')
-            // AGORA:  busca do Supabase
-            const allProjects = await _dbGetAllProjects();
-            const projectData = allProjects[projectId];
-
+            const projectData = _todosOsProjetos[projectId];
             if (!projectData) {
-                alert('Projeto não encontrado!');
-                return;
+                // Tentar buscar direto se não estiver no cache
+                const all = await _dbGetAllProjects();
+                if (!all[projectId]) { alert('Projeto não encontrado!'); return; }
+                _todosOsProjetos = all;
             }
-
-            currentProjectId = projectId;
-            currentProjectData = JSON.parse(JSON.stringify(projectData));
-            phases = JSON.parse(JSON.stringify(projectData.phases || defaultPhases));
-            weeks = JSON.parse(JSON.stringify(projectData.weeks || defaultWeeks));
-
-            document.getElementById('projectsSection').style.display = 'none';
-            document.getElementById('projectSection').style.display = 'block';
-            document.getElementById('progressSection').style.display = 'block';
-            document.getElementById('chartSection').style.display = 'block';
-            document.getElementById('timelineSection').style.display = 'block';
+            const p = _todosOsProjetos[projectId];
+            currentProjectId   = projectId;
+            currentProjectData = JSON.parse(JSON.stringify(p));
+            phases = JSON.parse(JSON.stringify(p.phases || defaultPhases));
+            weeks  = JSON.parse(JSON.stringify(p.weeks  || defaultWeeks));
+            document.getElementById('projectsSection').style.display  = 'none';
+            document.getElementById('projectSection').style.display   = 'block';
+            document.getElementById('progressSection').style.display  = 'block';
+            document.getElementById('chartSection').style.display     = 'block';
+            document.getElementById('timelineSection').style.display  = 'block';
             document.getElementById('checklistsSection').style.display = 'block';
-
-            displayProjectInfo(projectData.clientName, projectData.startDate, projectData.responsible, projectData.clientCNPJ);
-            renderTimeline(projectData.dates || {});
+            displayProjectInfo(p.clientName, p.startDate, p.responsible, p.clientCNPJ);
+            renderTimeline(p.dates || {});
             renderChecklists();
             renderDeliveryChart();
         }
 
-        // ALTERAÇÃO DE ARMAZENAMENTO: localStorage → Supabase
         async function deleteProject(projectId) {
             if (confirm('Deseja deletar este projeto? Esta ação não pode ser desfeita!')) {
-                // ANTES: JSON.parse(localStorage.getItem('allProjects') || '{}') + setItem
-                // AGORA:  remove do Supabase
                 await _dbDeleteProject(projectId);
-                loadProjectsList();
+                delete _todosOsProjetos[projectId];
+                _renderizarProjetos(_todosOsProjetos, null);
             }
         }
 
         function backToProjects() {
-            document.getElementById('projectsSection').style.display = 'block';
-            document.getElementById('projectSection').style.display = 'none';
-            document.getElementById('progressSection').style.display = 'none';
-            document.getElementById('chartSection').style.display = 'none';
-            document.getElementById('timelineSection').style.display = 'none';
+            document.getElementById('projectsSection').style.display  = 'block';
+            document.getElementById('projectSection').style.display   = 'none';
+            document.getElementById('progressSection').style.display  = 'none';
+            document.getElementById('chartSection').style.display     = 'none';
+            document.getElementById('timelineSection').style.display  = 'none';
             document.getElementById('checklistsSection').style.display = 'none';
             loadProjectsList();
         }
 
         function resetProject() {
             document.getElementById('clientName').value = '';
-            document.getElementById('startDate').value = '';
+            document.getElementById('startDate').value  = '';
             document.getElementById('responsible').value = '';
-            document.getElementById('projectSection').style.display = 'none';
-            document.getElementById('progressSection').style.display = 'none';
-            document.getElementById('chartSection').style.display = 'none';
-            document.getElementById('timelineSection').style.display = 'none';
+            document.getElementById('projectSection').style.display   = 'none';
+            document.getElementById('progressSection').style.display  = 'none';
+            document.getElementById('chartSection').style.display     = 'none';
+            document.getElementById('timelineSection').style.display  = 'none';
             document.getElementById('checklistsSection').style.display = 'none';
-            currentProjectId = null;
-            currentProjectData = null;
+            currentProjectId = null; currentProjectData = null;
             phases = JSON.parse(JSON.stringify(defaultPhases));
-            weeks = JSON.parse(JSON.stringify(defaultWeeks));
+            weeks  = JSON.parse(JSON.stringify(defaultWeeks));
             if (deliveryChart) deliveryChart.destroy();
         }
 
         function formatDate(dateStr) {
+            if (!dateStr) return '—';
             const date = new Date(dateStr + 'T00:00:00');
-            return date.toLocaleDateString('pt-BR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
+            return date.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
         }
 
-        // ===== NOVA ETAPA NA CRONOLOGIA =====
         function openNewTimelineEntry() {
-            document.getElementById('newTimeline_title').value = '';
-            document.getElementById('newTimeline_start').value = '';
-            document.getElementById('newTimeline_end').value = '';
-            document.getElementById('newTimeline_description').value = '';
+            ['newTimeline_title','newTimeline_start','newTimeline_end','newTimeline_description'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('newTimelineModal').style.display = 'block';
         }
-
         function saveNewTimelineEntry() {
             const title = document.getElementById('newTimeline_title').value.trim();
             const start = document.getElementById('newTimeline_start').value;
-            const end = document.getElementById('newTimeline_end').value;
+            const end   = document.getElementById('newTimeline_end').value;
             const description = document.getElementById('newTimeline_description').value.trim();
-
-            if (!title) { alert('O título da etapa é obrigatório!'); return; }
-            if (start && end && new Date(start) > new Date(end)) {
-                alert('Data de início não pode ser maior que a data fim!');
-                return;
-            }
-
+            if (!title) { alert('O título é obrigatório!'); return; }
+            if (start && end && new Date(start) > new Date(end)) { alert('Data início não pode ser maior que fim!'); return; }
             const newId = 'custom-' + Date.now();
-            const newWeek = { id: newId, title, phaseNumber: '', custom: true, description };
-            weeks.push(newWeek);
-
+            weeks.push({ id: newId, title, phaseNumber: '', custom: true, description });
             if (!currentProjectData.dates) currentProjectData.dates = {};
-            if (start || end) {
-                currentProjectData.dates[newId] = { start: start || '', end: end || '' };
-            }
+            if (start || end) currentProjectData.dates[newId] = { start: start || '', end: end || '' };
             currentProjectData.weeks = weeks;
-
             renderTimeline(currentProjectData.dates);
             document.getElementById('newTimelineModal').style.display = 'none';
         }
-
-        // ===== FUNÇÕES EXTRAS DA CRONOLOGIA (editar/excluir etapa custom) =====
         function removeTimelineEntry(weekId) {
             if (!confirm('Deseja remover esta etapa?')) return;
             weeks = weeks.filter(w => w.id !== weekId);
@@ -1431,68 +1133,39 @@
             currentProjectData.weeks = weeks;
             renderTimeline(currentProjectData.dates || {});
         }
-
-        // ===== NOVA FASE NO CHECKLIST =====
         function addNewPhase() {
-            document.getElementById('newPhase_name').value = '';
+            document.getElementById('newPhase_name').value  = '';
             document.getElementById('newPhase_items').value = '';
             document.getElementById('newPhaseModal').style.display = 'block';
         }
-
         function saveNewPhase() {
             const name = document.getElementById('newPhase_name').value.trim();
             if (!name) { alert('Nome da fase é obrigatório!'); return; }
-
-            const itemsRaw = document.getElementById('newPhase_items').value;
-            const items = itemsRaw.split('').map(i => i.trim()).filter(i => i.length > 0);
+            const items = document.getElementById('newPhase_items').value.split('\n').map(i => i.trim()).filter(i => i.length > 0);
             if (!items.length) { alert('Adicione pelo menos um item!'); return; }
-
-            const newPhase = {
-                id: 'phase-' + Date.now(),
-                name: name,
-                phaseNumber: String(phases.length + 1),
-                items: items
-            };
-            phases.push(newPhase);
+            phases.push({ id: 'phase-' + Date.now(), name, phaseNumber: String(phases.length + 1), items });
             currentProjectData.phases = phases;
-            renderChecklists();
-            renderDeliveryChart();
+            renderChecklists(); renderDeliveryChart();
             document.getElementById('newPhaseModal').style.display = 'none';
         }
-
-        // ===== EXCLUIR FASE INTEIRA =====
         function removePhase(phaseId) {
-            if (!confirm('Deseja remover esta fase inteira e todos os seus itens?')) return;
+            if (!confirm('Deseja remover esta fase inteira?')) return;
             flushChecklistEditorState();
             phases = phases.filter(p => p.id !== phaseId);
             if (currentProjectData.checklistStates) delete currentProjectData.checklistStates[phaseId];
-            if (currentProjectData.checklistDates) delete currentProjectData.checklistDates[phaseId];
-            if (currentProjectData.checklistNotes) delete currentProjectData.checklistNotes[phaseId];
+            if (currentProjectData.checklistDates)  delete currentProjectData.checklistDates[phaseId];
+            if (currentProjectData.checklistNotes)  delete currentProjectData.checklistNotes[phaseId];
             openChecklistEditor();
         }
 
-        // ===== SALVAR OBSERVAÇÃO DE ITEM =====
-        function saveChecklistNote(phaseId, itemIndex, note) {
-            if (!currentProjectData.checklistNotes) currentProjectData.checklistNotes = {};
-            if (!currentProjectData.checklistNotes[phaseId]) currentProjectData.checklistNotes[phaseId] = {};
-            currentProjectData.checklistNotes[phaseId][itemIndex] = note;
-        }
-
         window.onclick = function(event) {
-            const timelineModal = document.getElementById('timelineModal');
-            const checklistModal = document.getElementById('checklistModal');
-            const newTimelineModal = document.getElementById('newTimelineModal');
-            const newPhaseModal = document.getElementById('newPhaseModal');
-            if (event.target === timelineModal) timelineModal.style.display = 'none';
-            if (event.target === checklistModal) checklistModal.style.display = 'none';
-            if (event.target === newTimelineModal) newTimelineModal.style.display = 'none';
-            if (event.target === newPhaseModal) newPhaseModal.style.display = 'none';
+            ['timelineModal','checklistModal','newTimelineModal','newPhaseModal'].forEach(id => {
+                const modal = document.getElementById(id);
+                if (event.target === modal) modal.style.display = 'none';
+            });
         };
 
         document.addEventListener('DOMContentLoaded', loadProjectsList);
-
-
     </script>
 </body>
 </html>
-
