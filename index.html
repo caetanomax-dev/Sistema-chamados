@@ -419,10 +419,12 @@
     .cliente-dropdown {
       position: absolute; top: calc(100% + 6px); left: 0; right: 0;
       background: var(--card); border: 2px solid var(--primary); border-radius: 14px;
-      max-height: 360px; overflow-y: auto; z-index: 3000; display: none;
-      box-shadow: 0 16px 40px rgba(37,99,235,0.18); padding: 8px;
+      max-height: 500px; overflow-y: auto; z-index: 3000; display: none;
+      box-shadow: 0 16px 40px rgba(37,99,235,0.22); padding: 12px;
     }
     .cliente-dropdown.show { display: block; animation: fadeIn 0.15s ease-out; }
+    .cliente-dropdown .cliente-card { animation: none; }
+    .cliente-dropdown .cards-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 
     /* Item de cliente encontrado */
     .cliente-dropdown-item {
@@ -1153,34 +1155,44 @@ const app = {
     dropdown.innerHTML = '';
 
     if(clientes.length > 0){
-      clientes.forEach(c => {
-        const metaParts = [];
-        if(c.cnpj) metaParts.push(`🪪 ${c.cnpj}`);
-        if(c.razao_social) metaParts.push(`🏢 ${c.razao_social}`);
-        if(c.endereco) metaParts.push(`📍 ${c.endereco}`);
+      // Grid igual ao da aba Clientes
+      const grid = document.createElement('div');
+      grid.className = 'cards-grid';
+      grid.style.cssText = 'margin-bottom:10px;';
 
-        const item = document.createElement('div');
-        item.className = 'cliente-dropdown-item';
-        item.innerHTML = `
-          <div class="cliente-dropdown-icon">👤</div>
-          <div class="cliente-dropdown-info">
-            <div class="cliente-dropdown-nome">${this._highlight(c.nome, termoBusca)}</div>
-            ${metaParts.length ? `<div class="cliente-dropdown-meta">${metaParts.map(p=>`<span>${p}</span>`).join('')}</div>` : ''}
+      clientes.forEach(c => {
+        const nomeHL = this._highlight(c.nome, termoBusca);
+        const cnpjHL = c.cnpj ? this._highlight(c.cnpj, termoBusca) : '';
+        const razaoHL = c.razao_social ? this._highlight(c.razao_social, termoBusca) : '';
+
+        const card = document.createElement('div');
+        card.className = 'cliente-card';
+        card.style.cssText = 'cursor:default;';
+        card.innerHTML = `
+          <h3>👤 ${nomeHL}</h3>
+          ${razaoHL ? `<p><strong>Razão:</strong> ${razaoHL}</p>` : ''}
+          ${cnpjHL  ? `<p><strong>CNPJ/CPF:</strong> ${cnpjHL}</p>` : ''}
+          ${c.endereco    ? `<p><strong>Endereço:</strong> ${c.endereco}</p>` : ''}
+          ${c.observacoes ? `<p style="font-style:italic;margin-top:6px;">${c.observacoes}</p>` : ''}
+          <div class="cliente-actions" style="margin-top:14px;">
+            <button class="btn btn-success btn-sm"
+              style="width:100%;text-align:center;"
+              onmousedown="event.preventDefault(); app.selecionarClienteRich(${JSON.stringify(JSON.stringify(c))})">
+              ✓ Selecionar este cliente
+            </button>
           </div>
-          <button class="cliente-dropdown-btn-sel" onmousedown="event.preventDefault(); app.selecionarClienteRich(${JSON.stringify(JSON.stringify(c))})">
-            ✓ Selecionar
-          </button>
         `;
-        dropdown.appendChild(item);
+        grid.appendChild(card);
       });
 
-      // Separador + opção criar novo
+      dropdown.appendChild(grid);
+
       const sep = document.createElement('hr');
       sep.className = 'cliente-dropdown-sep';
       dropdown.appendChild(sep);
     }
 
-    // Opção cadastrar novo
+    // Opção cadastrar novo — mesmo estilo do botão "Novo Cliente" da aba
     const novo = document.createElement('div');
     novo.className = 'cliente-dropdown-novo';
     novo.innerHTML = `
