@@ -1158,33 +1158,55 @@ const app = {
     dropdown.innerHTML = '';
 
     if(clientes.length > 0){
-      // Grid igual ao da aba Clientes
       const grid = document.createElement('div');
       grid.className = 'cards-grid';
-      grid.style.cssText = 'margin-bottom:10px;';
+      grid.style.marginBottom = '10px';
 
       clientes.forEach(c => {
-        const nomeHL = this._highlight(c.nome, termoBusca);
-        const cnpjHL = c.cnpj ? this._highlight(c.cnpj, termoBusca) : '';
-        const razaoHL = c.razao_social ? this._highlight(c.razao_social, termoBusca) : '';
-
         const card = document.createElement('div');
         card.className = 'cliente-card';
-        card.style.cssText = 'cursor:default;';
-        card.innerHTML = `
-          <h3>👤 ${nomeHL}</h3>
-          ${razaoHL ? `<p><strong>Razão:</strong> ${razaoHL}</p>` : ''}
-          ${cnpjHL  ? `<p><strong>CNPJ/CPF:</strong> ${cnpjHL}</p>` : ''}
-          ${c.endereco    ? `<p><strong>Endereço:</strong> ${c.endereco}</p>` : ''}
-          ${c.observacoes ? `<p style="font-style:italic;margin-top:6px;">${c.observacoes}</p>` : ''}
-          <div class="cliente-actions" style="margin-top:14px;">
-            <button class="btn btn-success btn-sm"
-              style="width:100%;text-align:center;"
-              onclick="app.selecionarClienteRich(${JSON.stringify(JSON.stringify(c))})">
-              ✓ Selecionar este cliente
-            </button>
-          </div>
-        `;
+
+        // Nome com highlight
+        const h3 = document.createElement('h3');
+        h3.innerHTML = '👤 ' + this._highlight(c.nome, termoBusca);
+        card.appendChild(h3);
+
+        if(c.razao_social){
+          const p = document.createElement('p');
+          p.innerHTML = '<strong>Razão:</strong> ' + this._highlight(c.razao_social, termoBusca);
+          card.appendChild(p);
+        }
+        if(c.cnpj){
+          const p = document.createElement('p');
+          p.innerHTML = '<strong>CNPJ/CPF:</strong> ' + this._highlight(c.cnpj, termoBusca);
+          card.appendChild(p);
+        }
+        if(c.endereco){
+          const p = document.createElement('p');
+          p.innerHTML = '<strong>Endereço:</strong> ' + c.endereco;
+          card.appendChild(p);
+        }
+        if(c.observacoes){
+          const p = document.createElement('p');
+          p.style.cssText = 'font-style:italic;margin-top:6px;';
+          p.textContent = c.observacoes;
+          card.appendChild(p);
+        }
+
+        // Botão selecionar
+        const actions = document.createElement('div');
+        actions.className = 'cliente-actions';
+        actions.style.marginTop = '14px';
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-success btn-sm';
+        btn.style.cssText = 'width:100%;text-align:center;';
+        btn.textContent = '✓ Selecionar este cliente';
+        btn.addEventListener('click', () => {
+          this.selecionarClienteRich(c);
+        });
+        actions.appendChild(btn);
+        card.appendChild(actions);
+
         grid.appendChild(card);
       });
 
@@ -1195,18 +1217,11 @@ const app = {
       dropdown.appendChild(sep);
     }
 
-    // Opção cadastrar novo — mesmo estilo do botão "Novo Cliente" da aba
+    // Opção cadastrar novo
     const novo = document.createElement('div');
     novo.className = 'cliente-dropdown-novo';
-    novo.innerHTML = `
-      <div class="cliente-dropdown-novo-icon">➕</div>
-      <div class="cliente-dropdown-novo-text">
-        <strong>Cadastrar "${termoBusca}" como novo cliente</strong>
-        <span>Abre o formulário de cadastro com este nome preenchido</span>
-      </div>
-    `;
-    novo.addEventListener('mousedown', (e)=>{
-      e.preventDefault();
+    novo.innerHTML = '<div class="cliente-dropdown-novo-icon">➕</div><div class="cliente-dropdown-novo-text"><strong>Cadastrar \"' + termoBusca + '\" como novo cliente</strong><span>Abre o formulário de cadastro com este nome preenchido</span></div>';
+    novo.addEventListener('click', () => {
       this._abrirCadastroNovoClienteDoChamado(termoBusca);
     });
     dropdown.appendChild(novo);
@@ -1214,25 +1229,25 @@ const app = {
     dropdown.classList.add('show');
   },
 
-  _highlight(texto, termo){
+    _highlight(texto, termo){
     if(!termo) return texto;
     const re = new RegExp(`(${termo.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
     return texto.replace(re, '<mark style="background:rgba(37,99,235,0.15);color:var(--primary);border-radius:3px;padding:0 2px;">$1</mark>');
   },
 
-  selecionarClienteRich(clienteJson){
-    const c = JSON.parse(clienteJson);
-    // Coloca o nome direto no input visível
+  selecionarClienteRich(c){
+    // c é o objeto cliente direto (não mais JSON string)
+    const nome = c.nome || c;
     const input = document.getElementById('mCliente');
-    input.value = c.nome;
+    input.value = nome;
     input.style.display = '';
-    input.style.borderColor = 'var(--success)';
-    input.style.background = 'rgba(16,185,129,0.07)';
-    // Também salva no campo oculto por segurança
-    document.getElementById('mClienteValor').value = c.nome;
-    // Fecha dropdown
-    document.getElementById('clienteDropdown').classList.remove('show');
-    document.getElementById('clienteDropdown').innerHTML = '';
+    input.style.borderColor = '#10b981';
+    input.style.boxShadow = '0 0 0 3px rgba(16,185,129,0.15)';
+    document.getElementById('mClienteValor').value = nome;
+    // Fecha e limpa dropdown
+    const dd = document.getElementById('clienteDropdown');
+    dd.classList.remove('show');
+    dd.innerHTML = '';
     document.getElementById('clienteChip').style.display = 'none';
   },
 
@@ -1276,7 +1291,7 @@ const app = {
       await this.registrarAuditoria('Criou cliente (via chamado)',`Nome: ${nome}`);
       // Fecha modal cliente e seleciona automaticamente no chamado
       document.getElementById('modalNovoCliente').classList.remove('active');
-      this.selecionarClienteRich(JSON.stringify(data));
+      this.selecionarClienteRich(data);
     }catch(e){ this.mostrarErro('Erro: '+e.message); }
   },
 
