@@ -181,6 +181,20 @@
         .status-completed { background: rgba(16,185,129,0.15); color: var(--success); }
         .status-in-progress { background: rgba(245,158,11,0.15); color: var(--warning); }
         .status-pending { background: rgba(239,68,68,0.15); color: var(--danger); }
+        .project-card.finalizado { border-left-color: #10b981; opacity: 0.85; }
+        .project-card.finalizado h3 { color: var(--text2); }
+        .badge-finalizado {
+            display: inline-block; padding: 4px 10px; border-radius: 20px;
+            font-size: 0.78em; font-weight: 700; margin-bottom: 8px;
+            background: rgba(16,185,129,0.15); color: #10b981;
+            border: 1px solid rgba(16,185,129,0.3);
+        }
+        .badge-em-andamento {
+            display: inline-block; padding: 4px 10px; border-radius: 20px;
+            font-size: 0.78em; font-weight: 700; margin-bottom: 8px;
+            background: rgba(245,158,11,0.12); color: #d97706;
+            border: 1px solid rgba(245,158,11,0.25);
+        }
         .chart-container { position: relative; height: 400px; margin: 30px 0; padding: 20px; background: var(--card); border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.3s ease; }
         .modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0;
@@ -337,9 +351,17 @@
                 <div class="info-card"><label>Data de Início</label><p id="displayStartDate">-</p></div>
                 <div class="info-card"><label>Responsável</label><p id="displayResponsible">-</p></div>
             </div>
+            <div id="projectStatusBanner" style="display:none; margin-bottom:20px; padding:16px 20px; border-radius:12px; background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.04)); border:2px solid rgba(16,185,129,0.3); display:none; align-items:center; gap:12px;">
+                <span style="font-size:1.8em;">✅</span>
+                <div>
+                    <p style="font-weight:700; color:#10b981; font-size:1.05em; margin:0;">Projeto Finalizado</p>
+                    <p id="projectFinishedDate" style="font-size:0.85em; color:var(--text2); margin:0;"></p>
+                </div>
+            </div>
             <div class="button-group">
                 <button class="btn btn-success" onclick="printPDF()">🖨️ Imprimir PDF</button>
                 <button class="btn btn-success" onclick="saveProject()">💾 Salvar Projeto</button>
+                <button class="btn" id="btnFinalizarProjeto" onclick="toggleFinalizarProjeto()" style="background:linear-gradient(135deg,#10b981,#059669);color:white;">✅ Finalizar Projeto</button>
                 <button class="btn btn-danger" onclick="backToProjects()">← Voltar Projetos</button>
             </div>
         </section>
@@ -462,12 +484,16 @@
             const result = {};
             (data || []).forEach(row => {
                 const datesRaw = row.dates || {};
-                const clientCNPJ = datesRaw._clientCNPJ || '';
-                const datesClean = Object.assign({}, datesRaw);
+                const clientCNPJ   = datesRaw._clientCNPJ   || '';
+                const finalizado   = datesRaw._finalizado    || false;
+                const finalizadoEm = datesRaw._finalizadoEm  || '';
+                const datesClean   = Object.assign({}, datesRaw);
                 delete datesClean._clientCNPJ;
+                delete datesClean._finalizado;
+                delete datesClean._finalizadoEm;
                 result[row.project_id] = {
                     id: row.project_id, clientName: row.client_name,
-                    clientCNPJ: clientCNPJ,
+                    clientCNPJ: clientCNPJ, finalizado, finalizadoEm,
                     startDate: row.start_date, responsible: row.responsible,
                     dates: datesClean, phases: row.phases || [],
                     weeks: row.weeks || {}, checklistStates: row.checklist_states || {},
@@ -482,7 +508,9 @@
             // Armazena clientCNPJ dentro do campo dates como metadado extra
             // (evita necessidade de coluna client_cnpj na tabela)
             const datesComMeta = Object.assign({}, projectData.dates || {}, {
-                _clientCNPJ: projectData.clientCNPJ || ''
+                _clientCNPJ:   projectData.clientCNPJ   || '',
+                _finalizado:   projectData.finalizado    || false,
+                _finalizadoEm: projectData.finalizadoEm || ''
             });
             const row = {
                 project_id: projectData.id, client_name: projectData.clientName,
@@ -583,12 +611,15 @@
                 const cnpjHL = termoBusca ? _highlight(project.clientCNPJ, termoBusca) : (project.clientCNPJ || '');
                 const respHL = termoBusca ? _highlight(project.responsible, termoBusca) : (project.responsible || '—');
 
+                if (project.finalizado) card.classList.add('finalizado');
                 card.innerHTML =
-                    '<h3>👤 ' + nomeHL + '</h3>'
+                    (project.finalizado ? '<span class="badge-finalizado">✅ Finalizado</span>' : '<span class="badge-em-andamento">🔄 Em andamento</span>')
+                    + '<h3>👤 ' + nomeHL + '</h3>'
                     + (cnpjHL ? '<p><strong>CNPJ/CPF:</strong> ' + cnpjHL + '</p>' : '')
                     + '<p><strong>Responsável:</strong> ' + respHL + '</p>'
                     + '<p><strong>Início:</strong> ' + formatDate(project.startDate) + '</p>'
                     + '<p><strong>Progresso:</strong> ' + progressData + '%</p>'
+                    + (project.finalizado && project.finalizadoEm ? '<p style="font-size:0.82em;color:#10b981;font-weight:600;">✅ Finalizado em: ' + project.finalizadoEm + '</p>' : '')
                     + '<p style="font-size: 0.85em; color: var(--text2);">Salvo em: ' + (project.savedAt || '—') + '</p>'
                     + '<div class="project-card-buttons">'
                     + '<button class="btn btn-secondary" onclick="loadProject(\'' + projectId + '\')">📂 Abrir</button>'
@@ -992,15 +1023,52 @@
             currentProjectData.phases = phases; renderChecklists(); renderDeliveryChart(); closeChecklistEditor();
         }
 
-        async function saveProject() {
+        function toggleFinalizarProjeto() {
+            const jaFinalizado = currentProjectData.finalizado;
+            if (jaFinalizado) {
+                // Reabrir projeto
+                if (!confirm('Deseja reabrir este projeto?')) return;
+                currentProjectData.finalizado = false;
+                currentProjectData.finalizadoEm = null;
+            } else {
+                // Finalizar projeto
+                if (!confirm('Deseja marcar este projeto como finalizado? Ele será salvo automaticamente.')) return;
+                currentProjectData.finalizado = true;
+                currentProjectData.finalizadoEm = new Date().toLocaleString('pt-BR');
+            }
+            _atualizarBannerFinalizado();
+            saveProject(true); // salva silenciosamente
+        }
+
+        function _atualizarBannerFinalizado() {
+            const banner = document.getElementById('projectStatusBanner');
+            const btn    = document.getElementById('btnFinalizarProjeto');
+            const dateEl = document.getElementById('projectFinishedDate');
+            if (currentProjectData && currentProjectData.finalizado) {
+                banner.style.display = 'flex';
+                dateEl.textContent   = 'Finalizado em: ' + (currentProjectData.finalizadoEm || '');
+                btn.textContent      = '🔄 Reabrir Projeto';
+                btn.style.background = 'linear-gradient(135deg,#6b7280,#4b5563)';
+            } else {
+                banner.style.display = 'none';
+                if (btn) {
+                    btn.textContent = '✅ Finalizar Projeto';
+                    btn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+                }
+            }
+        }
+
+        async function saveProject(silencioso = false) {
             if (!currentProjectId) { alert('Nenhum projeto em edição!'); return; }
             currentProjectData.phases  = phases;
             currentProjectData.weeks   = weeks;
             currentProjectData.savedAt = new Date().toLocaleString('pt-BR');
             const ok = await _dbSaveProject(currentProjectData);
             if (!ok) { alert('Erro ao salvar no banco de dados.'); return; }
-            alert('✓ Projeto salvo com sucesso!');
-            backToProjects();
+            if (!silencioso) {
+                alert('✓ Projeto salvo com sucesso!');
+                backToProjects();
+            }
         }
 
         function printPDF() {
@@ -1084,6 +1152,7 @@
             renderTimeline(p.dates || {});
             renderChecklists();
             renderDeliveryChart();
+            _atualizarBannerFinalizado();
         }
 
         async function deleteProject(projectId) {
