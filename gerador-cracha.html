@@ -1,0 +1,1968 @@
+<!-- v20260301-fix-selecionar -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Sistema de Chamados</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --primary: #2563eb; --dark: #1e40af; --success: #10b981; --warning: #f59e0b;
+      --danger: #ef4444; --info: #06b6d4;
+      --bg: white; --bg2: #f9fafb; --text: #1f2937; --text2: #6b7280;
+      --border: #e5e7eb; --card: white;
+    }
+    body.dark-mode {
+      --bg: #0f172a; --bg2: #1e293b; --text: #f1f5f9; --text2: #94a3b8;
+      --border: #334155; --card: #1e293b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    input, select, textarea {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    input:not([type="checkbox"]):not([type="radio"]):not([type="file"]) {
+      height: 44px;
+      line-height: 44px;
+    }
+    select { height: 44px; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: var(--text); line-height: 1.6; min-height: 100vh;
+      padding: 20px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    body.dark-mode { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .theme-toggle {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 50%; width: 36px; height: 36px; min-width: 36px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.3s ease; flex-shrink: 0;
+    }
+    .theme-toggle:hover { background: var(--border); transform: scale(1.1); }
+    .theme-icon { font-size: 16px; transition: transform 0.3s ease; line-height: 1; }
+    .theme-toggle:hover .theme-icon { transform: rotate(20deg); }
+
+    /* ── LOGIN ── */
+    .login-container {
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh;
+    }
+    .login-box {
+      background: var(--card); padding: 40px; border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12); width: 100%; max-width: 420px;
+      border-left: 5px solid var(--primary); animation: slideDown 0.6s ease-out;
+      transition: background 0.3s ease;
+    }
+    .login-box h1 {
+      text-align: center; margin-bottom: 30px; font-size: 1.8em;
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .login-box input {
+      width: 100%; margin-bottom: 15px; padding: 12px 15px;
+      border: 2px solid var(--border); border-radius: 8px; font-size: 0.95em;
+      font-family: inherit; background: var(--bg2); color: var(--text); transition: all 0.3s ease;
+    }
+    .login-box input:focus { outline: none; border-color: var(--primary); background: var(--card); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+    /* ── LAYOUT ── */
+    .layout { display: flex; flex-direction: column; min-height: 100vh; height: auto; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--card);
+      color: var(--text);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      margin: 0 0 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.07), 0 0 0 1px rgba(37,99,235,0.1);
+      border-left: 5px solid var(--primary);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      animation: slideDown 0.6s ease-out;
+    }
+    body.dark-mode .topbar {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 1px rgba(37,99,235,0.2);
+    }
+    .topbar-row1 {
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      height: 64px;
+    }
+    .topbar-brand {
+      display: flex; align-items: center; gap: 14px;
+      flex-shrink: 0;
+    }
+    .topbar-brand-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3em; flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+      overflow: hidden;
+    }
+    .topbar-brand-icon img {
+      width: 100% !important; height: 100% !important;
+      object-fit: contain; border-radius: 8px;
+    }
+    .topbar-brand h1 {
+      font-size: 1.35em; font-weight: 800; white-space: nowrap; letter-spacing: -0.3px;
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .topbar-user {
+      display: flex; align-items: center; gap: 12px;
+      margin-left: auto; flex-shrink: 0;
+    }
+    .topbar-user .user-info-wrap { text-align: right; }
+    .topbar-user .user-name { font-size: 0.88em; font-weight: 600; color: var(--text); line-height: 1.2; white-space: nowrap; }
+    .topbar-user .user-email { font-size: 0.73em; color: var(--text2); white-space: nowrap; }
+    .topbar-user .btn-logout {
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      color: var(--danger); padding: 7px 14px; border-radius: 10px;
+      cursor: pointer; font-size: 0.8em; font-family: inherit; font-weight: 600;
+      transition: all 0.2s ease; white-space: nowrap; flex-shrink: 0;
+    }
+    .topbar-user .btn-logout:hover { background: var(--danger); color: white; transform: translateY(-1px); }
+    .topbar-row2 {
+      display: flex;
+      align-items: center;
+      padding: 0 20px 14px;
+      gap: 4px;
+      border-top: none;
+    }
+    .topbar-row2 nav {
+      display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;
+    }
+    .topbar-row2 nav button {
+      background: none; border: none; color: var(--text2);
+      padding: 8px 14px; border-radius: 10px; cursor: pointer;
+      font-size: 0.84em; font-family: inherit; font-weight: 500;
+      transition: all 0.2s ease; white-space: nowrap;
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+      height: 36px;
+    }
+    .topbar-row2 nav button:hover { background: rgba(37,99,235,0.08); color: var(--primary); }
+    .topbar-row2 nav button.active {
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      color: white; box-shadow: 0 4px 12px rgba(37,99,235,0.3); font-weight: 600;
+    }
+    .menu-toggle-btn { display: none; }
+    .content { flex: 1; padding: 0; overflow-y: auto; }
+
+    /* ── SECTION / CARD ── */
+    .section {
+      background: var(--card); border-radius: 16px; padding: 30px;
+      margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+      animation: fadeIn 0.6s ease-out; transition: background 0.3s ease;
+    }
+    .section h2 {
+      font-size: 1.5em; margin-bottom: 25px; color: var(--text);
+      border-bottom: 3px solid var(--primary); padding-bottom: 15px; display: inline-block;
+    }
+    .page-header {
+      background: var(--card); border-radius: 16px; padding: 30px;
+      margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+      border-left: 5px solid var(--primary); animation: slideDown 0.6s ease-out;
+      transition: background 0.3s ease; display: flex; align-items: center; gap: 16px;
+    }
+    .page-header h1 {
+      font-size: 2.2em;
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .page-header p { color: var(--text2); font-size: 0.95em; margin-top: 2px; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 12px 28px; border: none; border-radius: 8px; font-size: 0.95em;
+      font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+      text-transform: uppercase; letter-spacing: 0.5px; display: inline-block;
+      font-family: inherit;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.3); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #059669; transform: translateY(-2px); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #dc2626; transform: translateY(-1px); }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-warning:hover { background: #d97706; }
+    .btn-info { background: var(--info); color: white; }
+    .btn-info:hover { background: #0891b2; transform: translateY(-2px); }
+    .btn-sm { padding: 8px 16px; font-size: 0.85em; }
+    .btn-icon { padding: 6px 10px; font-size: 0.85em; }
+
+    /* ── INPUTS ── */
+    input[type="text"], input[type="date"], input[type="email"],
+    input[type="password"], input[type="number"], select, textarea {
+      padding: 12px 15px; border: 2px solid var(--border); border-radius: 8px;
+      font-size: 0.95em; font-family: inherit; background: var(--bg2);
+      color: var(--text); transition: all 0.3s ease; width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--primary);
+      background: var(--card); box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 0.88em; text-align: left; }
+    th { background: var(--bg2); font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; color: var(--text2); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(37,99,235,0.03); }
+
+    /* ── STATUS BADGES ── */
+    .badge {
+      padding: 4px 12px; border-radius: 20px; font-size: 0.78em; font-weight: 600;
+      display: inline-block; cursor: pointer;
+    }
+    .badge-pendente { background: rgba(245,158,11,0.15); color: #d97706; text-transform: capitalize; }
+    .badge-resolvido { background: rgba(16,185,129,0.15); color: #059669; text-transform: capitalize; }
+
+    /* ── CLIENTE CARDS ── */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .cliente-card {
+      background: var(--card); border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid var(--primary);
+      transition: all 0.3s ease; animation: fadeIn 0.6s ease-out;
+    }
+    .cliente-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.12); transform: translateY(-2px); }
+    .cliente-card h3 { font-size: 1.2em; margin-bottom: 10px; color: var(--text); }
+    .cliente-card p { font-size: 0.9em; color: var(--text2); margin-bottom: 5px; }
+    .cliente-actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+    .cliente-actions .btn { flex: 1; min-width: 70px; text-align: center; }
+
+    /* ── FORM GRID ── */
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-weight: 600; font-size: 0.9em; color: var(--text); }
+
+    /* ── MODAL ── */
+    .modal {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 2000; align-items: center; justify-content: center;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: var(--card); border-radius: 16px; padding: 30px;
+      width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      display: flex; flex-direction: column; gap: 10px;
+      animation: fadeIn 0.3s ease-out; transition: background 0.3s ease;
+    }
+    .modal-content.wide { max-width: 700px; }
+
+    /* ── MODAL USUÁRIO ── */
+    #modalNovoUsuario {
+      position: fixed !important;
+      top: 0 !important; left: 0 !important;
+      width: 100vw !important; height: 100vh !important;
+      background: rgba(0,0,0,0.6) !important;
+      z-index: 9999 !important;
+      display: none;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 20px !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+    }
+    #modalNovoUsuario.active { display: flex !important; }
+    #modalNovoUsuario > .modal-content {
+      width: 100% !important; max-width: 480px !important; max-height: 85vh !important;
+      height: auto !important; overflow: hidden !important;
+      display: flex !important; flex-direction: column !important;
+      padding: 0 !important; margin: 0 !important; border-radius: 16px !important;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4) !important; position: relative !important;
+    }
+    #modalNovoUsuario > .modal-content > .modal-header { padding: 24px 24px 16px !important; flex-shrink: 0 !important; position: static !important; }
+    #modalNovoUsuario > .modal-content > #msgNovoUsuario { padding: 0 24px !important; flex-shrink: 0 !important; }
+    #modalNovoUsuario .modal-usuario-body {
+      flex: 1 1 auto !important; overflow-y: auto !important; overflow-x: hidden !important;
+      padding: 8px 24px 16px !important; display: flex !important; flex-direction: column !important;
+      gap: 14px !important; min-height: 0 !important;
+    }
+    #modalNovoUsuario > .modal-content > .modal-footer {
+      padding: 14px 24px !important; flex-shrink: 0 !important; position: static !important;
+      margin-top: 0 !important; bottom: auto !important;
+    }
+    #modalNovoUsuario input[type="checkbox"] {
+      width: 18px !important; height: 18px !important; min-height: unset !important;
+      line-height: normal !important; padding: 0 !important; border: none !important;
+      box-shadow: none !important; background: none !important; flex-shrink: 0 !important;
+    }
+    .modal-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;
+    }
+    .modal-grid .field-full,
+    .modal-grid .field.field-full { grid-column: 1 / -1; }
+    .modal-grid .field { width: 100%; }
+    .modal-header {
+      font-size: 1.5em; font-weight: 700; color: var(--text);
+      border-bottom: 3px solid var(--primary); padding-bottom: 15px; margin-bottom: 8px;
+    }
+    .modal-footer {
+      display: flex; gap: 15px; justify-content: flex-end;
+      padding-top: 20px; border-top: 1px solid var(--border);
+      position: sticky; bottom: 0; background: var(--card); margin-top: auto;
+    }
+    .field {
+      display: flex; flex-direction: column; gap: 6px; width: 100%;
+    }
+    .field label {
+      font-weight: 600; font-size: 0.88em; color: var(--text); display: block;
+    }
+    .field input,
+    .field select,
+    .field textarea,
+    .field .autocomplete-wrap input {
+      width: 100% !important; height: 44px !important; padding: 0 14px !important;
+      border: 2px solid var(--border) !important; border-radius: 8px !important;
+      font-size: 0.92em !important; font-family: inherit !important;
+      background: var(--bg2) !important; color: var(--text) !important;
+      box-sizing: border-box !important; transition: all 0.3s ease !important;
+      appearance: auto !important; -webkit-appearance: auto !important;
+      line-height: normal !important;
+    }
+    .field textarea {
+      height: auto !important; min-height: 90px !important;
+      padding: 12px 14px !important; resize: vertical !important;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none !important; border-color: var(--primary) !important;
+      background: var(--card) !important; box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+    }
+    .modal-content label { font-weight: 600; font-size: 0.88em; color: var(--text); display: block; margin-bottom: 6px; }
+    .modal-content > div { width: 100%; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100% !important; height: 44px !important; padding: 0 14px !important;
+      border: 2px solid var(--border) !important; border-radius: 8px !important;
+      font-size: 0.92em !important; font-family: inherit !important;
+      background: var(--bg2) !important; color: var(--text) !important;
+      box-sizing: border-box !important; transition: all 0.3s ease !important;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none !important; border-color: var(--primary) !important;
+      background: var(--card) !important; box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+    }
+
+    /* ── INFO CARDS ── */
+    .info-card {
+      background: linear-gradient(135deg, var(--bg2), var(--card)); padding: 20px;
+      border-radius: 12px; border-left: 4px solid var(--primary);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background 0.3s ease;
+    }
+    .info-card .info-label { font-size: 0.85em; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; display: block; }
+    .info-card .info-value { font-size: 1.1em; font-weight: 600; color: var(--text); }
+
+    /* ── FILTROS ── */
+    .filtros-box {
+      background: var(--card); border-radius: 16px; padding: 24px;
+      margin-bottom: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+      transition: background 0.3s ease;
+    }
+
+    /* ── AUDITORIA ITEM ── */
+    .audit-item {
+      padding: 12px; background: var(--bg2); border-radius: 8px;
+      border-left: 4px solid var(--info); margin-bottom: 10px;
+      font-size: 0.88em; transition: background 0.3s ease;
+    }
+
+    /* ── CRONOLOGIA ── */
+    .crono-item {
+      padding: 12px; background: var(--bg2); border-radius: 8px;
+      border-left: 4px solid var(--primary); margin-bottom: 10px;
+      font-size: 0.88em; transition: background 0.3s ease;
+    }
+    .crono-item .crono-date { font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .crono-item .crono-author { font-size: 0.82em; color: var(--text2); margin-bottom: 6px; }
+
+    /* ── ACESSO ITEM ── */
+    .acesso-item {
+      padding: 16px; background: var(--bg2); border-radius: 10px;
+      border-left: 4px solid var(--success); margin-bottom: 12px;
+      font-size: 0.95em; transition: background 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* ── AUTOCOMPLETE (outros) ── */
+    .autocomplete-wrap { position: relative; width: 100%; }
+    .autocomplete-wrap input { width: 100% !important; }
+    .autocomplete-list {
+      position: absolute; top: 100%; left: 0; right: 0; background: var(--card);
+      border: 2px solid var(--primary); border-radius: 0 0 8px 8px;
+      max-height: 180px; overflow-y: auto; z-index: 500; display: none;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    .autocomplete-list div {
+      padding: 10px 14px; cursor: pointer; font-size: 0.9em; border-bottom: 1px solid var(--border);
+      color: var(--text); transition: background 0.15s;
+    }
+    .autocomplete-list div:hover { background: rgba(37,99,235,0.08); }
+
+    /* ════════════════════════════════════════════
+       NOVO: CLIENTE DROPDOWN RICH CARDS (modal chamado)
+    ════════════════════════════════════════════ */
+    .cliente-search-wrap { position: relative; width: 100%; }
+    .cliente-search-wrap input { width: 100% !important; }
+
+    .cliente-dropdown {
+      position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+      background: var(--card); border: 2px solid var(--primary); border-radius: 14px;
+      max-height: 500px; overflow-y: auto; z-index: 3000; display: none;
+      box-shadow: 0 16px 40px rgba(37,99,235,0.22); padding: 12px;
+    }
+    .cliente-dropdown.show { display: block; animation: fadeIn 0.15s ease-out; }
+    .cliente-dropdown .cliente-card { animation: none; }
+    .cliente-dropdown .cards-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+
+    /* Item de cliente encontrado */
+    .cliente-dropdown-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; border-radius: 10px;
+      border: 1px solid var(--border); margin-bottom: 6px;
+      background: var(--bg2); transition: all 0.18s ease; gap: 12px;
+    }
+    .cliente-dropdown-item:last-of-type { margin-bottom: 0; }
+    .cliente-dropdown-item:hover {
+      background: rgba(37,99,235,0.06); border-color: var(--primary);
+      transform: translateX(2px); box-shadow: 0 2px 8px rgba(37,99,235,0.1);
+    }
+    .cliente-dropdown-icon {
+      width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1em; box-shadow: 0 2px 6px rgba(37,99,235,0.25);
+    }
+    .cliente-dropdown-info { flex: 1; min-width: 0; }
+    .cliente-dropdown-nome {
+      font-weight: 700; font-size: 0.93em; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .cliente-dropdown-meta {
+      font-size: 0.77em; color: var(--text2); margin-top: 2px;
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .cliente-dropdown-meta span {
+      display: flex; align-items: center; gap: 3px;
+    }
+    .cliente-dropdown-btn-sel {
+      padding: 6px 14px; border-radius: 20px; font-weight: 700;
+      font-size: 0.78em; border: none; cursor: pointer; font-family: inherit;
+      white-space: nowrap; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--success), #059669);
+      color: white; transition: all 0.18s ease;
+      box-shadow: 0 2px 6px rgba(16,185,129,0.3);
+    }
+    .cliente-dropdown-btn-sel:hover {
+      transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,185,129,0.4);
+    }
+
+    /* Separador */
+    .cliente-dropdown-sep {
+      border: none; border-top: 1px solid var(--border); margin: 6px 0;
+    }
+
+    /* Opção de cadastrar novo */
+    .cliente-dropdown-novo {
+      display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+      border-radius: 10px; border: 2px dashed rgba(37,99,235,0.4); margin-top: 2px;
+      background: rgba(37,99,235,0.03); cursor: pointer; transition: all 0.2s ease;
+    }
+    .cliente-dropdown-novo:hover {
+      background: rgba(37,99,235,0.09); border-color: var(--primary);
+    }
+    .cliente-dropdown-novo-icon {
+      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+      background: rgba(37,99,235,0.12); display: flex; align-items: center;
+      justify-content: center; font-size: 1.1em; color: var(--primary);
+    }
+    .cliente-dropdown-novo-text strong {
+      display: block; font-size: 0.9em; color: var(--primary); font-weight: 700;
+    }
+    .cliente-dropdown-novo-text span {
+      font-size: 0.76em; color: var(--text2);
+    }
+
+    /* Sem resultados */
+    .cliente-dropdown-vazio {
+      padding: 20px; text-align: center; color: var(--text2); font-size: 0.88em;
+    }
+
+    /* Loading */
+    .cliente-dropdown-loading {
+      padding: 16px; text-align: center; color: var(--text2); font-size: 0.88em;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 16px; height: 16px; border: 2px solid var(--border);
+      border-top-color: var(--primary); border-radius: 50%;
+      animation: spin 0.6s linear infinite; flex-shrink: 0;
+    }
+
+    /* ── Chip do cliente selecionado ── */
+    .cliente-chip {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      background: rgba(16,185,129,0.08); border: 2px solid rgba(16,185,129,0.5);
+      border-radius: 10px; margin-top: 8px; animation: fadeIn 0.2s ease;
+    }
+    .cliente-chip-icon {
+      width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, #10b981, #059669);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1em; box-shadow: 0 2px 6px rgba(16,185,129,0.3);
+    }
+    .cliente-chip-info { flex: 1; min-width: 0; }
+    .cliente-chip-nome { font-weight: 700; color: #059669; font-size: 0.92em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cliente-chip-meta { font-size: 0.75em; color: var(--text2); margin-top: 1px; }
+    .cliente-chip-remove {
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      color: #ef4444; cursor: pointer; font-size: 0.78em; padding: 5px 11px;
+      border-radius: 8px; font-weight: 700; font-family: inherit; white-space: nowrap;
+      transition: all 0.18s ease;
+    }
+    .cliente-chip-remove:hover { background: #ef4444; color: white; }
+
+    /* ── MSGS ── */
+    .msg-erro { color: #dc2626; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px; border-left: 4px solid var(--danger); margin-bottom: 16px; font-size: 0.9em; }
+    .msg-sucesso { color: #059669; padding: 12px; background: rgba(16,185,129,0.1); border-radius: 8px; border-left: 4px solid var(--success); margin-bottom: 16px; font-size: 0.9em; }
+
+    /* ── PERM CHECKBOX ── */
+    .perm-group {
+      background: var(--bg2); padding: 16px; border-radius: 10px;
+      border: 1px solid var(--border); transition: background 0.3s ease;
+    }
+    .perm-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .perm-item:last-child { border-bottom: none; }
+    .perm-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); flex-shrink: 0; }
+    .perm-item label { cursor: pointer; font-weight: 500; font-size: 0.92em; margin: 0; }
+
+    /* ── BUTTON TOOLBAR ── */
+    .btn-toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+
+    /* ── TABELA RELATORIO ── */
+    .tabela-scroll { max-height: 450px; overflow-y: auto; border-radius: 12px; }
+    .tabela-scroll thead th { position: sticky; top: 0; background: var(--bg2); z-index: 2; }
+
+    .hidden { display: none !important; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      .topbar { margin: 10px 12px 0; top: 10px; border-radius: 14px; }
+      .topbar-row1 { padding: 0 12px; height: 56px; gap: 10px; }
+      .topbar-brand h1 { font-size: 1em; }
+      .topbar-brand-icon { width: 34px; height: 34px; font-size: 1em; }
+      .topbar-row2 { display: none; }
+      .topbar-row2.aberto, .topbar.open .topbar-row2 {
+        display: flex; flex-direction: column; align-items: stretch;
+        padding: 6px 10px 12px; height: auto; border-top: 1px solid var(--border);
+      }
+      .topbar-row2 nav { flex-direction: column; width: 100%; gap: 3px; }
+      .topbar-row2 nav button { width: 100%; justify-content: flex-start; padding: 11px 14px; font-size: 0.92em; border-radius: 10px; height: auto; }
+      .topbar-user .user-info-wrap { display: none; }
+      .menu-toggle-btn {
+        display: flex !important; flex-direction: column; justify-content: center;
+        align-items: center; background: var(--bg2); border: 1px solid var(--border);
+        border-radius: 10px; color: var(--text); cursor: pointer; padding: 7px 9px;
+        gap: 4px; flex-shrink: 0; transition: all 0.2s ease; width: 40px; height: 40px;
+      }
+      .menu-toggle-btn:hover { background: var(--border); }
+      .menu-toggle-btn span { display: block; width: 18px; height: 2px; background: currentColor; border-radius: 2px; transition: all 0.2s ease; }
+      .topbar.open .menu-toggle-btn span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+      .topbar.open .menu-toggle-btn span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+      .topbar.open .menu-toggle-btn span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+      .topbar.open .menu-toggle-btn span:nth-child(4) { opacity: 0; transform: scaleX(0); }
+      .content { padding: 12px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .modal-content { width: 95%; max-width: none; padding: 20px; }
+      .modal-grid { grid-template-columns: 1fr !important; }
+      .btn-toolbar { flex-direction: column; }
+      .btn-toolbar .btn { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="telaLogin" class="login-container">
+  <div class="login-box">
+    <h1>🔐 Sistema de Chamados</h1>
+    <div id="msgLogin"></div>
+    <input id="loginEmail" type="email" placeholder="Email" autocomplete="email">
+    <input id="loginSenha" type="password" placeholder="Senha" autocomplete="current-password" style="margin-top:0;">
+    <button class="btn btn-primary" id="btnLogin" style="width:100%;margin-top:8px;">Entrar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appContainer" class="hidden">
+  <div class="layout">
+
+    <!-- TOPBAR -->
+    <header class="topbar" id="sidebar">
+      <div class="topbar-row1">
+        <button class="menu-toggle-btn" id="menuToggle" aria-label="Menu">
+          <span></span><span></span><span></span><span></span>
+        </button>
+        <div class="topbar-brand">
+          <div class="topbar-brand-icon" id="logoWrap">
+            <img id="logoEmpresa" class="hidden" style="width:100%;height:100%;object-fit:contain;border-radius:8px;">
+            <span id="logoIcon">📋</span>
+          </div>
+          <h1 id="nomeEmpresa">Sistema de Chamados</h1>
+        </div>
+        <div class="topbar-user">
+          <div class="user-info-wrap">
+            <div class="user-name" id="usuarioNome">Usuário</div>
+            <div class="user-email" id="usuarioEmail"></div>
+          </div>
+          <div id="themeToggle" class="theme-toggle" title="Alternar tema claro/escuro">
+            <span class="theme-icon">🌙</span>
+          </div>
+          <button class="btn-logout" id="btnLogout">Sair</button>
+        </div>
+      </div>
+      <div class="topbar-row2">
+        <nav>
+          <button class="active" onclick="app.aba('chamados',this)">📋 Chamados</button>
+          <button onclick="app.aba('clientes',this)">👥 Clientes</button>
+          <button onclick="app.aba('relatorios',this)">📊 Relatórios</button>
+          <button onclick="app.aba('usuarios',this)">👨‍💼 Usuários</button>
+          <button onclick="app.aba('auditoria',this)">🔍 Auditoria</button>
+          <button onclick="app.aba('config',this)">⚙️ Config</button>
+          <button onclick="abrirInstalacoes(this)">📅 Instalações</button>
+          <button onclick="window.location.href='gerador-cracha.html'">🪪 Crachá PDV</button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="content">
+      <div id="msgErro"></div>
+
+      <!-- CHAMADOS -->
+      <section id="chamados">
+        <div class="page-header">
+          <div>
+            <h1>📋 Chamados</h1>
+            <p>Gerenciamento de atendimentos e suporte</p>
+          </div>
+        </div>
+        <div class="section">
+          <div class="btn-toolbar">
+            <button class="btn btn-primary" onclick="app.abrirModal()">+ Abrir Chamado</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Data</th><th>Hora</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Status</th><th>Cronologia</th></tr></thead>
+              <tbody id="listaChamados"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- CLIENTES -->
+      <section id="clientes" class="hidden">
+        <div class="page-header">
+          <div><h1>👥 Clientes</h1><p>Base de clientes cadastrados</p></div>
+        </div>
+        <div class="section">
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
+            <div style="flex:1;min-width:220px;position:relative;">
+              <input id="pesquisaCliente" type="text" placeholder="🔍 Pesquisar cliente por nome, CNPJ ou razão social..."
+                style="width:100%;padding-left:16px;"
+                oninput="app.pesquisarClientes()"
+                onkeydown="if(event.key==='Enter') app.pesquisarClientes()">
+            </div>
+            <button class="btn btn-primary" onclick="app.pesquisarClientes()">🔍 Buscar</button>
+            <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.limparPesquisaClientes()">🧹 Limpar</button>
+            <button class="btn btn-primary" onclick="app.abrirModalNovoCliente()">+ Novo Cliente</button>
+          </div>
+          <div id="clientesEstadoVazio" style="text-align:center;padding:40px 20px;color:var(--text2);">
+            <div style="font-size:3em;margin-bottom:12px;">🔍</div>
+            <p style="font-size:1.05em;">Use o campo de pesquisa acima para encontrar clientes.</p>
+          </div>
+          <div class="cards-grid" id="listaClientes" style="display:none;"></div>
+        </div>
+      </section>
+
+      <!-- RELATÓRIOS -->
+      <section id="relatorios" class="hidden">
+        <div class="page-header">
+          <div><h1>📊 Relatórios</h1><p>Consulta e exportação de chamados</p></div>
+        </div>
+        <div class="filtros-box section">
+          <h2>Filtros</h2>
+          <div class="form-grid">
+            <div class="form-group"><label>ID do Chamado</label><input id="fIdChamado" type="number" placeholder="Filtrar por ID"></div>
+            <div class="form-group">
+              <label>Cliente</label>
+              <div class="autocomplete-wrap">
+                <input id="fCliente" type="text" placeholder="Filtrar por cliente" autocomplete="off" oninput="app.buscarClientesFiltro()" onblur="setTimeout(()=>{document.getElementById('listaClientesFiltro').style.display='none'},200)">
+                <div class="autocomplete-list" id="listaClientesFiltro"></div>
+              </div>
+            </div>
+            <div class="form-group"><label>CNPJ</label><input id="fCNPJ" type="text" placeholder="Filtrar por CNPJ"></div>
+            <div class="form-group"><label>Solicitante</label><input id="fSolicitante" type="text" placeholder="Filtrar por solicitante"></div>
+            <div class="form-group"><label>Técnico</label><select id="fTecnico"><option value="">Todos os Técnicos</option></select></div>
+            <div class="form-group">
+              <label>Categoria</label>
+              <select id="fCategoria">
+                <option value="">Todas as Categorias</option>
+                <option>Caixa</option><option>Equipamento</option><option>Retaguarda</option>
+                <option>Treinamento</option><option>Apresentação</option><option>Instalação</option>
+                <option>Sitef</option><option>Outros</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Tipo de Atendimento</label>
+              <select id="fTipoAtendimento"><option value="">Todos os Tipos</option><option>Remoto</option><option>Presencial</option></select>
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="fStatus"><option value="">Todos</option><option value="pendente">Pendente</option><option value="resolvido">Resolvido</option></select>
+            </div>
+            <div class="form-group"><label>Data Início</label><input id="fDataInicio" type="date"></div>
+            <div class="form-group"><label>Data Fim</label><input id="fDataFim" type="date"></div>
+          </div>
+          <div class="btn-toolbar" style="justify-content:center;margin-top:10px;">
+            <button class="btn btn-primary" onclick="app.relatorio()">🔍 Filtrar</button>
+            <button class="btn btn-success" onclick="app.imprimirRelatorio()">🖨️ Imprimir</button>
+            <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.limparFiltrosRelatorio()">🧹 Limpar</button>
+          </div>
+        </div>
+        <div class="section">
+          <div class="tabela-scroll">
+            <table>
+              <thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Tipo</th><th>Status</th><th>Descrição</th></tr></thead>
+              <tbody id="resultadoRelatorio"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- USUÁRIOS -->
+      <section id="usuarios" class="hidden">
+        <div class="page-header">
+          <div><h1>👨‍💼 Usuários</h1><p>Gerenciamento de acesso ao sistema</p></div>
+        </div>
+        <div class="section">
+          <div class="btn-toolbar">
+            <button class="btn btn-primary" onclick="app.abrirModalNovoUsuario()">+ Novo Usuário</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nome</th><th>Email</th><th>Permissões</th><th>Cadastro</th><th>Ações</th></tr></thead>
+              <tbody id="listaUsuarios"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- AUDITORIA -->
+      <section id="auditoria" class="hidden">
+        <div class="page-header">
+          <div><h1>🔍 Auditoria</h1><p>Histórico de ações do sistema</p></div>
+        </div>
+        <div class="section">
+          <div class="form-grid" style="margin-bottom:16px;">
+            <input type="text" id="auditFiltroUsuario" placeholder="Filtrar por usuário">
+            <input type="text" id="auditFiltroAcao" placeholder="Filtrar por ação">
+            <input type="date" id="auditFiltroDataInicio">
+            <input type="date" id="auditFiltroDataFim">
+          </div>
+          <div class="btn-toolbar">
+            <button class="btn btn-primary" onclick="app.filtrarAuditoria()">🔍 Pesquisar</button>
+            <button class="btn btn-danger" onclick="app.limparAuditoria()">🗑️ Limpar</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Detalhes</th></tr></thead>
+              <tbody id="listaAuditoria"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONFIG -->
+      <section id="config" class="hidden">
+        <div class="page-header">
+          <div><h1>⚙️ Configurações</h1><p>Personalização do sistema</p></div>
+        </div>
+        <div class="section" style="max-width:500px;">
+          <h2>Empresa</h2>
+          <div class="form-group" style="margin-bottom:16px;">
+            <label>Nome da Empresa</label>
+            <input id="confEmpresa" type="text" placeholder="Nome da empresa">
+          </div>
+          <div class="form-group" style="margin-bottom:20px;">
+            <label>URL da Logo</label>
+            <input id="confLogo" type="text" placeholder="https://...">
+          </div>
+          <button class="btn btn-primary" onclick="app.salvarConfig()" style="width:100%;">💾 Salvar</button>
+        </div>
+      </section>
+
+      <!-- INSTALAÇÕES -->
+      <section id="instalacoesSection" class="hidden" style="overflow:visible;">
+        <iframe id="iframeInstalacoes" src="" scrolling="auto"
+          style="width:100%; height:calc(100vh - 75px); border:none; display:block;"></iframe>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MODAL NOVO CHAMADO — com busca rich de clientes
+═══════════════════════════════════════════════ -->
+<div id="modal" class="modal">
+  <div class="modal-content wide">
+    <div class="modal-header">📋 Novo Chamado</div>
+    <div class="modal-grid">
+
+      <!-- Campo de busca de cliente — NOVO DESIGN -->
+      <div class="field field-full">
+        <label>Cliente *</label>
+        <div class="cliente-search-wrap" id="clienteSearchWrap">
+          <input
+            id="mCliente"
+            type="text"
+            placeholder="🔍 Digite o nome ou CNPJ do cliente..."
+            autocomplete="off"
+            oninput="app.buscarClientesRich()"
+          >
+          <!-- Dropdown rico -->
+          <div class="cliente-dropdown" id="clienteDropdown"></div>
+        </div>
+        <!-- Chip do cliente selecionado -->
+        <div id="clienteChip" style="display:none;"></div>
+        <!-- Campo oculto que armazena o nome real selecionado -->
+        <input type="hidden" id="mClienteValor">
+      </div>
+
+      <div class="field">
+        <label>Solicitante *</label>
+        <input id="mSolicitante" type="text" placeholder="Nome do solicitante">
+      </div>
+      <div class="field">
+        <label>Técnico *</label>
+        <select id="mTecnico"><option value="">Selecione um técnico</option></select>
+      </div>
+      <div class="field">
+        <label>Categoria *</label>
+        <select id="mCategoria">
+          <option value="">Selecione uma categoria</option>
+          <option>Caixa</option><option>Equipamento</option><option>Retaguarda</option>
+          <option>Treinamento</option><option>Apresentação</option><option>Instalação</option>
+          <option>Sitef</option><option>Outros</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Tipo de Atendimento *</label>
+        <select id="mTipoAtendimento">
+          <option value="">Selecione o tipo</option>
+          <option>Remoto</option><option>Presencial</option>
+        </select>
+      </div>
+      <div class="field field-full">
+        <label>Descrição *</label>
+        <textarea id="mDescricao" placeholder="Descreva o problema..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="app.salvarChamado()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOVO USUÁRIO -->
+<div id="modalNovoUsuario" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">👨‍💼 Usuário</div>
+    <div id="msgNovoUsuario"></div>
+    <div class="modal-usuario-body">
+      <div class="field field-full"><label>Nome *</label><input id="novoUsuarioNome" type="text" placeholder="Nome completo"></div>
+      <div class="field field-full"><label>Email *</label><input id="novoUsuarioEmail" type="email" placeholder="Email"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="field"><label>Senha *</label><input id="novoUsuarioSenha" type="password" placeholder="Mínimo 6 caracteres"></div>
+        <div class="field"><label>Confirmar Senha *</label><input id="novoUsuarioConfirma" type="password" placeholder="Confirmar senha"></div>
+      </div>
+      <div class="field field-full">
+        <label>Permissões</label>
+        <div style="background:var(--bg2);border-radius:10px;border:1px solid var(--border);padding:8px 16px;">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <input type="checkbox" id="permChamados" checked style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+            <label for="permChamados" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">📋 Chamados</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <input type="checkbox" id="permClientes" checked style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+            <label for="permClientes" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">👥 Clientes</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <input type="checkbox" id="permRelatorios" checked style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+            <label for="permRelatorios" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">📊 Relatórios</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <input type="checkbox" id="permExcluirChamados" style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+            <label for="permExcluirChamados" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">🗑️ Excluir Chamados</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;">
+            <input type="checkbox" id="permUsuarios" style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+            <label for="permUsuarios" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">👨‍💼 Admin</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.fecharModalNovoUsuario()">Cancelar</button>
+      <button class="btn btn-primary" id="btnSalvarUsuario" onclick="app.criarNovoUsuario()">💾 Criar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOVO CLIENTE -->
+<div id="modalNovoCliente" class="modal">
+  <div class="modal-content wide">
+    <div class="modal-header">👥 Cliente</div>
+    <div class="modal-grid">
+      <div class="field field-full"><label>Nome *</label><input id="ncNome" type="text" placeholder="Nome do cliente"></div>
+      <div class="field"><label>Razão Social</label><input id="ncRazao" type="text" placeholder="Razão social"></div>
+      <div class="field"><label>CNPJ/CPF</label><input id="ncCNPJ" type="text" placeholder="CNPJ ou CPF"></div>
+      <div class="field field-full"><label>Endereço</label><input id="ncEndereco" type="text" placeholder="Endereço"></div>
+      <div class="field field-full"><label>Observações</label><textarea id="ncObservacoes" placeholder="Observações..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.fecharModalNovoCliente()">Cancelar</button>
+      <button class="btn btn-primary" onclick="app.salvarNovoCliente()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ACESSOS -->
+<div id="modalAcessos" class="modal">
+  <div class="modal-content wide">
+    <div class="modal-header">🔐 Acessos — <span id="clienteAcessoNome"></span></div>
+    <div class="modal-grid">
+      <div class="field field-full"><label>Nome/Tipo *</label><input id="arNome" type="text" placeholder="Ex: Servidor 1, VPN..."></div>
+      <div class="field field-full"><label>Dados de Acesso</label><textarea id="arDescricao" placeholder="IP, Usuário, Senha..." style="min-height:130px;"></textarea></div>
+    </div>
+    <button class="btn btn-success" onclick="app.salvarAcessoRemoto()" style="width:100%;">+ Adicionar Acesso</button>
+    <hr style="border:none;border-top:1px solid var(--border);margin:4px 0;">
+    <div id="listaAcessosRemoto" style="max-height:400px;overflow-y:auto;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" onclick="app.fecharAcessos()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CRONOLOGIA -->
+<div id="modalCronologia" class="modal">
+  <div class="modal-content wide">
+    <div class="modal-header">📋 Cronologia — Chamado #<span id="idCronologia"></span></div>
+    <div id="descricaoPrincipal"></div>
+    <div class="field"><label>Nova Atualização</label><textarea id="descricaoCronologia" placeholder="Digite a atualização..."></textarea></div>
+    <button class="btn btn-primary" onclick="app.salvarCronologia()" style="width:100%;">➕ Adicionar</button>
+    <hr style="border:none;border-top:1px solid var(--border);margin:4px 0;">
+    <div id="listaCronologia" style="max-height:280px;overflow-y:auto;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" onclick="app.fecharCronologia()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://boendmrotsttljydigld.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvZW5kbXJvdHN0dGxqeWRpZ2xkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1OTI5NTksImV4cCI6MjA4MjE2ODk1OX0.k6vVvD6kNV8r-a9lR6jaTcAm1wz5c_jbTDnjKlpo0cE';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* ── DARK MODE ── */
+function initDarkMode(){
+  const dark = localStorage.getItem('darkMode') === 'true';
+  if(dark){ document.body.classList.add('dark-mode'); document.querySelector('.theme-icon').textContent='☀️'; }
+}
+function setupThemeToggle(){
+  const btn = document.getElementById('themeToggle');
+  if(!btn) return;
+  btn.addEventListener('click', ()=>{
+    document.body.classList.toggle('dark-mode');
+    const dark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', dark);
+    document.querySelector('.theme-icon').textContent = dark ? '☀️' : '🌙';
+  });
+}
+
+const app = {
+  usuarioAtual: null, clienteAcessoAtual: null, chamadoCronologiaId: null,
+  _richSearchTimer: null,
+
+  async login(){
+    const email = document.getElementById('loginEmail').value.trim();
+    const senha = document.getElementById('loginSenha').value;
+    if(!email||!senha) return this.msgLogin('❌ Preencha email e senha');
+    try{
+      const {data,error} = await sb.auth.signInWithPassword({email, password:senha});
+      if(error) return this.msgLogin('❌ '+error.message);
+      this.usuarioAtual = data.user;
+      this.mostrarApp();
+    }catch(e){ this.msgLogin('❌ '+e.message); }
+  },
+
+  msgLogin(msg){
+    const div = document.getElementById('msgLogin');
+    const ok = msg.includes('✅');
+    div.innerHTML = `<div class="${ok?'msg-sucesso':'msg-erro'}">${msg}</div>`;
+    setTimeout(()=>div.innerHTML='', 5000);
+  },
+
+  async logout(){
+    await sb.auth.signOut();
+    this.usuarioAtual = null;
+    document.getElementById('telaLogin').style.display='flex';
+    document.getElementById('appContainer').classList.add('hidden');
+    document.getElementById('loginEmail').value='';
+    document.getElementById('loginSenha').value='';
+  },
+
+  async mostrarApp(){
+    setTimeout(async()=>{
+      document.getElementById('telaLogin').style.display='none';
+      document.getElementById('appContainer').classList.remove('hidden');
+      const nome = this.usuarioAtual.user_metadata?.full_name || this.usuarioAtual.email;
+      document.getElementById('usuarioNome').innerText = nome;
+      document.getElementById('usuarioEmail').innerText = this.usuarioAtual.email;
+      try{
+        const {data} = await sb.from('usuarios').select('permissoes').eq('email',this.usuarioAtual.email).single();
+        const perms = data?.permissoes ? JSON.parse(data.permissoes) : {chamados:true,clientes:true,relatorios:true,excluirChamados:false,usuarios:true,auditoria:true};
+        this.salvarPermissoes(perms);
+        this.mostrarAbasPermitidas(perms);
+      }catch(e){
+        this.salvarPermissoes({chamados:true,clientes:true,relatorios:true,excluirChamados:false,usuarios:true,auditoria:true});
+      }
+      this.carregarChamados();
+      this.carregarConfig();
+    },100);
+  },
+
+  mostrarAbasPermitidas(perms){
+    document.querySelectorAll('.topbar-row2 nav button').forEach(btn=>{
+      const txt = btn.innerText;
+      let aba='';
+      if(txt.includes('Chamados')) aba='chamados';
+      else if(txt.includes('Clientes')) aba='clientes';
+      else if(txt.includes('Relatórios')) aba='relatorios';
+      else if(txt.includes('Usuários')) aba='usuarios';
+      else if(txt.includes('Auditoria')) aba='auditoria';
+      btn.style.display=(aba&&perms[aba]===false)?'none':'flex';
+    });
+  },
+
+  mostrarErro(msg){
+    const div = document.getElementById('msgErro');
+    div.innerHTML=`<div class="msg-erro">❌ ${msg}</div>`;
+    setTimeout(()=>div.innerHTML='',5000);
+  },
+
+  aba(id,btn){
+    const perms = this.obterPermissoes();
+    const ok={chamados:perms.chamados!==false,clientes:perms.clientes!==false,relatorios:perms.relatorios!==false,usuarios:perms.usuarios!==false,auditoria:perms.auditoria!==false,config:true};
+    if(!ok[id]) return alert('❌ Sem permissão');
+    document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    document.querySelectorAll('.topbar-row2 nav button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sidebar').classList.remove('open');
+    if(id==='clientes') this.carregarClientes();
+    if(id==='usuarios') this.carregarUsuarios();
+    if(id==='auditoria') this.carregarAuditoria();
+    if(id==='relatorios') this.carregarTecnicos();
+  },
+
+  obterPermissoes(){ try{ return JSON.parse(localStorage.getItem('userPermissions')||'{}'); }catch{ return {}; } },
+  salvarPermissoes(p){ localStorage.setItem('userPermissions',JSON.stringify(p)); },
+
+  /* ════════════════════════════════════════════
+     MODAL CHAMADO — BUSCA RICH DE CLIENTES
+  ════════════════════════════════════════════ */
+
+  abrirModal(){
+    const mCliente = document.getElementById('mCliente');
+    mCliente.value = '';
+    mCliente.style.display = '';
+    mCliente.style.borderColor = '';
+    mCliente.style.background = '';
+    document.getElementById('mClienteValor').value = '';
+    document.getElementById('mSolicitante').value = '';
+    document.getElementById('mCategoria').value = '';
+    document.getElementById('mTipoAtendimento').value = '';
+    document.getElementById('mDescricao').value = '';
+    document.getElementById('clienteDropdown').classList.remove('show');
+    document.getElementById('clienteDropdown').innerHTML = '';
+    document.getElementById('clienteChip').style.display = 'none';
+    document.getElementById('modal').classList.add('active');
+    this.carregarTecnicos();
+  },
+
+  fecharModal(){
+    document.getElementById('modal').classList.remove('active');
+    document.getElementById('clienteDropdown').classList.remove('show');
+  },
+
+  /* Busca rich: nome OU CNPJ */
+  async buscarClientesRich(){
+    const valor = document.getElementById('mCliente').value.trim();
+    const dropdown = document.getElementById('clienteDropdown');
+
+    clearTimeout(this._richSearchTimer);
+
+    if(valor.length < 1){
+      dropdown.classList.remove('show');
+      dropdown.innerHTML = '';
+      return;
+    }
+
+    // Loading
+    dropdown.innerHTML = `<div class="cliente-dropdown-loading"><div class="spinner"></div> Buscando clientes...</div>`;
+    dropdown.classList.add('show');
+
+    this._richSearchTimer = setTimeout(async()=>{
+      try{
+        // Busca por nome OU cnpj
+        const {data} = await sb.from('clientes')
+          .select('*')
+          .or(`nome.ilike.%${valor}%,cnpj.ilike.%${valor}%,razao_social.ilike.%${valor}%`)
+          .order('nome', {ascending: true})
+          .limit(10);
+
+        this._renderClienteDropdown(data || [], valor);
+      }catch(e){
+        dropdown.innerHTML = `<div class="cliente-dropdown-vazio">❌ Erro ao buscar clientes</div>`;
+      }
+    }, 280);
+  },
+
+  _renderClienteDropdown(clientes, termoBusca){
+    const dropdown = document.getElementById('clienteDropdown');
+    dropdown.innerHTML = '';
+
+    if(clientes.length > 0){
+      const grid = document.createElement('div');
+      grid.className = 'cards-grid';
+      grid.style.marginBottom = '10px';
+
+      clientes.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'cliente-card';
+
+        // Nome com highlight
+        const h3 = document.createElement('h3');
+        h3.innerHTML = '👤 ' + this._highlight(c.nome, termoBusca);
+        card.appendChild(h3);
+
+        if(c.razao_social){
+          const p = document.createElement('p');
+          p.innerHTML = '<strong>Razão:</strong> ' + this._highlight(c.razao_social, termoBusca);
+          card.appendChild(p);
+        }
+        if(c.cnpj){
+          const p = document.createElement('p');
+          p.innerHTML = '<strong>CNPJ/CPF:</strong> ' + this._highlight(c.cnpj, termoBusca);
+          card.appendChild(p);
+        }
+        if(c.endereco){
+          const p = document.createElement('p');
+          p.innerHTML = '<strong>Endereço:</strong> ' + c.endereco;
+          card.appendChild(p);
+        }
+        if(c.observacoes){
+          const p = document.createElement('p');
+          p.style.cssText = 'font-style:italic;margin-top:6px;';
+          p.textContent = c.observacoes;
+          card.appendChild(p);
+        }
+
+        // Botão selecionar
+        const actions = document.createElement('div');
+        actions.className = 'cliente-actions';
+        actions.style.marginTop = '14px';
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-success btn-sm';
+        btn.style.cssText = 'width:100%;text-align:center;';
+        btn.textContent = '✓ Selecionar este cliente';
+        btn.addEventListener('click', () => {
+          this.selecionarClienteRich(c);
+        });
+        actions.appendChild(btn);
+        card.appendChild(actions);
+
+        grid.appendChild(card);
+      });
+
+      dropdown.appendChild(grid);
+
+      const sep = document.createElement('hr');
+      sep.className = 'cliente-dropdown-sep';
+      dropdown.appendChild(sep);
+    }
+
+    // Opção cadastrar novo
+    const novo = document.createElement('div');
+    novo.className = 'cliente-dropdown-novo';
+    novo.innerHTML = '<div class="cliente-dropdown-novo-icon">➕</div><div class="cliente-dropdown-novo-text"><strong>Cadastrar \"' + termoBusca + '\" como novo cliente</strong><span>Abre o formulário de cadastro com este nome preenchido</span></div>';
+    novo.addEventListener('click', () => {
+      this._abrirCadastroNovoClienteDoChamado(termoBusca);
+    });
+    dropdown.appendChild(novo);
+
+    dropdown.classList.add('show');
+  },
+
+    _highlight(texto, termo){
+    if(!termo) return texto;
+    const re = new RegExp(`(${termo.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+    return texto.replace(re, '<mark style="background:rgba(37,99,235,0.15);color:var(--primary);border-radius:3px;padding:0 2px;">$1</mark>');
+  },
+
+  selecionarClienteRich(c){
+    // c é o objeto cliente direto (não mais JSON string)
+    const nome = c.nome || c;
+    const input = document.getElementById('mCliente');
+    input.value = nome;
+    input.style.display = '';
+    input.style.borderColor = '#10b981';
+    input.style.boxShadow = '0 0 0 3px rgba(16,185,129,0.15)';
+    document.getElementById('mClienteValor').value = nome;
+    // Fecha e limpa dropdown
+    const dd = document.getElementById('clienteDropdown');
+    dd.classList.remove('show');
+    dd.innerHTML = '';
+    document.getElementById('clienteChip').style.display = 'none';
+  },
+
+  limparClienteSelecionado(){
+    const inp = document.getElementById('mCliente');
+    inp.value = '';
+    inp.style.borderColor = '';
+    inp.style.background = '';
+    inp.style.display = '';
+    document.getElementById('mClienteValor').value = '';
+    document.getElementById('clienteChip').style.display = 'none';
+    document.getElementById('clienteDropdown').classList.remove('show');
+    setTimeout(()=> inp.focus(), 50);
+  },
+
+  _abrirCadastroNovoClienteDoChamado(nome){
+    // Fecha o dropdown mas MANTÉM o modal de chamado aberto
+    document.getElementById('clienteDropdown').classList.remove('show');
+    // Preenche o nome no modal de cliente
+    ['ncNome','ncRazao','ncCNPJ','ncEndereco','ncObservacoes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('ncNome').value = nome;
+    delete document.getElementById('modalNovoCliente').dataset.nomeOriginal;
+    const btn = document.querySelector('#modalNovoCliente .modal-footer .btn-primary');
+    btn.innerText='💾 Salvar'; btn.onclick=()=>this._salvarNovoClienteDoChamado();
+    document.querySelector('#modalNovoCliente .modal-header').innerText='👥 Novo Cliente';
+    document.getElementById('modalNovoCliente').classList.add('active');
+  },
+
+  async _salvarNovoClienteDoChamado(){
+    const nome = document.getElementById('ncNome').value.trim();
+    if(!nome) return alert('Nome é obrigatório!');
+    try{
+      const {data, error} = await sb.from('clientes').insert({
+        nome,
+        razao_social: document.getElementById('ncRazao').value.trim()||null,
+        cnpj: document.getElementById('ncCNPJ').value.trim()||null,
+        endereco: document.getElementById('ncEndereco').value.trim()||null,
+        observacoes: document.getElementById('ncObservacoes').value.trim()||null
+      }).select().single();
+      if(error) return this.mostrarErro('Erro: '+error.message);
+      await this.registrarAuditoria('Criou cliente (via chamado)',`Nome: ${nome}`);
+      // Fecha modal cliente e seleciona automaticamente no chamado
+      document.getElementById('modalNovoCliente').classList.remove('active');
+      this.selecionarClienteRich(data);
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  _setupClienteDropdownBlur(){
+    // Nada — o fechamento é feito apenas pelo click fora (no handler global)
+  },
+
+  /* ── CHAMADOS ── */
+  async carregarTecnicos(){
+    try{
+      const {data} = await sb.from('usuarios').select('nome,email').order('nome',{ascending:true});
+      ['mTecnico','fTecnico'].forEach(id=>{
+        const sel = document.getElementById(id);
+        if(!sel) return;
+        const first = id==='mTecnico' ? '<option value="">Selecione um técnico</option>' : '<option value="">Todos os Técnicos</option>';
+        sel.innerHTML = first;
+        data.forEach(u=>{ const n=u.nome||u.email; sel.innerHTML+=`<option value="${n}">${n}</option>`; });
+      });
+    }catch(e){console.error(e);}
+  },
+
+  async carregarChamados(){
+    try{
+      const {data} = await sb.from('chamados').select('*').order('id',{ascending:false});
+      const tbody = document.getElementById('listaChamados');
+      tbody.innerHTML='';
+      if(!data||!data.length) return tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text2);">Nenhum chamado</td></tr>';
+      const hoje = new Date().toISOString().split('T')[0];
+      const filtrados = data.filter(c=>c.created_at.substring(0,10)===hoje||c.status==='pendente');
+      if(!filtrados.length) return tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text2);">Nenhum chamado pendente ou de hoje</td></tr>';
+
+      let podeExcluir = false;
+      try{
+        const {data:uData} = await sb.from('usuarios').select('permissoes').eq('email', this.usuarioAtual.email).single();
+        if(uData?.permissoes){
+          const p = JSON.parse(uData.permissoes);
+          podeExcluir = p.excluirChamados === true;
+          this.salvarPermissoes(p);
+        }
+      }catch(e){}
+
+      filtrados.forEach(c=>{
+        tbody.innerHTML+=`<tr>
+          <td><strong>${c.id}</strong></td>
+          <td>${new Date(c.created_at).toLocaleDateString('pt-BR')}</td>
+          <td>${new Date(c.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
+          <td>${c.cliente}</td>
+          <td>${c.solicitante}</td>
+          <td>${c.tecnico}</td>
+          <td><strong>${c.categoria||'N/A'}</strong></td>
+          <td><span class="badge badge-${c.status}" onclick="app.alterarStatus(${c.id},'${c.status}')">${c.status}</span></td>
+          <td style="display:flex;gap:6px;">
+            <button class="btn btn-info btn-icon" onclick="app.abrirCronologia(${c.id})">📋</button>
+            ${podeExcluir ? `<button class="btn btn-danger btn-icon" onclick="app.excluirChamado(${c.id})">🗑️</button>` : ''}
+          </td>
+        </tr>`;
+      });
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  async alterarStatus(id,status){
+    const novo = status==='pendente'?'resolvido':'pendente';
+    if(!confirm(`Alterar status para "${novo}"?`)) return;
+    try{
+      const {error} = await sb.from('chamados').update({status:novo}).eq('id',id);
+      if(error) return this.mostrarErro('Erro ao alterar');
+      await this.registrarHistorico(id,`Status alterado para ${novo}`);
+      await this.registrarAuditoria('Alterou status do chamado',`ID: ${id} | Novo status: ${novo}`);
+      this.carregarChamados();
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  async excluirChamado(id){
+    if(!confirm(`Tem certeza que deseja excluir o chamado #${id}?\nEsta ação não pode ser desfeita.`)) return;
+    try{
+      await sb.from('cronologia_chamados').delete().eq('chamado_id',id);
+      await sb.from('historico_chamados').delete().eq('chamado_id',id);
+      const {error} = await sb.from('chamados').delete().eq('id',id);
+      if(error) return this.mostrarErro('Erro ao excluir: '+error.message);
+      await this.registrarAuditoria('Excluiu chamado',`ID: ${id}`);
+      this.carregarChamados();
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  async salvarChamado(){
+    const c = (document.getElementById('mCliente').value || '').trim();
+    const s = document.getElementById('mSolicitante').value.trim();
+    const t = document.getElementById('mTecnico').value.trim();
+    const cat = document.getElementById('mCategoria').value.trim();
+    const tipo = document.getElementById('mTipoAtendimento').value.trim();
+    const d = document.getElementById('mDescricao').value.trim();
+    if(!c||!s||!t||!cat||!tipo||!d) return alert('Preencha todos os campos!');
+    try{
+      const {data:existe} = await sb.from('clientes').select('nome').eq('nome',c).single();
+      if(!existe) await sb.from('clientes').insert({nome:c});
+      const {data,error} = await sb.from('chamados').insert({
+        cliente:c, solicitante:s, tecnico:t, categoria:cat, tipo_atendimento:tipo,
+        descricao:d, status:'pendente', created_at:new Date().toISOString(),
+        criado_por_id: this.usuarioAtual.id,
+        criado_por_nome: this.usuarioAtual.user_metadata?.full_name||this.usuarioAtual.email,
+        criado_por_email: this.usuarioAtual.email
+      }).select().single();
+      if(error) return this.mostrarErro('Erro: '+error.message);
+      await this.registrarHistorico(data.id,'Chamado criado');
+      await this.registrarAuditoria('Criou chamado',`ID: ${data.id} | Cliente: ${c}`);
+      this.fecharModal();
+      this.carregarChamados();
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  /* ── CLIENTES ── */
+  async carregarClientes(){
+    document.getElementById('listaClientes').style.display = 'none';
+    document.getElementById('clientesEstadoVazio').style.display = 'block';
+    document.getElementById('pesquisaCliente').value = '';
+  },
+
+  _renderizarClientes(data){
+    const div = document.getElementById('listaClientes');
+    const vazio = document.getElementById('clientesEstadoVazio');
+    div.innerHTML='';
+    if(!data||!data.length){
+      div.style.display='none';
+      vazio.innerHTML='<div style="font-size:3em;margin-bottom:12px;">😕</div><p style="font-size:1.05em;">Nenhum cliente encontrado para essa pesquisa.</p>';
+      vazio.style.display='block';
+      return;
+    }
+    vazio.style.display='none';
+    div.style.display='grid';
+    data.forEach(c=>{
+      div.innerHTML+=`<div class="cliente-card">
+        <h3>👤 ${c.nome}</h3>
+        ${c.razao_social?`<p><strong>Razão:</strong> ${c.razao_social}</p>`:''}
+        ${c.cnpj?`<p><strong>CNPJ/CPF:</strong> ${c.cnpj}</p>`:''}
+        ${c.endereco?`<p><strong>Endereço:</strong> ${c.endereco}</p>`:''}
+        ${c.observacoes?`<p style="font-style:italic;margin-top:6px;">${c.observacoes}</p>`:''}
+        <div class="cliente-actions">
+          <button class="btn btn-info btn-sm" onclick="app.editarCliente('${c.nome.replace(/'/g,"\\'")}')">✏️ Editar</button>
+          <button class="btn btn-success btn-sm" onclick="app.abrirAcessos('${c.nome.replace(/'/g,"\\'")}')">🔐 Acessos</button>
+          <button class="btn btn-danger btn-sm" onclick="app.excluirCliente('${c.nome.replace(/'/g,"\\'")}')">🗑️</button>
+        </div>
+      </div>`;
+    });
+  },
+
+  async pesquisarClientes(){
+    const termo = document.getElementById('pesquisaCliente').value.trim();
+    try{
+      let query = sb.from('clientes').select('*');
+      if(termo){
+        query = query.or(`nome.ilike.%${termo}%,razao_social.ilike.%${termo}%,cnpj.ilike.%${termo}%`);
+      }
+      const {data} = await query.order('nome',{ascending:true});
+      this._renderizarClientes(data);
+    }catch(e){ console.error(e); }
+  },
+
+  limparPesquisaClientes(){
+    document.getElementById('pesquisaCliente').value='';
+    document.getElementById('listaClientes').style.display='none';
+    document.getElementById('clientesEstadoVazio').innerHTML='<div style="font-size:3em;margin-bottom:12px;">🔍</div><p style="font-size:1.05em;">Use o campo de pesquisa acima para encontrar clientes.</p>';
+    document.getElementById('clientesEstadoVazio').style.display='block';
+  },
+
+  abrirModalNovoCliente(){
+    ['ncNome','ncRazao','ncCNPJ','ncEndereco','ncObservacoes'].forEach(id=>document.getElementById(id).value='');
+    delete document.getElementById('modalNovoCliente').dataset.nomeOriginal;
+    const btn = document.querySelector('#modalNovoCliente .modal-footer .btn-primary');
+    btn.innerText='💾 Salvar'; btn.onclick=()=>this.salvarNovoCliente();
+    document.querySelector('#modalNovoCliente .modal-header').innerText='👥 Novo Cliente';
+    document.getElementById('modalNovoCliente').classList.add('active');
+  },
+  fecharModalNovoCliente(){ document.getElementById('modalNovoCliente').classList.remove('active'); },
+
+  async salvarNovoCliente(){
+    const nome = document.getElementById('ncNome').value.trim();
+    if(!nome) return alert('Nome é obrigatório!');
+    try{
+      const {error} = await sb.from('clientes').insert({
+        nome, razao_social:document.getElementById('ncRazao').value.trim()||null,
+        cnpj:document.getElementById('ncCNPJ').value.trim()||null,
+        endereco:document.getElementById('ncEndereco').value.trim()||null,
+        observacoes:document.getElementById('ncObservacoes').value.trim()||null
+      });
+      if(error) return this.mostrarErro('Erro: '+error.message);
+      await this.registrarAuditoria('Criou cliente',`Nome: ${nome}`);
+      alert('✅ Cliente cadastrado!');
+      this.fecharModalNovoCliente();
+      this.pesquisarClientes();
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  async editarCliente(nome){
+    const {data} = await sb.from('clientes').select('*').eq('nome',nome).single();
+    if(!data) return this.mostrarErro('Cliente não encontrado');
+    document.getElementById('ncNome').value=data.nome||'';
+    document.getElementById('ncRazao').value=data.razao_social||'';
+    document.getElementById('ncCNPJ').value=data.cnpj||'';
+    document.getElementById('ncEndereco').value=data.endereco||'';
+    document.getElementById('ncObservacoes').value=data.observacoes||'';
+    document.getElementById('modalNovoCliente').dataset.nomeOriginal=nome;
+    document.querySelector('#modalNovoCliente .modal-header').innerText='✏️ Editar Cliente';
+    const btn = document.querySelector('#modalNovoCliente .modal-footer .btn-primary');
+    btn.innerText='💾 Atualizar'; btn.onclick=()=>this.salvarEdicaoCliente();
+    document.getElementById('modalNovoCliente').classList.add('active');
+  },
+
+  async salvarEdicaoCliente(){
+    const original = document.getElementById('modalNovoCliente').dataset.nomeOriginal;
+    const novo = document.getElementById('ncNome').value.trim();
+    if(!novo) return alert('Nome é obrigatório!');
+    try{
+      const {error} = await sb.from('clientes').update({
+        nome:novo, razao_social:document.getElementById('ncRazao').value.trim()||null,
+        cnpj:document.getElementById('ncCNPJ').value.trim()||null,
+        endereco:document.getElementById('ncEndereco').value.trim()||null,
+        observacoes:document.getElementById('ncObservacoes').value.trim()||null
+      }).eq('nome',original);
+      if(error) return this.mostrarErro('Erro: '+error.message);
+      alert('✅ Cliente atualizado!');
+      this.fecharModalNovoCliente();
+      this.pesquisarClientes();
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  async excluirCliente(nome){
+    const {data:ch} = await sb.from('chamados').select('id').eq('cliente',nome).limit(1);
+    if(ch&&ch.length) return alert('❌ Não é possível excluir!\nEste cliente possui chamados.');
+    if(!confirm(`Excluir "${nome}"?`)) return;
+    try{
+      const {error} = await sb.from('clientes').delete().eq('nome',nome);
+      if(error) return this.mostrarErro('Erro: '+error.message);
+      alert('✅ Excluído!');
+      this.pesquisarClientes();
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  /* ── RELATÓRIOS ── */
+  async buscarClientesFiltro(){
+    const valor = document.getElementById('fCliente').value.trim();
+    const lista = document.getElementById('listaClientesFiltro');
+    if(valor.length<1){ lista.style.display='none'; return; }
+    try{
+      const {data} = await sb.from('clientes').select('nome').ilike('nome',`%${valor}%`).limit(20);
+      lista.innerHTML='';
+      (data||[]).forEach(c=>lista.innerHTML+=`<div onmousedown="document.getElementById('fCliente').value='${c.nome}';document.getElementById('listaClientesFiltro').style.display='none';">${c.nome}</div>`);
+      lista.style.display=data&&data.length?'block':'none';
+    }catch(e){console.error(e);}
+  },
+
+  async relatorio(){
+    try{
+      let q = sb.from('chamados').select('*');
+      const id = document.getElementById('fIdChamado').value;
+      if(id) q=q.eq('id',id);
+      if(document.getElementById('fCategoria').value) q=q.eq('categoria',document.getElementById('fCategoria').value);
+      if(document.getElementById('fTipoAtendimento').value) q=q.eq('tipo_atendimento',document.getElementById('fTipoAtendimento').value);
+      if(document.getElementById('fCliente').value) q=q.ilike('cliente','%'+document.getElementById('fCliente').value+'%');
+      if(document.getElementById('fSolicitante').value) q=q.ilike('solicitante','%'+document.getElementById('fSolicitante').value+'%');
+      if(document.getElementById('fTecnico').value) q=q.ilike('tecnico','%'+document.getElementById('fTecnico').value+'%');
+      if(document.getElementById('fStatus').value) q=q.eq('status',document.getElementById('fStatus').value);
+      const {data,error} = await q.order('created_at',{ascending:false});
+      if(error) return this.mostrarErro('Erro: '+error.message);
+      let resultados = data||[];
+      const cnpj = document.getElementById('fCNPJ').value.trim();
+      if(cnpj){
+        const {data:cls} = await sb.from('clientes').select('nome,cnpj').ilike('cnpj','%'+cnpj+'%');
+        const nomes=(cls||[]).map(c=>c.nome);
+        resultados=resultados.filter(c=>nomes.includes(c.cliente));
+      }
+      const di=document.getElementById('fDataInicio').value;
+      const df=document.getElementById('fDataFim').value;
+      if(di||df) resultados=resultados.filter(c=>{ const d=c.created_at.substring(0,10); if(di&&d<di) return false; if(df&&d>df) return false; return true; });
+      const tbody=document.getElementById('resultadoRelatorio');
+      tbody.innerHTML='';
+      if(!resultados.length) return tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text2);">Nenhum resultado</td></tr>';
+      resultados.forEach(c=>{
+        tbody.innerHTML+=`<tr>
+          <td><strong>#${c.id}</strong></td>
+          <td>${new Date(c.created_at).toLocaleDateString('pt-BR')}</td>
+          <td>${c.cliente}</td>
+          <td>${c.solicitante}</td>
+          <td>${c.tecnico}</td>
+          <td>${c.categoria||'N/A'}</td>
+          <td>${c.tipo_atendimento||'N/A'}</td>
+          <td><span class="badge badge-${c.status}">${c.status}</span></td>
+          <td style="font-size:0.85em;max-width:220px;">
+            <div style="color:var(--text2);margin-bottom:4px;"><strong>Por:</strong> ${c.criado_por_nome||'N/A'}</div>
+            <div style="margin-bottom:6px;white-space:pre-wrap;">${c.descricao}</div>
+            <button class="btn btn-info btn-icon" onclick="app.abrirCronologia(${c.id})">📋 Cronologia</button>
+          </td>
+        </tr>`;
+      });
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  limparFiltrosRelatorio(){
+    ['fIdChamado','fCliente','fCNPJ','fSolicitante','fDataInicio','fDataFim'].forEach(id=>document.getElementById(id).value='');
+    ['fTecnico','fCategoria','fTipoAtendimento','fStatus'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('resultadoRelatorio').innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text2);">Use os filtros para pesquisar</td></tr>';
+  },
+
+  imprimirRelatorio(){
+    const rows = document.getElementById('resultadoRelatorio').getElementsByTagName('tr');
+    if(!rows.length){ alert('Faça uma busca primeiro!'); return; }
+    const empresa = document.getElementById('nomeEmpresa').innerText;
+    let html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;padding:30px;color:#333;}h1{color:#2563eb;margin-bottom:5px;}p{color:#666;font-size:13px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;}th,td{padding:9px;border-bottom:1px solid #ddd;font-size:12px;text-align:left;}th{background:#2563eb;color:white;}.pendente{background:#fef3c7;color:#92400e;padding:3px 8px;border-radius:999px;font-size:11px;}.resolvido{background:#dcfce7;color:#166534;padding:3px 8px;border-radius:999px;font-size:11px;}</style></head><body><h1>${empresa}</h1><p>Relatório de Chamados — ${new Date().toLocaleDateString('pt-BR')}</p><table><thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Tipo</th><th>Status</th><th>Descrição</th></tr></thead><tbody>`;
+    for(let i=0;i<rows.length;i++){
+      const cells=rows[i].getElementsByTagName('td');
+      if(!cells.length) continue;
+      const status=cells[7]?.innerText?.trim().toLowerCase()||'';
+      html+=`<tr><td>${cells[0]?.innerText}</td><td>${cells[1]?.innerText}</td><td>${cells[2]?.innerText}</td><td>${cells[3]?.innerText}</td><td>${cells[4]?.innerText}</td><td>${cells[5]?.innerText}</td><td>${cells[6]?.innerText}</td><td><span class="${status}">${status}</span></td><td>${(cells[8]?.innerText||'').substring(0,60)}...</td></tr>`;
+    }
+    html+=`</tbody></table><p style="margin-top:20px;color:#999;text-align:center;font-size:11px;">Total: ${rows.length} registros</p></body></html>`;
+    const w=window.open('','','width=1200,height=800');
+    w.document.write(html); w.document.close(); w.print();
+  },
+
+  /* ── USUÁRIOS ── */
+  async carregarUsuarios(){
+    try{
+      const {data,error}=await sb.from('usuarios').select('*').order('criado_em',{ascending:false});
+      if(error) return this.mostrarErro('Tabela "usuarios" não configurada');
+      const tbody=document.getElementById('listaUsuarios');
+      tbody.innerHTML='';
+      if(!data||!data.length) return tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text2);">Nenhum usuário</td></tr>';
+      data.forEach(u=>{
+        const perms=u.permissoes?JSON.parse(u.permissoes):{};
+        const lista=[perms.chamados&&'Chamados',perms.clientes&&'Clientes',perms.relatorios&&'Relatórios',perms.usuarios&&'Admin'].filter(Boolean).join(', ')||'—';
+        tbody.innerHTML+=`<tr>
+          <td><strong>${u.nome||u.email}</strong></td>
+          <td>${u.email}</td>
+          <td><span style="font-size:0.82em;color:var(--text2);">${lista}</span></td>
+          <td>${u.criado_em?new Date(u.criado_em).toLocaleDateString('pt-BR'):'—'}</td>
+          <td style="display:flex;gap:6px;">
+            <button class="btn btn-info btn-icon" onclick="app.editarPermissoes('${u.id}','${u.nome||u.email}')">✏️</button>
+            <button class="btn btn-danger btn-icon" onclick="app.excluirUsuario('${u.id}')">🗑️</button>
+          </td>
+        </tr>`;
+      });
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  abrirModalNovoUsuario(){
+    ['novoUsuarioNome','novoUsuarioEmail','novoUsuarioSenha','novoUsuarioConfirma'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('novoUsuarioSenha').placeholder='Mínimo 6 caracteres';
+    document.getElementById('novoUsuarioConfirma').placeholder='Confirmar senha';
+    document.getElementById('permChamados').checked=true;
+    document.getElementById('permClientes').checked=true;
+    document.getElementById('permRelatorios').checked=true;
+    document.getElementById('permExcluirChamados').checked=false;
+    document.getElementById('permUsuarios').checked=false;
+    document.getElementById('msgNovoUsuario').innerHTML='';
+    document.querySelector('#modalNovoUsuario .modal-header').innerText='👨‍💼 Novo Usuário';
+    document.getElementById('btnSalvarUsuario').innerText='💾 Criar';
+    document.getElementById('btnSalvarUsuario').onclick=()=>this.criarNovoUsuario();
+    document.getElementById('modalNovoUsuario').classList.add('active');
+    document.body.style.overflow='hidden';
+  },
+
+  fecharModalNovoUsuario(){ document.getElementById('modalNovoUsuario').classList.remove('active'); document.body.style.overflow=''; },
+
+  async criarNovoUsuario(){
+    const nome=document.getElementById('novoUsuarioNome').value.trim();
+    const email=document.getElementById('novoUsuarioEmail').value.trim();
+    const senha=document.getElementById('novoUsuarioSenha').value;
+    const conf=document.getElementById('novoUsuarioConfirma').value;
+    if(!nome||!email||!senha||!conf) return this.msgNU('❌ Preencha todos');
+    if(senha!==conf) return this.msgNU('❌ Senhas não conferem');
+    if(senha.length<6) return this.msgNU('❌ Mínimo 6 caracteres');
+    try{
+      const {data,error}=await sb.auth.signUp({email,password:senha,options:{data:{full_name:nome}}});
+      if(error) return this.msgNU('❌ '+error.message);
+      const perms={chamados:document.getElementById('permChamados').checked,clientes:document.getElementById('permClientes').checked,relatorios:document.getElementById('permRelatorios').checked,excluirChamados:document.getElementById('permExcluirChamados').checked,usuarios:document.getElementById('permUsuarios').checked};
+      const {error:dbErr}=await sb.from('usuarios').insert({id:data.user.id,nome,email,permissoes:JSON.stringify(perms),criado_em:new Date().toISOString()});
+      if(dbErr) return this.msgNU('❌ '+dbErr.message);
+      this.msgNU('✅ Usuário criado!');
+      setTimeout(()=>this.fecharModalNovoUsuario(),1500);
+      this.carregarUsuarios();
+    }catch(e){ this.msgNU('❌ '+e.message); }
+  },
+
+  msgNU(msg){
+    const div=document.getElementById('msgNovoUsuario');
+    div.innerHTML=`<div class="${msg.includes('✅')?'msg-sucesso':'msg-erro'}">${msg}</div>`;
+  },
+
+  async editarPermissoes(id,nome){
+    const {data}=await sb.from('usuarios').select('*').eq('id',id).single();
+    const perms=data.permissoes?JSON.parse(data.permissoes):{};
+    document.getElementById('novoUsuarioNome').value=data.nome||data.email;
+    document.getElementById('novoUsuarioEmail').value=data.email;
+    document.getElementById('novoUsuarioSenha').value='';
+    document.getElementById('novoUsuarioConfirma').value='';
+    document.getElementById('novoUsuarioSenha').placeholder='(deixar vazio = não alterar)';
+    document.getElementById('novoUsuarioConfirma').placeholder='(deixar vazio = não alterar)';
+    document.getElementById('permChamados').checked=perms.chamados;
+    document.getElementById('permClientes').checked=perms.clientes;
+    document.getElementById('permRelatorios').checked=perms.relatorios;
+    document.getElementById('permExcluirChamados').checked=perms.excluirChamados||false;
+    document.getElementById('permUsuarios').checked=perms.usuarios;
+    document.querySelector('#modalNovoUsuario .modal-header').innerText='✏️ Editar — '+nome;
+    document.getElementById('btnSalvarUsuario').innerText='💾 Atualizar';
+    document.getElementById('btnSalvarUsuario').onclick=()=>this.salvarEdicaoUsuario(id);
+    document.getElementById('modalNovoUsuario').classList.add('active');
+    document.body.style.overflow='hidden';
+  },
+
+  async salvarEdicaoUsuario(id){
+    const perms={chamados:document.getElementById('permChamados').checked,clientes:document.getElementById('permClientes').checked,relatorios:document.getElementById('permRelatorios').checked,excluirChamados:document.getElementById('permExcluirChamados').checked,usuarios:document.getElementById('permUsuarios').checked};
+    try{
+      const {error}=await sb.from('usuarios').update({permissoes:JSON.stringify(perms)}).eq('id',id);
+      if(error) return this.msgNU('❌ '+error.message);
+      this.msgNU('✅ Atualizado!');
+      setTimeout(()=>this.fecharModalNovoUsuario(),1500);
+      this.carregarUsuarios();
+    }catch(e){ this.msgNU('❌ '+e.message); }
+  },
+
+  async excluirUsuario(id){
+    if(!confirm('Excluir usuário?')) return;
+    const {error}=await sb.from('usuarios').delete().eq('id',id);
+    if(error) return this.mostrarErro('Erro: '+error.message);
+    this.carregarUsuarios();
+  },
+
+  /* ── ACESSOS ── */
+  abrirAcessos(cliente){
+    this.clienteAcessoAtual=cliente;
+    document.getElementById('clienteAcessoNome').innerText=cliente;
+    document.getElementById('arNome').value='';
+    document.getElementById('arDescricao').value='';
+    document.getElementById('modalAcessos').classList.add('active');
+    this.carregarAcessos();
+  },
+  fecharAcessos(){ document.getElementById('modalAcessos').classList.remove('active'); },
+
+  async carregarAcessos(){
+    const {data}=await sb.from('acessos_remotos').select('*').eq('cliente_nome',this.clienteAcessoAtual).order('id',{ascending:false});
+    const lista=document.getElementById('listaAcessosRemoto');
+    lista.innerHTML='';
+    if(!data||!data.length) return lista.innerHTML='<p style="text-align:center;color:var(--text2);padding:16px;">Nenhum acesso cadastrado</p>';
+    data.forEach(a=>{
+      lista.innerHTML+=`<div class="acesso-item">
+        <strong>${a.nome}</strong>
+        <p style="white-space:pre-wrap;margin:6px 0;font-size:0.85em;">${a.descricao||'(sem dados)'}</p>
+        <button class="btn btn-info btn-icon" onclick="app.editarAcesso(${a.id},'${a.nome.replace(/'/g,"\\'")}','${(a.descricao||'').replace(/'/g,"\\'")}')">✏️</button>
+        <button class="btn btn-danger btn-icon" onclick="app.excluirAcesso(${a.id})">🗑️</button>
+      </div>`;
+    });
+  },
+
+  async salvarAcessoRemoto(){
+    const nome=document.getElementById('arNome').value.trim();
+    if(!nome) return alert('Nome é obrigatório!');
+    const {error}=await sb.from('acessos_remotos').insert({cliente_nome:this.clienteAcessoAtual,nome,descricao:document.getElementById('arDescricao').value.trim()||null});
+    if(error) return this.mostrarErro('Erro: '+error.message);
+    document.getElementById('arNome').value='';
+    document.getElementById('arDescricao').value='';
+    this.carregarAcessos();
+  },
+
+  editarAcesso(id,nome,desc){ const n=prompt(`Editar: ${nome}`,desc); if(n!==null) this.salvarEditAcesso(id,n); },
+  async salvarEditAcesso(id,desc){ await sb.from('acessos_remotos').update({descricao:desc||null}).eq('id',id); this.carregarAcessos(); },
+  async excluirAcesso(id){ if(!confirm('Excluir?')) return; await sb.from('acessos_remotos').delete().eq('id',id); this.carregarAcessos(); },
+
+  /* ── CRONOLOGIA ── */
+  abrirCronologia(id){
+    this.chamadoCronologiaId=id;
+    document.getElementById('idCronologia').innerText=id;
+    document.getElementById('descricaoCronologia').value='';
+    this.carregarChamadoDescricao();
+    this.carregarCronologia();
+    document.getElementById('modalCronologia').classList.add('active');
+  },
+  fecharCronologia(){ document.getElementById('modalCronologia').classList.remove('active'); },
+
+  async carregarChamadoDescricao(){
+    const {data}=await sb.from('chamados').select('descricao').eq('id',this.chamadoCronologiaId).single();
+    if(!data) return;
+    document.getElementById('descricaoPrincipal').innerHTML=`
+      <div style="padding:14px;background:rgba(37,99,235,0.07);border-radius:10px;border-left:4px solid var(--primary);margin-bottom:12px;">
+        <div style="font-weight:700;color:var(--primary);margin-bottom:6px;font-size:0.88em;">📝 DESCRIÇÃO DO CHAMADO</div>
+        <p style="white-space:pre-wrap;font-size:0.9em;color:var(--text);">${data.descricao}</p>
+        <div style="margin-top:10px;display:flex;gap:6px;">
+          <button class="btn btn-success btn-icon" onclick="app.editarDescricaoChamado(${this.chamadoCronologiaId},'${(data.descricao||'').replace(/'/g,"\\'")}')">✏️ Editar</button>
+          <button class="btn btn-danger btn-icon" onclick="app.excluirDescricaoChamado()">🗑️ Limpar</button>
+        </div>
+      </div>`;
+  },
+
+  async editarDescricaoChamado(id,desc){
+    const n=prompt('Editar descrição:',desc);
+    if(n!==null&&n.trim()){
+      await sb.from('chamados').update({descricao:n.trim()}).eq('id',id);
+      await this.registrarAuditoria('Editou descrição',`Chamado ID: ${id}`);
+      this.carregarChamadoDescricao();
+    }
+  },
+
+  async excluirDescricaoChamado(){
+    if(!confirm('Limpar descrição?')) return;
+    await sb.from('chamados').update({descricao:''}).eq('id',this.chamadoCronologiaId);
+    this.carregarChamadoDescricao();
+  },
+
+  async carregarCronologia(){
+    const {data}=await sb.from('cronologia_chamados').select('*').eq('chamado_id',this.chamadoCronologiaId).order('data',{ascending:true});
+    const lista=document.getElementById('listaCronologia');
+    lista.innerHTML='';
+    if(!data||!data.length) return lista.innerHTML='<p style="text-align:center;color:var(--text2);padding:16px;">Nenhuma atualização</p>';
+    data.forEach(c=>{
+      lista.innerHTML+=`<div class="crono-item">
+        <div class="crono-date">${new Date(c.data).toLocaleString('pt-BR')}</div>
+        <div class="crono-author">Por: ${c.usuario_nome||'N/A'}${c.editado_por?` · Editado por: ${c.editado_por}`:''}</div>
+        <p style="white-space:pre-wrap;">${c.descricao}</p>
+        <div style="margin-top:8px;display:flex;gap:6px;">
+          <button class="btn btn-success btn-icon" onclick="app.editarCronologia(${c.id},'${(c.descricao||'').replace(/'/g,"\\'")}')">✏️</button>
+          <button class="btn btn-danger btn-icon" onclick="app.excluirCronologia(${c.id})">🗑️</button>
+        </div>
+      </div>`;
+    });
+  },
+
+  async salvarCronologia(){
+    const desc=document.getElementById('descricaoCronologia').value.trim();
+    if(!desc) return alert('Digite uma atualização!');
+    const {error}=await sb.from('cronologia_chamados').insert({chamado_id:this.chamadoCronologiaId,descricao:desc,usuario_nome:this.usuarioAtual.user_metadata?.full_name||this.usuarioAtual.email,data:new Date().toISOString()});
+    if(error) return this.mostrarErro('Erro: '+error.message);
+    await this.registrarAuditoria('Adicionou cronologia',`Chamado ID: ${this.chamadoCronologiaId}`);
+    document.getElementById('descricaoCronologia').value='';
+    this.carregarCronologia();
+  },
+
+  editarCronologia(id,desc){ const n=prompt('Editar:',desc); if(n!==null&&n.trim()) this.salvarEditCronologia(id,n.trim()); },
+  async salvarEditCronologia(id,desc){
+    await sb.from('cronologia_chamados').update({descricao:desc,editado_por:this.usuarioAtual.user_metadata?.full_name||this.usuarioAtual.email,data_edicao:new Date().toISOString()}).eq('id',id);
+    this.carregarCronologia();
+  },
+  async excluirCronologia(id){ if(!confirm('Excluir?')) return; await sb.from('cronologia_chamados').delete().eq('id',id); this.carregarCronologia(); },
+
+  /* ── AUDITORIA ── */
+  async carregarAuditoria(){
+    document.getElementById('listaAuditoria').innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2);">Use a pesquisa para filtrar registros</td></tr>';
+  },
+
+  async filtrarAuditoria(){
+    const {data,error}=await sb.from('auditoria').select('*').order('data_acao',{ascending:false}).limit(1000);
+    if(error) return this.mostrarErro('Erro: '+error.message);
+    let r=data||[];
+    const u=document.getElementById('auditFiltroUsuario').value.trim().toLowerCase();
+    if(u) r=r.filter(a=>a.usuario_nome.toLowerCase().includes(u));
+    const ac=document.getElementById('auditFiltroAcao').value.trim().toLowerCase();
+    if(ac) r=r.filter(a=>a.acao.toLowerCase().includes(ac));
+    const di=document.getElementById('auditFiltroDataInicio').value;
+    const df=document.getElementById('auditFiltroDataFim').value;
+    if(di||df) r=r.filter(a=>{ const d=a.data_acao.substring(0,10); if(di&&d<di)return false; if(df&&d>df)return false; return true; });
+    const tbody=document.getElementById('listaAuditoria');
+    tbody.innerHTML='';
+    if(!r.length) return tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2);">Nenhum resultado</td></tr>';
+    r.forEach(a=>{
+      tbody.innerHTML+=`<tr>
+        <td>${new Date(a.data_acao).toLocaleString('pt-BR')}</td>
+        <td><strong>${a.usuario_nome}</strong></td>
+        <td>${a.acao}</td>
+        <td style="font-size:0.82em;color:var(--text2);">${a.detalhes||'—'}</td>
+      </tr>`;
+    });
+  },
+
+  limparAuditoria(){
+    ['auditFiltroUsuario','auditFiltroAcao','auditFiltroDataInicio','auditFiltroDataFim'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('listaAuditoria').innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2);">Use a pesquisa para filtrar registros</td></tr>';
+  },
+
+  /* ── CONFIG ── */
+  async salvarConfig(){
+    const nome=document.getElementById('confEmpresa').value.trim();
+    const logo=document.getElementById('confLogo').value.trim();
+    try{
+      const {error}=await sb.from('configuracoes').upsert({id:1, empresa:nome||null, logo_url:logo||null});
+      if(error) return this.mostrarErro('Erro ao salvar: '+error.message);
+      if(nome) document.getElementById('nomeEmpresa').innerText=nome;
+      if(logo){
+        const img=document.getElementById('logoEmpresa');
+        img.src=logo; img.classList.remove('hidden');
+        const icon=document.getElementById('logoIcon');
+        if(icon) icon.style.display='none';
+      }
+      alert('✅ Configurações salvas!');
+    }catch(e){ this.mostrarErro('Erro: '+e.message); }
+  },
+
+  async carregarConfig(){
+    try{
+      const {data}=await sb.from('configuracoes').select('*').eq('id',1).single();
+      if(!data) return;
+      document.getElementById('confEmpresa').value=data.empresa||'';
+      document.getElementById('confLogo').value=data.logo_url||'';
+      if(data.empresa) document.getElementById('nomeEmpresa').innerText=data.empresa;
+      if(data.logo_url){
+        const img=document.getElementById('logoEmpresa');
+        img.src=data.logo_url; img.classList.remove('hidden');
+        const icon=document.getElementById('logoIcon');
+        if(icon) icon.style.display='none';
+      }
+    }catch(e){ console.error(e); }
+  },
+
+  /* ── HELPERS ── */
+  async registrarHistorico(chamadoId,acao){
+    try{ await sb.from('historico_chamados').insert({chamado_id:chamadoId,acao,usuario_id:this.usuarioAtual?.id||null,usuario_nome:this.usuarioAtual?.user_metadata?.full_name||this.usuarioAtual?.email||'Sistema',created_at:new Date().toISOString()}); }catch(e){}
+  },
+  async registrarAuditoria(acao,detalhes=''){
+    try{ await sb.from('auditoria').insert({usuario_id:this.usuarioAtual?.id||null,usuario_nome:this.usuarioAtual?.user_metadata?.full_name||this.usuarioAtual?.email||'Sistema',acao,detalhes,data_acao:new Date().toISOString()}); }catch(e){}
+  },
+
+  /* ── INIT ── */
+  init(){
+    initDarkMode();
+    setupThemeToggle();
+    document.getElementById('btnLogin').addEventListener('click',()=>this.login());
+    document.getElementById('btnLogout').addEventListener('click',()=>this.logout());
+    document.getElementById('loginEmail').addEventListener('keypress',e=>{if(e.key==='Enter')this.login();});
+    document.getElementById('loginSenha').addEventListener('keypress',e=>{if(e.key==='Enter')this.login();});
+    document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+    document.addEventListener('click', function(e){
+      const sidebar = document.getElementById('sidebar');
+      const menuBtn = document.getElementById('menuToggle');
+      if(sidebar && menuBtn && !sidebar.contains(e.target)){
+        sidebar.classList.remove('open');
+      }
+      // Fecha dropdown de cliente se clicar fora (mas não se clicar dentro)
+      const wrap = document.getElementById('clienteSearchWrap');
+      const dropdown = document.getElementById('clienteDropdown');
+      if(wrap && dropdown && !wrap.contains(e.target) && !dropdown.contains(e.target)){
+        dropdown.classList.remove('show');
+      }
+    });
+    this._setupClienteDropdownBlur();
+    this.verificarSessao();
+  },
+
+  async verificarSessao(){
+    try{
+      const {data:{session}}=await sb.auth.getSession();
+      if(session&&session.user){ this.usuarioAtual=session.user; this.mostrarApp(); }
+      else { document.getElementById('telaLogin').style.display='flex'; }
+    }catch(e){ document.getElementById('telaLogin').style.display='flex'; }
+  }
+};
+
+function abrirInstalacoes(botao) {
+  document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
+  document.querySelectorAll('.topbar-row2 nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('instalacoesSection').classList.remove('hidden');
+  const iframe = document.getElementById('iframeInstalacoes');
+  if (!iframe.getAttribute('data-loaded')) {
+    iframe.setAttribute('data-loaded', '1');
+    iframe.src = './instalacao.html';
+  }
+  botao.classList.add('active');
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+window.addEventListener('load',()=>app.init());
+</script>
+</body>
+</html>
