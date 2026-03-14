@@ -414,9 +414,6 @@
     }
     .autocomplete-list div:hover { background: rgba(37,99,235,0.08); }
 
-    /* ════════════════════════════════════════════
-       NOVO: CLIENTE DROPDOWN RICH CARDS (modal chamado)
-    ════════════════════════════════════════════ */
     .cliente-search-wrap { position: relative; width: 100%; }
     .cliente-search-wrap input { width: 100% !important; }
 
@@ -430,7 +427,6 @@
     .cliente-dropdown .cliente-card { animation: none; }
     .cliente-dropdown .cards-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 
-    /* Item de cliente encontrado */
     .cliente-dropdown-item {
       display: flex; align-items: center; justify-content: space-between;
       padding: 12px 14px; border-radius: 10px;
@@ -457,9 +453,7 @@
       font-size: 0.77em; color: var(--text2); margin-top: 2px;
       display: flex; gap: 8px; flex-wrap: wrap;
     }
-    .cliente-dropdown-meta span {
-      display: flex; align-items: center; gap: 3px;
-    }
+    .cliente-dropdown-meta span { display: flex; align-items: center; gap: 3px; }
     .cliente-dropdown-btn-sel {
       padding: 6px 14px; border-radius: 20px; font-weight: 700;
       font-size: 0.78em; border: none; cursor: pointer; font-family: inherit;
@@ -468,42 +462,22 @@
       color: white; transition: all 0.18s ease;
       box-shadow: 0 2px 6px rgba(16,185,129,0.3);
     }
-    .cliente-dropdown-btn-sel:hover {
-      transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,185,129,0.4);
-    }
-
-    /* Separador */
-    .cliente-dropdown-sep {
-      border: none; border-top: 1px solid var(--border); margin: 6px 0;
-    }
-
-    /* Opção de cadastrar novo */
+    .cliente-dropdown-btn-sel:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,185,129,0.4); }
+    .cliente-dropdown-sep { border: none; border-top: 1px solid var(--border); margin: 6px 0; }
     .cliente-dropdown-novo {
       display: flex; align-items: center; gap: 12px; padding: 12px 14px;
       border-radius: 10px; border: 2px dashed rgba(37,99,235,0.4); margin-top: 2px;
       background: rgba(37,99,235,0.03); cursor: pointer; transition: all 0.2s ease;
     }
-    .cliente-dropdown-novo:hover {
-      background: rgba(37,99,235,0.09); border-color: var(--primary);
-    }
+    .cliente-dropdown-novo:hover { background: rgba(37,99,235,0.09); border-color: var(--primary); }
     .cliente-dropdown-novo-icon {
       width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
       background: rgba(37,99,235,0.12); display: flex; align-items: center;
       justify-content: center; font-size: 1.1em; color: var(--primary);
     }
-    .cliente-dropdown-novo-text strong {
-      display: block; font-size: 0.9em; color: var(--primary); font-weight: 700;
-    }
-    .cliente-dropdown-novo-text span {
-      font-size: 0.76em; color: var(--text2);
-    }
-
-    /* Sem resultados */
-    .cliente-dropdown-vazio {
-      padding: 20px; text-align: center; color: var(--text2); font-size: 0.88em;
-    }
-
-    /* Loading */
+    .cliente-dropdown-novo-text strong { display: block; font-size: 0.9em; color: var(--primary); font-weight: 700; }
+    .cliente-dropdown-novo-text span { font-size: 0.76em; color: var(--text2); }
+    .cliente-dropdown-vazio { padding: 20px; text-align: center; color: var(--text2); font-size: 0.88em; }
     .cliente-dropdown-loading {
       padding: 16px; text-align: center; color: var(--text2); font-size: 0.88em;
       display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -515,7 +489,6 @@
       animation: spin 0.6s linear infinite; flex-shrink: 0;
     }
 
-    /* ── Chip do cliente selecionado ── */
     .cliente-chip {
       display: flex; align-items: center; gap: 10px; padding: 10px 14px;
       background: rgba(16,185,129,0.08); border: 2px solid rgba(16,185,129,0.5);
@@ -538,30 +511,20 @@
     }
     .cliente-chip-remove:hover { background: #ef4444; color: white; }
 
-    /* ── MSGS ── */
     .msg-erro { color: #dc2626; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px; border-left: 4px solid var(--danger); margin-bottom: 16px; font-size: 0.9em; }
     .msg-sucesso { color: #059669; padding: 12px; background: rgba(16,185,129,0.1); border-radius: 8px; border-left: 4px solid var(--success); margin-bottom: 16px; font-size: 0.9em; }
 
-    /* ── PERM CHECKBOX ── */
-    .perm-group {
-      background: var(--bg2); padding: 16px; border-radius: 10px;
-      border: 1px solid var(--border); transition: background 0.3s ease;
-    }
+    .perm-group { background: var(--bg2); padding: 16px; border-radius: 10px; border: 1px solid var(--border); transition: background 0.3s ease; }
     .perm-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
     .perm-item:last-child { border-bottom: none; }
     .perm-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); flex-shrink: 0; }
     .perm-item label { cursor: pointer; font-weight: 500; font-size: 0.92em; margin: 0; }
 
-    /* ── BUTTON TOOLBAR ── */
     .btn-toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-
-    /* ── TABELA RELATORIO ── */
     .tabela-scroll { max-height: 450px; overflow-y: auto; border-radius: 12px; }
     .tabela-scroll thead th { position: sticky; top: 0; background: var(--bg2); z-index: 2; }
-
     .hidden { display: none !important; }
 
-    /* ── RESPONSIVE ── */
     @media (max-width: 960px) {
       .topbar { margin: 10px 12px 0; top: 10px; border-radius: 14px; }
       .topbar-row1 { padding: 0 12px; height: 56px; gap: 10px; }
@@ -647,7 +610,7 @@
           <button onclick="app.aba('auditoria',this)">🔍 Auditoria</button>
           <button onclick="app.aba('config',this)">⚙️ Config</button>
           <button onclick="abrirInstalacoes(this)">📅 Instalações</button>
-          <button onclick="window.location.href='gerador-cracha.html'">🪪 Crachá PDV</button>
+          <a href="gerador-cracha.html" target="_blank" style="background:none;border:none;color:var(--text2);padding:8px 14px;border-radius:10px;cursor:pointer;font-size:0.84em;font-family:'Segoe UI',Arial,sans-serif;font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:6px;flex-shrink:0;height:36px;text-decoration:none;" onmouseover="this.style.background='rgba(37,99,235,0.08)';this.style.color='#2563eb'" onmouseout="this.style.background='none';this.style.color=''">🪪 Crachá PDV</a>
         </nav>
       </div>
     </header>
@@ -829,42 +792,22 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════
-     MODAL NOVO CHAMADO — com busca rich de clientes
-═══════════════════════════════════════════════ -->
+<!-- MODAL NOVO CHAMADO -->
 <div id="modal" class="modal">
   <div class="modal-content wide">
     <div class="modal-header">📋 Novo Chamado</div>
     <div class="modal-grid">
-
-      <!-- Campo de busca de cliente — NOVO DESIGN -->
       <div class="field field-full">
         <label>Cliente *</label>
         <div class="cliente-search-wrap" id="clienteSearchWrap">
-          <input
-            id="mCliente"
-            type="text"
-            placeholder="🔍 Digite o nome ou CNPJ do cliente..."
-            autocomplete="off"
-            oninput="app.buscarClientesRich()"
-          >
-          <!-- Dropdown rico -->
+          <input id="mCliente" type="text" placeholder="🔍 Digite o nome ou CNPJ do cliente..." autocomplete="off" oninput="app.buscarClientesRich()">
           <div class="cliente-dropdown" id="clienteDropdown"></div>
         </div>
-        <!-- Chip do cliente selecionado -->
         <div id="clienteChip" style="display:none;"></div>
-        <!-- Campo oculto que armazena o nome real selecionado -->
         <input type="hidden" id="mClienteValor">
       </div>
-
-      <div class="field">
-        <label>Solicitante *</label>
-        <input id="mSolicitante" type="text" placeholder="Nome do solicitante">
-      </div>
-      <div class="field">
-        <label>Técnico *</label>
-        <select id="mTecnico"><option value="">Selecione um técnico</option></select>
-      </div>
+      <div class="field"><label>Solicitante *</label><input id="mSolicitante" type="text" placeholder="Nome do solicitante"></div>
+      <div class="field"><label>Técnico *</label><select id="mTecnico"><option value="">Selecione um técnico</option></select></div>
       <div class="field">
         <label>Categoria *</label>
         <select id="mCategoria">
@@ -876,15 +819,9 @@
       </div>
       <div class="field">
         <label>Tipo de Atendimento *</label>
-        <select id="mTipoAtendimento">
-          <option value="">Selecione o tipo</option>
-          <option>Remoto</option><option>Presencial</option>
-        </select>
+        <select id="mTipoAtendimento"><option value="">Selecione o tipo</option><option>Remoto</option><option>Presencial</option></select>
       </div>
-      <div class="field field-full">
-        <label>Descrição *</label>
-        <textarea id="mDescricao" placeholder="Descreva o problema..."></textarea>
-      </div>
+      <div class="field field-full"><label>Descrição *</label><textarea id="mDescricao" placeholder="Descreva o problema..."></textarea></div>
     </div>
     <div class="modal-footer">
       <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.fecharModal()">Cancelar</button>
@@ -1063,6 +1000,8 @@ const app = {
 
   mostrarAbasPermitidas(perms){
     document.querySelectorAll('.topbar-row2 nav button').forEach(btn=>{
+      // ✅ CORREÇÃO: ignora botões externos (como o Crachá PDV)
+      if(btn.dataset.externo) return;
       const txt = btn.innerText;
       let aba='';
       if(txt.includes('Chamados')) aba='chamados';
@@ -1098,10 +1037,6 @@ const app = {
   obterPermissoes(){ try{ return JSON.parse(localStorage.getItem('userPermissions')||'{}'); }catch{ return {}; } },
   salvarPermissoes(p){ localStorage.setItem('userPermissions',JSON.stringify(p)); },
 
-  /* ════════════════════════════════════════════
-     MODAL CHAMADO — BUSCA RICH DE CLIENTES
-  ════════════════════════════════════════════ */
-
   abrirModal(){
     const mCliente = document.getElementById('mCliente');
     mCliente.value = '';
@@ -1125,80 +1060,38 @@ const app = {
     document.getElementById('clienteDropdown').classList.remove('show');
   },
 
-  /* Busca rich: nome OU CNPJ */
   async buscarClientesRich(){
     const valor = document.getElementById('mCliente').value.trim();
     const dropdown = document.getElementById('clienteDropdown');
-
     clearTimeout(this._richSearchTimer);
-
-    if(valor.length < 1){
-      dropdown.classList.remove('show');
-      dropdown.innerHTML = '';
-      return;
-    }
-
-    // Loading
+    if(valor.length < 1){ dropdown.classList.remove('show'); dropdown.innerHTML = ''; return; }
     dropdown.innerHTML = `<div class="cliente-dropdown-loading"><div class="spinner"></div> Buscando clientes...</div>`;
     dropdown.classList.add('show');
-
     this._richSearchTimer = setTimeout(async()=>{
       try{
-        // Busca por nome OU cnpj
-        const {data} = await sb.from('clientes')
-          .select('*')
-          .or(`nome.ilike.%${valor}%,cnpj.ilike.%${valor}%,razao_social.ilike.%${valor}%`)
-          .order('nome', {ascending: true})
-          .limit(10);
-
+        const {data} = await sb.from('clientes').select('*').or(`nome.ilike.%${valor}%,cnpj.ilike.%${valor}%,razao_social.ilike.%${valor}%`).order('nome', {ascending: true}).limit(10);
         this._renderClienteDropdown(data || [], valor);
-      }catch(e){
-        dropdown.innerHTML = `<div class="cliente-dropdown-vazio">❌ Erro ao buscar clientes</div>`;
-      }
+      }catch(e){ dropdown.innerHTML = `<div class="cliente-dropdown-vazio">❌ Erro ao buscar clientes</div>`; }
     }, 280);
   },
 
   _renderClienteDropdown(clientes, termoBusca){
     const dropdown = document.getElementById('clienteDropdown');
     dropdown.innerHTML = '';
-
     if(clientes.length > 0){
       const grid = document.createElement('div');
       grid.className = 'cards-grid';
       grid.style.marginBottom = '10px';
-
       clientes.forEach(c => {
         const card = document.createElement('div');
         card.className = 'cliente-card';
-
-        // Nome com highlight
         const h3 = document.createElement('h3');
         h3.innerHTML = '👤 ' + this._highlight(c.nome, termoBusca);
         card.appendChild(h3);
-
-        if(c.razao_social){
-          const p = document.createElement('p');
-          p.innerHTML = '<strong>Razão:</strong> ' + this._highlight(c.razao_social, termoBusca);
-          card.appendChild(p);
-        }
-        if(c.cnpj){
-          const p = document.createElement('p');
-          p.innerHTML = '<strong>CNPJ/CPF:</strong> ' + this._highlight(c.cnpj, termoBusca);
-          card.appendChild(p);
-        }
-        if(c.endereco){
-          const p = document.createElement('p');
-          p.innerHTML = '<strong>Endereço:</strong> ' + c.endereco;
-          card.appendChild(p);
-        }
-        if(c.observacoes){
-          const p = document.createElement('p');
-          p.style.cssText = 'font-style:italic;margin-top:6px;';
-          p.textContent = c.observacoes;
-          card.appendChild(p);
-        }
-
-        // Botão selecionar
+        if(c.razao_social){ const p = document.createElement('p'); p.innerHTML = '<strong>Razão:</strong> ' + this._highlight(c.razao_social, termoBusca); card.appendChild(p); }
+        if(c.cnpj){ const p = document.createElement('p'); p.innerHTML = '<strong>CNPJ/CPF:</strong> ' + this._highlight(c.cnpj, termoBusca); card.appendChild(p); }
+        if(c.endereco){ const p = document.createElement('p'); p.innerHTML = '<strong>Endereço:</strong> ' + c.endereco; card.appendChild(p); }
+        if(c.observacoes){ const p = document.createElement('p'); p.style.cssText = 'font-style:italic;margin-top:6px;'; p.textContent = c.observacoes; card.appendChild(p); }
         const actions = document.createElement('div');
         actions.className = 'cliente-actions';
         actions.style.marginTop = '14px';
@@ -1206,42 +1099,31 @@ const app = {
         btn.className = 'btn btn-success btn-sm';
         btn.style.cssText = 'width:100%;text-align:center;';
         btn.textContent = '✓ Selecionar este cliente';
-        btn.addEventListener('click', () => {
-          this.selecionarClienteRich(c);
-        });
+        btn.addEventListener('click', () => { this.selecionarClienteRich(c); });
         actions.appendChild(btn);
         card.appendChild(actions);
-
         grid.appendChild(card);
       });
-
       dropdown.appendChild(grid);
-
       const sep = document.createElement('hr');
       sep.className = 'cliente-dropdown-sep';
       dropdown.appendChild(sep);
     }
-
-    // Opção cadastrar novo
     const novo = document.createElement('div');
     novo.className = 'cliente-dropdown-novo';
     novo.innerHTML = '<div class="cliente-dropdown-novo-icon">➕</div><div class="cliente-dropdown-novo-text"><strong>Cadastrar \"' + termoBusca + '\" como novo cliente</strong><span>Abre o formulário de cadastro com este nome preenchido</span></div>';
-    novo.addEventListener('click', () => {
-      this._abrirCadastroNovoClienteDoChamado(termoBusca);
-    });
+    novo.addEventListener('click', () => { this._abrirCadastroNovoClienteDoChamado(termoBusca); });
     dropdown.appendChild(novo);
-
     dropdown.classList.add('show');
   },
 
-    _highlight(texto, termo){
+  _highlight(texto, termo){
     if(!termo) return texto;
     const re = new RegExp(`(${termo.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
     return texto.replace(re, '<mark style="background:rgba(37,99,235,0.15);color:var(--primary);border-radius:3px;padding:0 2px;">$1</mark>');
   },
 
   selecionarClienteRich(c){
-    // c é o objeto cliente direto (não mais JSON string)
     const nome = c.nome || c;
     const input = document.getElementById('mCliente');
     input.value = nome;
@@ -1249,7 +1131,6 @@ const app = {
     input.style.borderColor = '#10b981';
     input.style.boxShadow = '0 0 0 3px rgba(16,185,129,0.15)';
     document.getElementById('mClienteValor').value = nome;
-    // Fecha e limpa dropdown
     const dd = document.getElementById('clienteDropdown');
     dd.classList.remove('show');
     dd.innerHTML = '';
@@ -1258,10 +1139,7 @@ const app = {
 
   limparClienteSelecionado(){
     const inp = document.getElementById('mCliente');
-    inp.value = '';
-    inp.style.borderColor = '';
-    inp.style.background = '';
-    inp.style.display = '';
+    inp.value = ''; inp.style.borderColor = ''; inp.style.background = ''; inp.style.display = '';
     document.getElementById('mClienteValor').value = '';
     document.getElementById('clienteChip').style.display = 'none';
     document.getElementById('clienteDropdown').classList.remove('show');
@@ -1269,9 +1147,7 @@ const app = {
   },
 
   _abrirCadastroNovoClienteDoChamado(nome){
-    // Fecha o dropdown mas MANTÉM o modal de chamado aberto
     document.getElementById('clienteDropdown').classList.remove('show');
-    // Preenche o nome no modal de cliente
     ['ncNome','ncRazao','ncCNPJ','ncEndereco','ncObservacoes'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('ncNome').value = nome;
     delete document.getElementById('modalNovoCliente').dataset.nomeOriginal;
@@ -1286,25 +1162,20 @@ const app = {
     if(!nome) return alert('Nome é obrigatório!');
     try{
       const {data, error} = await sb.from('clientes').insert({
-        nome,
-        razao_social: document.getElementById('ncRazao').value.trim()||null,
+        nome, razao_social: document.getElementById('ncRazao').value.trim()||null,
         cnpj: document.getElementById('ncCNPJ').value.trim()||null,
         endereco: document.getElementById('ncEndereco').value.trim()||null,
         observacoes: document.getElementById('ncObservacoes').value.trim()||null
       }).select().single();
       if(error) return this.mostrarErro('Erro: '+error.message);
       await this.registrarAuditoria('Criou cliente (via chamado)',`Nome: ${nome}`);
-      // Fecha modal cliente e seleciona automaticamente no chamado
       document.getElementById('modalNovoCliente').classList.remove('active');
       this.selecionarClienteRich(data);
     }catch(e){ this.mostrarErro('Erro: '+e.message); }
   },
 
-  _setupClienteDropdownBlur(){
-    // Nada — o fechamento é feito apenas pelo click fora (no handler global)
-  },
+  _setupClienteDropdownBlur(){},
 
-  /* ── CHAMADOS ── */
   async carregarTecnicos(){
     try{
       const {data} = await sb.from('usuarios').select('nome,email').order('nome',{ascending:true});
@@ -1327,25 +1198,17 @@ const app = {
       const hoje = new Date().toISOString().split('T')[0];
       const filtrados = data.filter(c=>c.created_at.substring(0,10)===hoje||c.status==='pendente');
       if(!filtrados.length) return tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text2);">Nenhum chamado pendente ou de hoje</td></tr>';
-
       let podeExcluir = false;
       try{
         const {data:uData} = await sb.from('usuarios').select('permissoes').eq('email', this.usuarioAtual.email).single();
-        if(uData?.permissoes){
-          const p = JSON.parse(uData.permissoes);
-          podeExcluir = p.excluirChamados === true;
-          this.salvarPermissoes(p);
-        }
+        if(uData?.permissoes){ const p = JSON.parse(uData.permissoes); podeExcluir = p.excluirChamados === true; this.salvarPermissoes(p); }
       }catch(e){}
-
       filtrados.forEach(c=>{
         tbody.innerHTML+=`<tr>
           <td><strong>${c.id}</strong></td>
           <td>${new Date(c.created_at).toLocaleDateString('pt-BR')}</td>
           <td>${new Date(c.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
-          <td>${c.cliente}</td>
-          <td>${c.solicitante}</td>
-          <td>${c.tecnico}</td>
+          <td>${c.cliente}</td><td>${c.solicitante}</td><td>${c.tecnico}</td>
           <td><strong>${c.categoria||'N/A'}</strong></td>
           <td><span class="badge badge-${c.status}" onclick="app.alterarStatus(${c.id},'${c.status}')">${c.status}</span></td>
           <td style="display:flex;gap:6px;">
@@ -1407,7 +1270,6 @@ const app = {
     }catch(e){ this.mostrarErro('Erro: '+e.message); }
   },
 
-  /* ── CLIENTES ── */
   async carregarClientes(){
     document.getElementById('listaClientes').style.display = 'none';
     document.getElementById('clientesEstadoVazio').style.display = 'block';
@@ -1421,11 +1283,9 @@ const app = {
     if(!data||!data.length){
       div.style.display='none';
       vazio.innerHTML='<div style="font-size:3em;margin-bottom:12px;">😕</div><p style="font-size:1.05em;">Nenhum cliente encontrado para essa pesquisa.</p>';
-      vazio.style.display='block';
-      return;
+      vazio.style.display='block'; return;
     }
-    vazio.style.display='none';
-    div.style.display='grid';
+    vazio.style.display='none'; div.style.display='grid';
     data.forEach(c=>{
       div.innerHTML+=`<div class="cliente-card">
         <h3>👤 ${c.nome}</h3>
@@ -1446,9 +1306,7 @@ const app = {
     const termo = document.getElementById('pesquisaCliente').value.trim();
     try{
       let query = sb.from('clientes').select('*');
-      if(termo){
-        query = query.or(`nome.ilike.%${termo}%,razao_social.ilike.%${termo}%,cnpj.ilike.%${termo}%`);
-      }
+      if(termo){ query = query.or(`nome.ilike.%${termo}%,razao_social.ilike.%${termo}%,cnpj.ilike.%${termo}%`); }
       const {data} = await query.order('nome',{ascending:true});
       this._renderizarClientes(data);
     }catch(e){ console.error(e); }
@@ -1534,7 +1392,6 @@ const app = {
     }catch(e){ this.mostrarErro('Erro: '+e.message); }
   },
 
-  /* ── RELATÓRIOS ── */
   async buscarClientesFiltro(){
     const valor = document.getElementById('fCliente').value.trim();
     const lista = document.getElementById('listaClientesFiltro');
@@ -1577,11 +1434,8 @@ const app = {
         tbody.innerHTML+=`<tr>
           <td><strong>#${c.id}</strong></td>
           <td>${new Date(c.created_at).toLocaleDateString('pt-BR')}</td>
-          <td>${c.cliente}</td>
-          <td>${c.solicitante}</td>
-          <td>${c.tecnico}</td>
-          <td>${c.categoria||'N/A'}</td>
-          <td>${c.tipo_atendimento||'N/A'}</td>
+          <td>${c.cliente}</td><td>${c.solicitante}</td><td>${c.tecnico}</td>
+          <td>${c.categoria||'N/A'}</td><td>${c.tipo_atendimento||'N/A'}</td>
           <td><span class="badge badge-${c.status}">${c.status}</span></td>
           <td style="font-size:0.85em;max-width:220px;">
             <div style="color:var(--text2);margin-bottom:4px;"><strong>Por:</strong> ${c.criado_por_nome||'N/A'}</div>
@@ -1611,11 +1465,9 @@ const app = {
       html+=`<tr><td>${cells[0]?.innerText}</td><td>${cells[1]?.innerText}</td><td>${cells[2]?.innerText}</td><td>${cells[3]?.innerText}</td><td>${cells[4]?.innerText}</td><td>${cells[5]?.innerText}</td><td>${cells[6]?.innerText}</td><td><span class="${status}">${status}</span></td><td>${(cells[8]?.innerText||'').substring(0,60)}...</td></tr>`;
     }
     html+=`</tbody></table><p style="margin-top:20px;color:#999;text-align:center;font-size:11px;">Total: ${rows.length} registros</p></body></html>`;
-    const w=window.open('','','width=1200,height=800');
-    w.document.write(html); w.document.close(); w.print();
+    const w=window.open('','','width=1200,height=800'); w.document.write(html); w.document.close(); w.print();
   },
 
-  /* ── USUÁRIOS ── */
   async carregarUsuarios(){
     try{
       const {data,error}=await sb.from('usuarios').select('*').order('criado_em',{ascending:false});
@@ -1627,8 +1479,7 @@ const app = {
         const perms=u.permissoes?JSON.parse(u.permissoes):{};
         const lista=[perms.chamados&&'Chamados',perms.clientes&&'Clientes',perms.relatorios&&'Relatórios',perms.usuarios&&'Admin'].filter(Boolean).join(', ')||'—';
         tbody.innerHTML+=`<tr>
-          <td><strong>${u.nome||u.email}</strong></td>
-          <td>${u.email}</td>
+          <td><strong>${u.nome||u.email}</strong></td><td>${u.email}</td>
           <td><span style="font-size:0.82em;color:var(--text2);">${lista}</span></td>
           <td>${u.criado_em?new Date(u.criado_em).toLocaleDateString('pt-BR'):'—'}</td>
           <td style="display:flex;gap:6px;">
@@ -1723,7 +1574,6 @@ const app = {
     this.carregarUsuarios();
   },
 
-  /* ── ACESSOS ── */
   abrirAcessos(cliente){
     this.clienteAcessoAtual=cliente;
     document.getElementById('clienteAcessoNome').innerText=cliente;
@@ -1754,8 +1604,7 @@ const app = {
     if(!nome) return alert('Nome é obrigatório!');
     const {error}=await sb.from('acessos_remotos').insert({cliente_nome:this.clienteAcessoAtual,nome,descricao:document.getElementById('arDescricao').value.trim()||null});
     if(error) return this.mostrarErro('Erro: '+error.message);
-    document.getElementById('arNome').value='';
-    document.getElementById('arDescricao').value='';
+    document.getElementById('arNome').value=''; document.getElementById('arDescricao').value='';
     this.carregarAcessos();
   },
 
@@ -1763,7 +1612,6 @@ const app = {
   async salvarEditAcesso(id,desc){ await sb.from('acessos_remotos').update({descricao:desc||null}).eq('id',id); this.carregarAcessos(); },
   async excluirAcesso(id){ if(!confirm('Excluir?')) return; await sb.from('acessos_remotos').delete().eq('id',id); this.carregarAcessos(); },
 
-  /* ── CRONOLOGIA ── */
   abrirCronologia(id){
     this.chamadoCronologiaId=id;
     document.getElementById('idCronologia').innerText=id;
@@ -1790,11 +1638,7 @@ const app = {
 
   async editarDescricaoChamado(id,desc){
     const n=prompt('Editar descrição:',desc);
-    if(n!==null&&n.trim()){
-      await sb.from('chamados').update({descricao:n.trim()}).eq('id',id);
-      await this.registrarAuditoria('Editou descrição',`Chamado ID: ${id}`);
-      this.carregarChamadoDescricao();
-    }
+    if(n!==null&&n.trim()){ await sb.from('chamados').update({descricao:n.trim()}).eq('id',id); await this.registrarAuditoria('Editou descrição',`Chamado ID: ${id}`); this.carregarChamadoDescricao(); }
   },
 
   async excluirDescricaoChamado(){
@@ -1838,7 +1682,6 @@ const app = {
   },
   async excluirCronologia(id){ if(!confirm('Excluir?')) return; await sb.from('cronologia_chamados').delete().eq('id',id); this.carregarCronologia(); },
 
-  /* ── AUDITORIA ── */
   async carregarAuditoria(){
     document.getElementById('listaAuditoria').innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2);">Use a pesquisa para filtrar registros</td></tr>';
   },
@@ -1872,7 +1715,6 @@ const app = {
     document.getElementById('listaAuditoria').innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2);">Use a pesquisa para filtrar registros</td></tr>';
   },
 
-  /* ── CONFIG ── */
   async salvarConfig(){
     const nome=document.getElementById('confEmpresa').value.trim();
     const logo=document.getElementById('confLogo').value.trim();
@@ -1906,7 +1748,6 @@ const app = {
     }catch(e){ console.error(e); }
   },
 
-  /* ── HELPERS ── */
   async registrarHistorico(chamadoId,acao){
     try{ await sb.from('historico_chamados').insert({chamado_id:chamadoId,acao,usuario_id:this.usuarioAtual?.id||null,usuario_nome:this.usuarioAtual?.user_metadata?.full_name||this.usuarioAtual?.email||'Sistema',created_at:new Date().toISOString()}); }catch(e){}
   },
@@ -1914,7 +1755,6 @@ const app = {
     try{ await sb.from('auditoria').insert({usuario_id:this.usuarioAtual?.id||null,usuario_nome:this.usuarioAtual?.user_metadata?.full_name||this.usuarioAtual?.email||'Sistema',acao,detalhes,data_acao:new Date().toISOString()}); }catch(e){}
   },
 
-  /* ── INIT ── */
   init(){
     initDarkMode();
     setupThemeToggle();
@@ -1926,15 +1766,10 @@ const app = {
     document.addEventListener('click', function(e){
       const sidebar = document.getElementById('sidebar');
       const menuBtn = document.getElementById('menuToggle');
-      if(sidebar && menuBtn && !sidebar.contains(e.target)){
-        sidebar.classList.remove('open');
-      }
-      // Fecha dropdown de cliente se clicar fora (mas não se clicar dentro)
+      if(sidebar && menuBtn && !sidebar.contains(e.target)){ sidebar.classList.remove('open'); }
       const wrap = document.getElementById('clienteSearchWrap');
       const dropdown = document.getElementById('clienteDropdown');
-      if(wrap && dropdown && !wrap.contains(e.target) && !dropdown.contains(e.target)){
-        dropdown.classList.remove('show');
-      }
+      if(wrap && dropdown && !wrap.contains(e.target) && !dropdown.contains(e.target)){ dropdown.classList.remove('show'); }
     });
     this._setupClienteDropdownBlur();
     this.verificarSessao();
