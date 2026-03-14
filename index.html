@@ -551,14 +551,19 @@
     }
     /* Radio buttons do tamanho */
     #crachaSection input[type="radio"] {
-      width:16px !important; height:16px !important; min-height:unset !important;
-      line-height:normal !important; padding:0 !important; border:none !important;
-      box-shadow:none !important; background:none !important; flex-shrink:0 !important;
-      accent-color:var(--primary);
+      width:16px !important; height:16px !important; min-height:16px !important;
+      max-height:16px !important; line-height:normal !important; padding:0 !important;
+      border:none !important; box-shadow:none !important; background:none !important;
+      flex-shrink:0 !important; accent-color:var(--primary);
+      display:inline-block !important; vertical-align:middle !important;
     }
-    /* Labels dos radio buttons */
-    #crachaSection label[style*="display:flex"] {
-      height:auto !important; line-height:1.4 !important;
+    /* Labels dos radio buttons — container */
+    #crachaSection .form-group > div > label {
+      height:auto !important; min-height:unset !important; line-height:1.4 !important;
+      padding:10px 14px !important; display:flex !important; align-items:center !important;
+      gap:10px !important; border:2px solid var(--border) !important;
+      border-radius:8px !important; cursor:pointer !important; background:var(--bg2) !important;
+      width:100% !important; box-sizing:border-box !important;
     }
     /* Color pickers */
     #crachaSection input[type="color"] {
