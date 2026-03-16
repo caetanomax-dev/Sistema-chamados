@@ -864,7 +864,7 @@
         <div class="page-header">
           <div>
             <h1>🪪 Gerador de Crachá PDV</h1>
-            <p>Geração e impressão de crachás com código de barras para autorização no PDV</p>
+            <p>Gere crachás com código de barras para autorização automática no sistema de frente de caixa</p>
           </div>
         </div>
 
@@ -2149,18 +2149,20 @@ function crGerarTodos() {
   const senha=document.getElementById('cr-senha').value;
   if(!usuario||!senha){crMsg('❌ Preencha o Usuário e a Senha para gerar todos os formatos.','erro');return;}
   const empresa=document.getElementById('cr-empresa').value.trim()||'TESTE PDV';
+  const cfg=crSizeCfg[crSize]; // respeita o tamanho escolhido
   crFolha=[];
   CR_TODOS_MODOS.forEach((modo,idx)=>{
     const svgEl=document.createElementNS('http://www.w3.org/2000/svg','svg');
     svgEl.id='crtmp'+idx; document.body.appendChild(svgEl);
     try {
       JsBarcode('#crtmp'+idx, usuario+modo.sep+senha, {
-        format:'CODE128', width:1.2, height:32, displayValue:false, margin:3, background:'#ffffff', lineColor:'#1e293b'
+        format:'CODE128', width:cfg.bw, height:cfg.bh,
+        displayValue:false, margin:3, background:'#ffffff', lineColor:'#1e293b'
       });
       crFolha.push({
         empresa:empresa.toUpperCase(), nome:modo.label,
         svg:svgEl.outerHTML, headerBg:`linear-gradient(135deg,${crC1},${crC2})`,
-        dividerBg:crC2, sizeCls:'cr-size-small', modeLabel:modo.desc, id:Date.now()+idx
+        dividerBg:crC2, sizeCls:cfg.cls, modeLabel:modo.desc, id:Date.now()+idx
       });
     } catch(e){}
     document.body.removeChild(svgEl);
