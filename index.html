@@ -527,9 +527,9 @@
 
     /* ── CRACHÁ PDV ── */
     .cr-badge-card { background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.18);display:flex;flex-direction:column;border:1px solid #e2e8f0; }
-    .cr-size-pvc { width:255px; }
-    .cr-size-big { width:300px; }
-    .cr-size-small { width:210px; }
+    .cr-size-pvc   { width:255px; } /* ~90mm — 2 por linha A4 */
+    .cr-size-big   { width:310px; } /* ~110mm — 1-2 por linha A4 */
+    .cr-size-small { width:162px; } /* ~57mm — 3 por linha A4 */
     .cr-badge-header-bar { padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px; }
     @media (max-width:900px) { #crachaGrid { grid-template-columns:1fr !important; } }
 
@@ -577,13 +577,20 @@
       padding:1px 5px !important; border:none !important; box-shadow:none !important;
     }
     @media print {
+      * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
       body * { visibility:hidden !important; }
-      #cr-print-zone, #cr-print-zone * { visibility:visible !important; }
-      #cr-print-zone { position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:white; }
-      #cr-folha-print-zone { display:block !important; visibility:visible !important; position:fixed;inset:0;background:white;padding:12mm; }
+      /* Crachá único */
+      #cr-print-single-zone { visibility:visible !important; position:fixed; inset:0; background:white; display:flex !important; align-items:center; justify-content:center; }
+      #cr-print-single-zone * { visibility:visible !important; }
+      /* Folha */
+      #cr-folha-print-zone { visibility:visible !important; position:absolute; top:0; left:0; width:100%; background:white; padding:8mm; }
       #cr-folha-print-zone * { visibility:visible !important; }
-      .cr-folha-print-grid { display:flex;flex-wrap:wrap;gap:6mm;align-items:flex-start; }
-      .cr-badge-card { box-shadow:none !important;border:1px solid #ccc !important; }
+      #cr-folha-print-zone .cr-folha-print-grid { display:flex; flex-wrap:wrap; gap:4mm; align-items:flex-start; width:194mm; }
+      #cr-folha-print-zone .cr-size-small { width:57mm !important; }
+      #cr-folha-print-zone .cr-size-pvc   { width:90mm !important; }
+      #cr-folha-print-zone .cr-size-big   { width:108mm !important; }
+      .cr-badge-card { box-shadow:none !important; border:1px solid #aaa !important; break-inside:avoid !important; page-break-inside:avoid !important; }
+      .cr-badge-header-bar { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
     }
     .hidden { display: none !important; }
 
@@ -851,143 +858,180 @@
       </section>
 
 
+
       <!-- CRACHÁ PDV -->
       <section id="crachaSection" class="hidden" style="overflow:visible;">
         <div class="page-header">
           <div>
             <h1>🪪 Gerador de Crachá PDV</h1>
-            <p>Gere crachás com código de barras para autorização automática no sistema de frente de caixa</p>
+            <p>Geração e impressão de crachás com código de barras para autorização no PDV</p>
           </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;" id="crachaGrid">
+        <!-- ZONAS DE IMPRESSÃO -->
+        <div id="cr-print-single-zone" style="display:none;"><div id="cr-print-single-badge"></div></div>
+        <div id="cr-folha-print-zone" style="display:none;"><div class="cr-folha-print-grid" id="cr-print-folha-badges"></div></div>
 
-          <!-- FORMULÁRIO -->
-          <div class="section">
-            <h2>📋 Dados do Crachá</h2>
-            <div id="msgFormCracha"></div>
+        <!-- GRID 2 COLUNAS -->
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;" id="crachaGrid">
 
-            <div class="form-group"><label>🏢 Nome da Empresa</label><input id="cr-empresa" type="text" placeholder="Ex: Minha Empresa Ltda"></div>
-            <div class="form-group"><label>👤 Nome exibido no Crachá</label><input id="cr-nome" type="text" placeholder="Ex: João da Silva"></div>
-            <div class="form-group"><label>🔑 Usuário do Sistema PDV</label><input id="cr-usuario" type="text" placeholder="Ex: joao.silva" autocomplete="off"></div>
-            <div class="form-group"><label>🔒 Senha do Sistema PDV</label><input id="cr-senha" type="password" placeholder="••••••••" autocomplete="new-password"></div>
-
-            <div class="form-group">
-              <label>⌨️ Separador entre Usuário e Senha</label>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
-                <div class="cr-sep-pill active" data-sep="enter" onclick="crSetSep(this)" style="padding:8px 14px;border:2px solid var(--primary);border-radius:20px;cursor:pointer;font-size:0.84em;font-weight:600;color:var(--primary);background:rgba(37,99,235,0.1);display:inline-flex;align-items:center;gap:5px;">ENTER <kbd style="background:rgba(37,99,235,0.15);border-radius:4px;padding:1px 5px;font-size:0.78em;font-family:monospace;color:var(--primary);">↵</kbd></div>
-                <div class="cr-sep-pill" data-sep="tab" onclick="crSetSep(this)" style="padding:8px 14px;border:2px solid var(--border);border-radius:20px;cursor:pointer;font-size:0.84em;font-weight:600;color:var(--text2);background:var(--bg2);display:inline-flex;align-items:center;gap:5px;">TAB <kbd style="background:var(--border);border-radius:4px;padding:1px 5px;font-size:0.78em;font-family:monospace;">⇥</kbd></div>
-                <div class="cr-sep-pill" data-sep="enter2" onclick="crSetSep(this)" style="padding:8px 14px;border:2px solid var(--border);border-radius:20px;cursor:pointer;font-size:0.84em;font-weight:600;color:var(--text2);background:var(--bg2);display:inline-flex;align-items:center;gap:5px;">ENTER+ENTER <kbd style="background:var(--border);border-radius:4px;padding:1px 5px;font-size:0.78em;font-family:monospace;">↵↵</kbd></div>
+          <!-- COLUNA ESQUERDA: FORMULÁRIO -->
+          <div>
+            <!-- DADOS -->
+            <div class="section" style="margin-bottom:16px;padding:20px;">
+              <h2 style="font-size:1.1em;margin-bottom:16px;">📋 Dados do Crachá</h2>
+              <div id="msgFormCracha"></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="form-group" style="margin-bottom:0;"><label>🏢 Empresa</label><input id="cr-empresa" type="text" placeholder="Ex: Minha Empresa Ltda"></div>
+                <div class="form-group" style="margin-bottom:0;"><label>👤 Nome exibido</label><input id="cr-nome" type="text" placeholder="Ex: João da Silva"></div>
+                <div class="form-group" style="margin-bottom:0;"><label>🔑 Usuário PDV</label><input id="cr-usuario" type="text" placeholder="Ex: joao.silva" autocomplete="off"></div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label>🔒 Senha PDV</label>
+                  <div style="position:relative;">
+                    <input id="cr-senha" type="text" placeholder="••••••••" autocomplete="off"
+                      style="height:44px!important;padding:0 40px 0 14px!important;border:2px solid var(--border)!important;border-radius:8px!important;font-size:0.92em!important;font-family:inherit!important;background:var(--bg2)!important;color:var(--text)!important;width:100%!important;box-sizing:border-box!important;">
+                    <button type="button" id="cr-btn-senha" onclick="crToggleSenha()"
+                      style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1em;color:var(--text2);padding:0;line-height:1;">👁️</button>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class="form-group">
-              <label>📐 Tamanho do Crachá</label>
-              <div style="display:flex;flex-direction:column;gap:8px;">
-                <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--bg2);">
-                  <input type="radio" name="cr-tamanho" value="pvc" checked onchange="crSetSize(this)" style="accent-color:var(--primary);width:16px;height:16px;flex-shrink:0;min-height:unset!important;padding:0!important;border:none!important;box-shadow:none!important;background:none!important;">
-                  <span style="font-weight:600;font-size:0.9em;color:var(--text);flex:1;">Padrão <span style="font-weight:400;color:var(--text2);font-size:0.88em;">(tamanho de um cartão de crédito)</span></span>
-                </label>
-                <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--bg2);">
-                  <input type="radio" name="cr-tamanho" value="big" onchange="crSetSize(this)" style="accent-color:var(--primary);width:16px;height:16px;flex-shrink:0;min-height:unset!important;padding:0!important;border:none!important;box-shadow:none!important;background:none!important;">
-                  <span style="font-weight:600;font-size:0.9em;color:var(--text);flex:1;">Grande <span style="font-weight:400;color:var(--text2);font-size:0.88em;">(um pouco maior que o padrão)</span></span>
-                </label>
-                <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--bg2);">
-                  <input type="radio" name="cr-tamanho" value="small" onchange="crSetSize(this)" style="accent-color:var(--primary);width:16px;height:16px;flex-shrink:0;min-height:unset!important;padding:0!important;border:none!important;box-shadow:none!important;background:none!important;">
-                  <span style="font-weight:600;font-size:0.9em;color:var(--text);flex:1;">Pequeno <span style="font-weight:400;color:var(--text2);font-size:0.88em;">(menor que o padrão)</span></span>
-                </label>
-              </div>
-            </div>
+            <!-- CONFIGURAÇÕES -->
+            <div class="section" style="margin-bottom:16px;padding:20px;">
+              <h2 style="font-size:1.1em;margin-bottom:16px;">⚙️ Configurações</h2>
 
-            <div class="form-group">
-              <label>🎨 Cor do Cabeçalho</label>
-              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;align-items:center;">
-                <div class="cr-swatch active" data-c1="#1e3a5f" data-c2="#2563eb" onclick="crSetCor(this)" title="Azul Padrão" style="width:34px;height:34px;border-radius:8px;cursor:pointer;border:3px solid var(--text);box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--text);background:linear-gradient(135deg,#1e3a5f,#2563eb);flex-shrink:0;"></div>
-                <div class="cr-swatch" data-c1="#064e3b" data-c2="#10b981" onclick="crSetCor(this)" title="Verde" style="width:34px;height:34px;border-radius:8px;cursor:pointer;border:3px solid transparent;background:linear-gradient(135deg,#064e3b,#10b981);flex-shrink:0;"></div>
-                <div class="cr-swatch" data-c1="#7f1d1d" data-c2="#ef4444" onclick="crSetCor(this)" title="Vermelho" style="width:34px;height:34px;border-radius:8px;cursor:pointer;border:3px solid transparent;background:linear-gradient(135deg,#7f1d1d,#ef4444);flex-shrink:0;"></div>
-                <div class="cr-swatch" data-c1="#3b0764" data-c2="#7c3aed" onclick="crSetCor(this)" title="Roxo" style="width:34px;height:34px;border-radius:8px;cursor:pointer;border:3px solid transparent;background:linear-gradient(135deg,#3b0764,#7c3aed);flex-shrink:0;"></div>
-                <div class="cr-swatch" data-c1="#7c2d12" data-c2="#f97316" onclick="crSetCor(this)" title="Laranja" style="width:34px;height:34px;border-radius:8px;cursor:pointer;border:3px solid transparent;background:linear-gradient(135deg,#7c2d12,#f97316);flex-shrink:0;"></div>
-                <div class="cr-swatch" data-c1="#111827" data-c2="#374151" onclick="crSetCor(this)" title="Cinza" style="width:34px;height:34px;border-radius:8px;cursor:pointer;border:3px solid transparent;background:linear-gradient(135deg,#111827,#374151);flex-shrink:0;"></div>
-                <div class="cr-swatch" data-c1="#831843" data-c2="#ec4899" onclick="crSetCor(this)" title="Rosa" style="width:34px;height:34px;border-radius:8px;cursor:pointer;border:3px solid transparent;background:linear-gradient(135deg,#831843,#ec4899);flex-shrink:0;"></div>
-                <div class="cr-swatch" data-c1="#164e63" data-c2="#06b6d4" onclick="crSetCor(this)" title="Ciano" style="width:34px;height:34px;border-radius:8px;cursor:pointer;border:3px solid transparent;background:linear-gradient(135deg,#164e63,#06b6d4);flex-shrink:0;"></div>
-                <label style="display:flex;align-items:center;gap:8px;padding:6px 12px;border:2px solid var(--border);border-radius:8px;background:var(--bg2);cursor:pointer;font-size:0.82em;font-weight:600;color:var(--text2);">
-                  🖌️ Personalizar
-                  <input type="color" id="cr-picker1" value="#1e3a5f" oninput="crSetCorCustom()" style="width:28px;height:28px;border:none;background:none;padding:0;cursor:pointer;border-radius:4px;min-height:unset!important;height:28px!important;">
-                  <input type="color" id="cr-picker2" value="#2563eb" oninput="crSetCorCustom()" style="width:28px;height:28px;border:none;background:none;padding:0;cursor:pointer;border-radius:4px;min-height:unset!important;height:28px!important;margin-left:-4px;">
-                </label>
-              </div>
-            </div>
-
-            <button class="btn btn-primary" onclick="crGerarCracha()" style="width:100%;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;">🪪 Gerar Crachá</button>
-
-            <div style="padding:14px 16px;border-radius:10px;margin-top:16px;background:rgba(6,182,212,0.07);border-left:4px solid var(--info);font-size:0.88em;color:var(--text2);line-height:1.6;">
-              <strong style="color:var(--info);">Como funciona:</strong> O código de barras codifica <em>usuário + separador + senha</em>. Ao escanear com um leitor HID, ele digita os dados automaticamente no campo do PDV.
-            </div>
-          </div>
-
-          <!-- PRÉ-VISUALIZAÇÃO -->
-          <div class="section" style="position:sticky;top:94px;">
-            <h2>👁️ Pré-visualização</h2>
-
-            <div id="cr-preview-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:60px 20px;color:var(--text2);text-align:center;">
-              <div style="font-size:3.5em;opacity:0.35;">🪪</div>
-              <p style="font-size:0.9em;line-height:1.5;">Preencha os campos ao lado<br>e clique em <strong>Gerar Crachá</strong></p>
-            </div>
-
-            <div id="cr-badge-preview" style="display:none;">
-              <div style="display:flex;justify-content:center;padding:20px 0 12px;">
-                <div id="cr-print-zone">
-                  <div class="cr-badge-card cr-size-pvc" id="cr-the-badge">
-                    <div class="cr-badge-header-bar" id="cr-header-bar">
-                      <span style="font-weight:800;font-size:0.78em;color:#fff;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="cr-b-empresa">EMPRESA</span>
-                      <span style="font-size:0.6em;font-weight:700;letter-spacing:0.12em;background:rgba(255,255,255,0.2);color:#fff;padding:2px 8px;border-radius:4px;text-transform:uppercase;border:1px solid rgba(255,255,255,0.3);flex-shrink:0;">PDV</span>
-                    </div>
-                    <div style="padding:12px 16px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;">
-                      <span style="font-size:0.58em;font-weight:700;letter-spacing:0.2em;color:#94a3b8;text-transform:uppercase;">Autorização PDV</span>
-                      <span style="font-size:0.95em;font-weight:800;color:#1e293b;text-align:center;line-height:1.3;" id="cr-b-nome">Nome do Responsável</span>
-                      <div id="cr-divider" style="width:32px;height:3px;background:#2563eb;border-radius:2px;margin:2px 0;"></div>
-                      <div style="background:#fff;padding:4px 8px 2px;border-radius:6px;display:flex;align-items:center;justify-content:center;">
-                        <svg id="cr-barcode"></svg>
-                      </div>
-                    </div>
-                    <div style="background:#f1f5f9;padding:6px 16px;display:flex;align-items:center;justify-content:center;gap:8px;border-top:1px solid #e2e8f0;">
-                      <div class="cr-footer-dot" style="width:5px;height:5px;background:#2563eb;border-radius:50%;"></div>
-                      <span style="font-size:0.52em;font-weight:700;letter-spacing:0.18em;color:#64748b;text-transform:uppercase;">Uso exclusivo no sistema PDV</span>
-                      <div class="cr-footer-dot" style="width:5px;height:5px;background:#2563eb;border-radius:50%;"></div>
-                    </div>
+              <!-- SEPARADOR -->
+              <div class="form-group" style="margin-bottom:14px;">
+                <label>⌨️ Separador</label>
+                <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;">
+                  <div class="cr-sep-pill active" data-sep="enter" onclick="crSetSep(this)" style="padding:7px 12px;border:2px solid var(--primary);border-radius:20px;cursor:pointer;font-size:0.82em;font-weight:600;color:var(--primary);background:rgba(37,99,235,0.1);display:inline-flex;align-items:center;gap:4px;">ENTER <kbd style="background:rgba(37,99,235,0.15);border-radius:3px;padding:1px 4px;font-size:0.76em;font-family:monospace;color:var(--primary);">↵</kbd></div>
+                  <div class="cr-sep-pill" data-sep="tab" onclick="crSetSep(this)" style="padding:7px 12px;border:2px solid var(--border);border-radius:20px;cursor:pointer;font-size:0.82em;font-weight:600;color:var(--text2);background:var(--bg2);display:inline-flex;align-items:center;gap:4px;">TAB <kbd style="background:var(--border);border-radius:3px;padding:1px 4px;font-size:0.76em;font-family:monospace;">⇥</kbd></div>
+                  <div class="cr-sep-pill" data-sep="enter2" onclick="crSetSep(this)" style="padding:7px 12px;border:2px solid var(--border);border-radius:20px;cursor:pointer;font-size:0.82em;font-weight:600;color:var(--text2);background:var(--bg2);display:inline-flex;align-items:center;gap:4px;">ENTER+ENTER <kbd style="background:var(--border);border-radius:3px;padding:1px 4px;font-size:0.76em;font-family:monospace;">↵↵</kbd></div>
+                  <div class="cr-sep-pill" data-sep="univ" onclick="crSetSep(this)" style="padding:7px 12px;border:2px solid var(--border);border-radius:20px;cursor:pointer;font-size:0.82em;font-weight:600;color:var(--text2);background:var(--bg2);display:inline-flex;align-items:center;gap:4px;">🌐 Universal</div>
+                </div>
+                <div id="cr-univ-sep-wrap" style="display:none;margin-top:8px;">
+                  <p style="font-size:0.78em;color:var(--text2);margin-bottom:5px;">Escolha o separador:</p>
+                  <div style="display:flex;gap:5px;flex-wrap:wrap;">
+                    <button class="cr-univ-btn active" data-char=":" onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--primary);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--primary);background:rgba(37,99,235,0.08);font-family:monospace;">:</button>
+                    <button class="cr-univ-btn" data-char=";" onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">;</button>
+                    <button class="cr-univ-btn" data-char="|" onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">|</button>
+                    <button class="cr-univ-btn" data-char="/" onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">/</button>
+                    <button class="cr-univ-btn" data-char="-" onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">-</button>
+                    <button class="cr-univ-btn" data-char="," onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">,</button>
+                    <button class="cr-univ-btn" data-char="." onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">.</button>
                   </div>
                 </div>
               </div>
 
-              <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
-                <button class="btn btn-success" onclick="crAdicionarNaFolha()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;">➕ Adicionar à folha</button>
-                <button class="btn btn-info" onclick="crClonar()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;">📋 Clonar</button>
+              <!-- TAMANHO + COR -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label>📐 Tamanho</label>
+                  <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
+                    <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--bg2);">
+                      <input type="radio" name="cr-tamanho" value="pvc" checked onchange="crSetSize(this)" style="accent-color:var(--primary);width:15px;height:15px!important;flex-shrink:0;min-height:unset!important;padding:0!important;border:none!important;box-shadow:none!important;background:none!important;">
+                      <span style="font-size:0.85em;font-weight:600;color:var(--text);flex:1;">Padrão <small style="font-weight:400;color:var(--text2);">(cartão)</small></span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--bg2);">
+                      <input type="radio" name="cr-tamanho" value="big" onchange="crSetSize(this)" style="accent-color:var(--primary);width:15px;height:15px!important;flex-shrink:0;min-height:unset!important;padding:0!important;border:none!important;box-shadow:none!important;background:none!important;">
+                      <span style="font-size:0.85em;font-weight:600;color:var(--text);flex:1;">Grande</span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--bg2);">
+                      <input type="radio" name="cr-tamanho" value="small" onchange="crSetSize(this)" style="accent-color:var(--primary);width:15px;height:15px!important;flex-shrink:0;min-height:unset!important;padding:0!important;border:none!important;box-shadow:none!important;background:none!important;">
+                      <span style="font-size:0.85em;font-weight:600;color:var(--text);flex:1;">Pequeno <small style="font-weight:400;color:var(--text2);">(3/folha)</small></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label>🎨 Cor do Cabeçalho</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;align-items:center;">
+                    <div class="cr-swatch active" data-c1="#1e3a5f" data-c2="#2563eb" onclick="crSetCor(this)" title="Azul" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid var(--text);box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--text);background:linear-gradient(135deg,#1e3a5f,#2563eb);flex-shrink:0;"></div>
+                    <div class="cr-swatch" data-c1="#064e3b" data-c2="#10b981" onclick="crSetCor(this)" title="Verde" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#064e3b,#10b981);flex-shrink:0;"></div>
+                    <div class="cr-swatch" data-c1="#7f1d1d" data-c2="#ef4444" onclick="crSetCor(this)" title="Vermelho" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#7f1d1d,#ef4444);flex-shrink:0;"></div>
+                    <div class="cr-swatch" data-c1="#3b0764" data-c2="#7c3aed" onclick="crSetCor(this)" title="Roxo" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#3b0764,#7c3aed);flex-shrink:0;"></div>
+                    <div class="cr-swatch" data-c1="#7c2d12" data-c2="#f97316" onclick="crSetCor(this)" title="Laranja" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#7c2d12,#f97316);flex-shrink:0;"></div>
+                    <div class="cr-swatch" data-c1="#111827" data-c2="#374151" onclick="crSetCor(this)" title="Cinza" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#111827,#374151);flex-shrink:0;"></div>
+                    <div class="cr-swatch" data-c1="#831843" data-c2="#ec4899" onclick="crSetCor(this)" title="Rosa" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#831843,#ec4899);flex-shrink:0;"></div>
+                    <div class="cr-swatch" data-c1="#164e63" data-c2="#06b6d4" onclick="crSetCor(this)" title="Ciano" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#164e63,#06b6d4);flex-shrink:0;"></div>
+                    <label style="display:flex;align-items:center;gap:5px;padding:4px 8px;border:1.5px solid var(--border);border-radius:7px;background:var(--bg2);cursor:pointer;font-size:0.78em;font-weight:600;color:var(--text2);">
+                      🖌️
+                      <input type="color" id="cr-picker1" value="#1e3a5f" oninput="crSetCorCustom()" style="width:22px;height:22px!important;border:none;background:none;padding:0;cursor:pointer;border-radius:3px;min-height:unset!important;">
+                      <input type="color" id="cr-picker2" value="#2563eb" oninput="crSetCorCustom()" style="width:22px;height:22px!important;border:none;background:none;padding:0;cursor:pointer;border-radius:3px;min-height:unset!important;margin-left:-2px;">
+                    </label>
+                  </div>
+                </div>
               </div>
-              <div style="display:flex;gap:8px;margin-top:8px;">
-                <button class="btn btn-primary" onclick="crResetar()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;">🔄 Novo Crachá</button>
-                <button class="btn" style="flex:1;background:var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;gap:8px;" onclick="crImprimir()">🖨️ Imprimir este</button>
+            </div>
+
+            <!-- BOTÕES -->
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+              <button class="btn btn-primary" onclick="crGerarCracha()" style="flex:1;">🪪 Gerar Crachá</button>
+              <button class="btn btn-warning" onclick="crGerarTodos()" style="flex:1;">🧪 Gerar Todos os Formatos</button>
+            </div>
+          </div>
+
+          <!-- COLUNA DIREITA: PRÉ-VISUALIZAÇÃO STICKY -->
+          <div style="position:sticky;top:94px;">
+            <div class="section" style="padding:20px;">
+              <h2 style="font-size:1.1em;margin-bottom:12px;">👁️ Pré-visualização</h2>
+
+              <div id="cr-preview-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:30px 10px;color:var(--text2);text-align:center;">
+                <div style="font-size:3em;opacity:0.25;">🪪</div>
+                <p style="font-size:0.84em;">Preencha os dados e clique em<br><strong>Gerar Crachá</strong></p>
               </div>
-              <div style="padding:14px 16px;border-radius:10px;margin-top:12px;background:rgba(6,182,212,0.07);border-left:4px solid var(--info);font-size:0.88em;color:var(--text2);line-height:1.6;">
-                <strong style="color:var(--info);">Dica:</strong> Use papel fotográfico ou PVC para melhor resultado.
+
+              <div id="cr-badge-preview" style="display:none;">
+                <div style="display:flex;justify-content:center;padding:10px 0 8px;">
+                  <div id="cr-print-zone">
+                    <div class="cr-badge-card cr-size-pvc" id="cr-the-badge">
+                      <div class="cr-badge-header-bar" id="cr-header-bar">
+                        <span style="font-weight:800;font-size:0.78em;color:#fff;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="cr-b-empresa">EMPRESA</span>
+                        <span style="font-size:0.6em;font-weight:700;background:rgba(255,255,255,0.2);color:#fff;padding:2px 8px;border-radius:4px;text-transform:uppercase;border:1px solid rgba(255,255,255,0.3);flex-shrink:0;">PDV</span>
+                      </div>
+                      <div style="padding:10px 14px 12px;display:flex;flex-direction:column;align-items:center;gap:5px;">
+                        <span style="font-size:0.56em;font-weight:700;letter-spacing:0.2em;color:#94a3b8;text-transform:uppercase;">Autorização PDV</span>
+                        <span style="font-size:0.92em;font-weight:800;color:#1e293b;text-align:center;line-height:1.3;" id="cr-b-nome">Nome do Responsável</span>
+                        <div id="cr-divider" style="width:28px;height:3px;background:#2563eb;border-radius:2px;margin:2px 0;"></div>
+                        <div style="background:#fff;padding:3px 6px 2px;border-radius:5px;display:flex;align-items:center;justify-content:center;">
+                          <svg id="cr-barcode"></svg>
+                        </div>
+                      </div>
+                      <div style="background:#f1f5f9;padding:5px 14px;display:flex;align-items:center;justify-content:center;gap:7px;border-top:1px solid #e2e8f0;">
+                        <div class="cr-footer-dot" style="width:4px;height:4px;background:#2563eb;border-radius:50%;"></div>
+                        <span style="font-size:0.5em;font-weight:700;letter-spacing:0.16em;color:#64748b;text-transform:uppercase;">Uso exclusivo no sistema PDV</span>
+                        <div class="cr-footer-dot" style="width:4px;height:4px;background:#2563eb;border-radius:50%;"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:6px;">
+                  <button class="btn btn-success btn-sm" onclick="crAdicionarNaFolha()" style="flex:1;">➕ Folha</button>
+                  <button class="btn btn-info btn-sm"    onclick="crClonar()"          style="flex:1;">📋 Clonar</button>
+                </div>
+                <div style="display:flex;gap:7px;margin-top:7px;">
+                  <button class="btn btn-sm" style="flex:1;background:var(--border);color:var(--text);" onclick="crResetar()">🔄 Novo</button>
+                  <button class="btn btn-sm" style="flex:1;background:var(--border);color:var(--text);" onclick="crImprimir()">🖨️ Imprimir</button>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- FOLHA DE IMPRESSÃO -->
-        <div id="cr-folha-wrap" class="section" style="display:none;margin-top:0;">
-          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
-            <h2 style="margin-bottom:0;border:none;padding:0;">🖨️ Folha de Impressão <span id="cr-folha-count" style="font-size:0.7em;color:var(--text2);font-weight:500;"></span></h2>
-            <div style="display:flex;gap:10px;">
-              <button class="btn btn-danger btn-sm" onclick="crLimparFolha()">🗑️ Limpar tudo</button>
-              <button class="btn btn-success" onclick="crImprimirFolha()">🖨️ Imprimir folha</button>
+        <div id="cr-folha-wrap" class="section" style="display:none;margin-top:0;padding:20px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+            <h2 style="font-size:1.1em;margin:0;">🖨️ Folha de Impressão <span id="cr-folha-count" style="font-size:0.75em;color:var(--text2);font-weight:400;"></span></h2>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-danger btn-sm" onclick="crLimparFolha()">🗑️ Limpar</button>
+              <button class="btn btn-success btn-sm" onclick="crImprimirFolha()">🖨️ Imprimir folha</button>
             </div>
           </div>
-          <div id="cr-folha-grid" style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;"></div>
+          <div id="cr-folha-grid" style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;"></div>
         </div>
 
-        <!-- ZONA DE IMPRESSÃO DA FOLHA (oculta na tela, visível só no print) -->
-        <div id="cr-folha-print-zone" style="display:none;"></div>
+      </section>
 
     </main>
   </div>
@@ -1999,6 +2043,7 @@ function abrirInstalacoes(botao) {
 }
 
 
+
 function abrirCracha(botao) {
   document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
   document.querySelectorAll('.topbar-row2 nav button').forEach(b => b.classList.remove('active'));
@@ -2008,166 +2053,207 @@ function abrirCracha(botao) {
 }
 
 /* ── CRACHÁ PDV ── */
-let crSep = 'enter', crSize = 'pvc', crC1 = '#1e3a5f', crC2 = '#2563eb';
-const crSizeCfg = { pvc:{cls:'cr-size-pvc',bh:44,bw:1.6}, big:{cls:'cr-size-big',bh:52,bw:1.8}, small:{cls:'cr-size-small',bh:30,bw:1.3} };
+let crSep = 'enter', crSize = 'pvc', crC1 = '#1e3a5f', crC2 = '#2563eb', crUnivSep = ':';
+const crSizeCfg = {
+  pvc:   { cls:'cr-size-pvc',   bh:44, bw:1.5 },
+  big:   { cls:'cr-size-big',   bh:52, bw:1.8 },
+  small: { cls:'cr-size-small', bh:32, bw:1.2 }
+};
+const CR_TODOS_MODOS = [
+  { label:'ENTER ↵',        sep:'\n',   desc:'usuário + ENTER + senha' },
+  { label:'TAB ⇥',          sep:'\t',   desc:'usuário + TAB + senha' },
+  { label:'ENTER+ENTER ↵↵', sep:'\n\n', desc:'usuário + ENTER + ENTER + senha' },
+  { label:'Universal  :',   sep:':',    desc:'usuário:senha' },
+  { label:'Universal  ;',   sep:';',    desc:'usuário;senha' },
+  { label:'Universal  |',   sep:'|',    desc:'usuário|senha' },
+  { label:'Universal  /',   sep:'/',    desc:'usuário/senha' },
+  { label:'Universal  -',   sep:'-',    desc:'usuário-senha' },
+  { label:'Universal  ,',   sep:',',    desc:'usuário,senha' },
+  { label:'Universal  .',   sep:'.',    desc:'usuário.senha' },
+];
 
+function crToggleSenha() {
+  const inp = document.getElementById('cr-senha');
+  const btn = document.getElementById('cr-btn-senha');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
+}
+function crGetSepChar() {
+  if(crSep==='enter')  return '\n';
+  if(crSep==='tab')    return '\t';
+  if(crSep==='enter2') return '\n\n';
+  if(crSep==='univ')   return crUnivSep;
+  return '\n';
+}
 function crSetSep(el) {
   document.querySelectorAll('.cr-sep-pill').forEach(p => {
-    p.style.borderColor = 'var(--border)'; p.style.color = 'var(--text2)';
-    p.style.background = 'var(--bg2)';
-    const k = p.querySelector('kbd'); if(k){ k.style.background='var(--border)'; k.style.color='var(--text2)'; }
+    p.style.borderColor='var(--border)'; p.style.color='var(--text2)'; p.style.background='var(--bg2)';
+    const k=p.querySelector('kbd'); if(k){k.style.background='var(--border)';k.style.color='var(--text2)';}
   });
-  el.style.borderColor = 'var(--primary)'; el.style.color = 'var(--primary)';
-  el.style.background = 'rgba(37,99,235,0.1)';
-  const k = el.querySelector('kbd'); if(k){ k.style.background='rgba(37,99,235,0.15)'; k.style.color='var(--primary)'; }
+  el.style.borderColor='var(--primary)'; el.style.color='var(--primary)'; el.style.background='rgba(37,99,235,0.1)';
+  const k=el.querySelector('kbd'); if(k){k.style.background='rgba(37,99,235,0.15)';k.style.color='var(--primary)';}
   crSep = el.dataset.sep;
+  document.getElementById('cr-univ-sep-wrap').style.display = crSep==='univ' ? 'block' : 'none';
+}
+function crSetUnivSep(el) {
+  document.querySelectorAll('.cr-univ-btn').forEach(b => {
+    b.style.borderColor='var(--border)'; b.style.color='var(--text2)'; b.style.background='var(--bg2)';
+  });
+  el.style.borderColor='var(--primary)'; el.style.color='var(--primary)'; el.style.background='rgba(37,99,235,0.08)';
+  crUnivSep = el.dataset.char;
 }
 function crSetSize(r) { crSize = r.value; }
 function crAplicarCor() {
-  const h = document.getElementById('cr-header-bar');
-  if(h) h.style.background = `linear-gradient(135deg,${crC1} 0%,${crC2} 100%)`;
-  const d = document.getElementById('cr-divider'); if(d) d.style.background = crC2;
-  document.querySelectorAll('.cr-footer-dot').forEach(x => x.style.background = crC2);
+  const h=document.getElementById('cr-header-bar');
+  if(h) h.style.background=`linear-gradient(135deg,${crC1},${crC2})`;
+  const d=document.getElementById('cr-divider'); if(d) d.style.background=crC2;
+  document.querySelectorAll('.cr-footer-dot').forEach(x=>x.style.background=crC2);
 }
 function crSetCor(el) {
-  document.querySelectorAll('.cr-swatch').forEach(s => { s.style.border='3px solid transparent'; s.style.boxShadow='none'; });
-  el.style.border = '3px solid var(--text)';
-  el.style.boxShadow = '0 0 0 2px var(--card),0 0 0 4px var(--text)';
-  crC1 = el.dataset.c1; crC2 = el.dataset.c2;
-  document.getElementById('cr-picker1').value = crC1;
-  document.getElementById('cr-picker2').value = crC2;
+  document.querySelectorAll('.cr-swatch').forEach(s=>{s.style.border='2.5px solid transparent';s.style.boxShadow='none';});
+  el.style.border='2.5px solid var(--text)'; el.style.boxShadow='0 0 0 2px var(--card),0 0 0 4px var(--text)';
+  crC1=el.dataset.c1; crC2=el.dataset.c2;
+  document.getElementById('cr-picker1').value=crC1;
+  document.getElementById('cr-picker2').value=crC2;
   crAplicarCor();
 }
 function crSetCorCustom() {
-  document.querySelectorAll('.cr-swatch').forEach(s => { s.style.border='3px solid transparent'; s.style.boxShadow='none'; });
-  crC1 = document.getElementById('cr-picker1').value;
-  crC2 = document.getElementById('cr-picker2').value;
+  document.querySelectorAll('.cr-swatch').forEach(s=>{s.style.border='2.5px solid transparent';s.style.boxShadow='none';});
+  crC1=document.getElementById('cr-picker1').value;
+  crC2=document.getElementById('cr-picker2').value;
   crAplicarCor();
 }
 function crGerarCracha() {
-  const empresa = document.getElementById('cr-empresa').value.trim() || 'MINHA EMPRESA';
-  const nome    = document.getElementById('cr-nome').value.trim()    || 'Nome do Responsável';
-  const usuario = document.getElementById('cr-usuario').value.trim();
-  const senha   = document.getElementById('cr-senha').value;
-  if(!usuario||!senha){ crMsg('❌ Preencha o Usuário e a Senha do PDV.','erro'); return; }
-  const sepChar = crSep==='enter'?'\n': crSep==='tab'?'\t':'\n\n';
-  const bStr = usuario + sepChar + senha;
-  document.getElementById('cr-b-empresa').textContent = empresa.toUpperCase();
-  document.getElementById('cr-b-nome').textContent    = nome;
-  const badge = document.getElementById('cr-the-badge');
-  badge.className = 'cr-badge-card';
-  const cfg = crSizeCfg[crSize];
-  badge.classList.add(cfg.cls);
+  const empresa=document.getElementById('cr-empresa').value.trim()||'MINHA EMPRESA';
+  const nome=document.getElementById('cr-nome').value.trim()||'Nome do Responsável';
+  const usuario=document.getElementById('cr-usuario').value.trim();
+  const senha=document.getElementById('cr-senha').value;
+  if(!usuario||!senha){crMsg('❌ Preencha o Usuário e a Senha do PDV.','erro');return;}
+  document.getElementById('cr-b-empresa').textContent=empresa.toUpperCase();
+  document.getElementById('cr-b-nome').textContent=nome;
+  const badge=document.getElementById('cr-the-badge');
+  badge.className='cr-badge-card';
+  badge.classList.add(crSizeCfg[crSize].cls);
   try {
-    JsBarcode('#cr-barcode', bStr, { format:'CODE128', width:cfg.bw, height:cfg.bh, displayValue:false, margin:4, background:'#ffffff', lineColor:'#1e293b' });
-  } catch(e) { crMsg('❌ Erro ao gerar código de barras.','erro'); return; }
-  document.getElementById('cr-preview-empty').style.display = 'none';
-  document.getElementById('cr-badge-preview').style.display = 'block';
+    JsBarcode('#cr-barcode', usuario+crGetSepChar()+senha, {
+      format:'CODE128', width:crSizeCfg[crSize].bw, height:crSizeCfg[crSize].bh,
+      displayValue:false, margin:4, background:'#ffffff', lineColor:'#1e293b'
+    });
+  } catch(e){crMsg('❌ Erro ao gerar código de barras.','erro');return;}
+  document.getElementById('cr-preview-empty').style.display='none';
+  document.getElementById('cr-badge-preview').style.display='block';
   crAplicarCor(); crMsg('','');
 }
-// Fila de crachás para impressão em folha
-let crFolha = [];
-
-function crCapturarDadosAtuais() {
-  const empresa = document.getElementById('cr-b-empresa').textContent;
-  const nome    = document.getElementById('cr-b-nome').textContent;
-  const svg     = document.getElementById('cr-barcode').outerHTML;
-  const headerBg = document.getElementById('cr-header-bar').style.background || `linear-gradient(135deg,${crC1} 0%,${crC2} 100%)`;
-  const dividerBg = document.getElementById('cr-divider').style.background || crC2;
-  const sizeCls = crSizeCfg[crSize].cls;
-  return { empresa, nome, svg, headerBg, dividerBg, sizeCls, id: Date.now() };
+function crGerarTodos() {
+  const usuario=document.getElementById('cr-usuario').value.trim();
+  const senha=document.getElementById('cr-senha').value;
+  if(!usuario||!senha){crMsg('❌ Preencha o Usuário e a Senha para gerar todos os formatos.','erro');return;}
+  const empresa=document.getElementById('cr-empresa').value.trim()||'TESTE PDV';
+  crFolha=[];
+  CR_TODOS_MODOS.forEach((modo,idx)=>{
+    const svgEl=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svgEl.id='crtmp'+idx; document.body.appendChild(svgEl);
+    try {
+      JsBarcode('#crtmp'+idx, usuario+modo.sep+senha, {
+        format:'CODE128', width:1.2, height:32, displayValue:false, margin:3, background:'#ffffff', lineColor:'#1e293b'
+      });
+      crFolha.push({
+        empresa:empresa.toUpperCase(), nome:modo.label,
+        svg:svgEl.outerHTML, headerBg:`linear-gradient(135deg,${crC1},${crC2})`,
+        dividerBg:crC2, sizeCls:'cr-size-small', modeLabel:modo.desc, id:Date.now()+idx
+      });
+    } catch(e){}
+    document.body.removeChild(svgEl);
+  });
+  crRenderFolha();
+  crMsg('✅ '+crFolha.length+' formatos gerados na folha!','sucesso');
 }
 
+/* ── FOLHA ── */
+let crFolha = [];
+function crCapturarDadosAtuais() {
+  return {
+    empresa: document.getElementById('cr-b-empresa').textContent,
+    nome:    document.getElementById('cr-b-nome').textContent,
+    svg:     document.getElementById('cr-barcode').outerHTML,
+    headerBg:`linear-gradient(135deg,${crC1},${crC2})`,
+    dividerBg:crC2, sizeCls:crSizeCfg[crSize].cls, id:Date.now()
+  };
+}
 function crBuildBadgeHTML(d) {
-  return `<div class="cr-badge-card ${d.sizeCls}">
-    <div class="cr-badge-header-bar" style="background:${d.headerBg};">
+  return `<div class="cr-badge-card ${d.sizeCls}" style="break-inside:avoid;page-break-inside:avoid;">
+    <div class="cr-badge-header-bar" style="background:${d.headerBg};-webkit-print-color-adjust:exact;print-color-adjust:exact;">
       <span style="font-weight:800;font-size:0.78em;color:#fff;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.empresa}</span>
-      <span style="font-size:0.6em;font-weight:700;letter-spacing:0.12em;background:rgba(255,255,255,0.2);color:#fff;padding:2px 8px;border-radius:4px;text-transform:uppercase;border:1px solid rgba(255,255,255,0.3);flex-shrink:0;">PDV</span>
+      <span style="font-size:0.6em;font-weight:700;background:rgba(255,255,255,0.2);color:#fff;padding:2px 8px;border-radius:4px;text-transform:uppercase;border:1px solid rgba(255,255,255,0.3);flex-shrink:0;">PDV</span>
     </div>
-    <div style="padding:12px 16px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;">
-      <span style="font-size:0.58em;font-weight:700;letter-spacing:0.2em;color:#94a3b8;text-transform:uppercase;">Autorização PDV</span>
-      <span style="font-size:0.95em;font-weight:800;color:#1e293b;text-align:center;line-height:1.3;">${d.nome}</span>
-      <div style="width:32px;height:3px;background:${d.dividerBg};border-radius:2px;margin:2px 0;"></div>
-      <div style="background:#fff;padding:4px 8px 2px;border-radius:6px;display:flex;align-items:center;justify-content:center;">${d.svg}</div>
+    <div style="padding:10px 14px 12px;display:flex;flex-direction:column;align-items:center;gap:5px;">
+      <span style="font-size:0.56em;font-weight:700;letter-spacing:0.2em;color:#94a3b8;text-transform:uppercase;">Autorização PDV</span>
+      <span style="font-size:0.92em;font-weight:800;color:#1e293b;text-align:center;line-height:1.3;">${d.nome}</span>
+      <div style="width:28px;height:3px;background:${d.dividerBg};border-radius:2px;margin:2px 0;"></div>
+      <div style="background:#fff;padding:3px 6px 2px;border-radius:5px;display:flex;align-items:center;justify-content:center;">${d.svg}</div>
     </div>
-    <div style="background:#f1f5f9;padding:6px 16px;display:flex;align-items:center;justify-content:center;gap:8px;border-top:1px solid #e2e8f0;">
-      <div style="width:5px;height:5px;background:${d.dividerBg};border-radius:50%;"></div>
-      <span style="font-size:0.52em;font-weight:700;letter-spacing:0.18em;color:#64748b;text-transform:uppercase;">Uso exclusivo no sistema PDV</span>
-      <div style="width:5px;height:5px;background:${d.dividerBg};border-radius:50%;"></div>
+    ${d.modeLabel?`<div style="font-size:0.56em;color:#64748b;text-align:center;padding:0 8px 5px;">${d.modeLabel}</div>`:''}
+    <div style="background:#f1f5f9;padding:5px 14px;display:flex;align-items:center;justify-content:center;gap:7px;border-top:1px solid #e2e8f0;-webkit-print-color-adjust:exact;print-color-adjust:exact;">
+      <div style="width:4px;height:4px;background:${d.dividerBg};border-radius:50%;"></div>
+      <span style="font-size:0.5em;font-weight:700;letter-spacing:0.16em;color:#64748b;text-transform:uppercase;">Uso exclusivo no sistema PDV</span>
+      <div style="width:4px;height:4px;background:${d.dividerBg};border-radius:50%;"></div>
     </div>
   </div>`;
 }
-
 function crRenderFolha() {
-  const wrap = document.getElementById('cr-folha-wrap');
-  const grid = document.getElementById('cr-folha-grid');
-  const count = document.getElementById('cr-folha-count');
-  if(crFolha.length === 0){ wrap.style.display='none'; return; }
+  const wrap=document.getElementById('cr-folha-wrap');
+  const grid=document.getElementById('cr-folha-grid');
+  const count=document.getElementById('cr-folha-count');
+  if(crFolha.length===0){wrap.style.display='none';return;}
   wrap.style.display='block';
-  count.textContent = `(${crFolha.length} crachá${crFolha.length>1?'s':''})`;
-  grid.innerHTML = '';
-  crFolha.forEach((d, i) => {
-    const item = document.createElement('div');
-    item.style.cssText = 'position:relative;display:inline-block;';
-    item.innerHTML = crBuildBadgeHTML(d) +
-      `<button onclick="crRemoverDaFolha(${d.id})" style="position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:#ef4444;color:white;border:none;cursor:pointer;font-size:0.75em;display:flex;align-items:center;justify-content:center;line-height:1;font-weight:700;box-shadow:0 2px 6px rgba(239,68,68,0.4);">✕</button>`;
+  count.textContent=`(${crFolha.length} crachá${crFolha.length>1?'s':''})`;
+  grid.innerHTML='';
+  crFolha.forEach(d=>{
+    const item=document.createElement('div');
+    item.style.cssText='position:relative;display:inline-block;';
+    item.innerHTML=crBuildBadgeHTML(d)+
+      `<button onclick="crRemoverDaFolha(${d.id})" style="position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:#ef4444;color:white;border:none;cursor:pointer;font-size:0.75em;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 2px 6px rgba(239,68,68,0.4);">✕</button>`;
     grid.appendChild(item);
   });
 }
-
 function crAdicionarNaFolha() {
-  if(document.getElementById('cr-badge-preview').style.display==='none'){
-    crMsg('❌ Gere um crachá primeiro.','erro'); return;
-  }
-  crFolha.push(crCapturarDadosAtuais());
-  crRenderFolha();
-  crMsg('✅ Adicionado à folha!','sucesso');
+  if(document.getElementById('cr-badge-preview').style.display==='none'){crMsg('❌ Gere um crachá primeiro.','erro');return;}
+  crFolha.push(crCapturarDadosAtuais()); crRenderFolha(); crMsg('✅ Adicionado à folha!','sucesso');
 }
-
 function crClonar() {
-  if(document.getElementById('cr-badge-preview').style.display==='none'){
-    crMsg('❌ Gere um crachá primeiro.','erro'); return;
-  }
-  crFolha.push(crCapturarDadosAtuais());
-  crRenderFolha();
+  if(document.getElementById('cr-badge-preview').style.display==='none'){crMsg('❌ Gere um crachá primeiro.','erro');return;}
+  setTimeout(()=>{crFolha.push(crCapturarDadosAtuais());crRenderFolha();},1);
   crMsg('✅ Clonado na folha!','sucesso');
 }
-
-function crRemoverDaFolha(id) {
-  crFolha = crFolha.filter(d => d.id !== id);
-  crRenderFolha();
-}
-
-function crLimparFolha() {
-  if(!confirm('Limpar todos os crachás da folha?')) return;
-  crFolha = [];
-  crRenderFolha();
-}
-
-function crImprimirFolha() {
-  if(crFolha.length === 0){ crMsg('❌ A folha está vazia.','erro'); return; }
-  const pz = document.getElementById('cr-folha-print-zone');
-  pz.innerHTML = `<div class="cr-folha-print-grid">${crFolha.map(d=>crBuildBadgeHTML(d)).join('')}</div>`;
-  // Esconde o print-zone individual temporariamente
-  const single = document.getElementById('cr-print-zone');
-  const oldDisplay = single.style.display;
-  single.style.display = 'none';
+function crRemoverDaFolha(id){crFolha=crFolha.filter(d=>d.id!==id);crRenderFolha();}
+function crLimparFolha(){if(!confirm('Limpar todos os crachás da folha?'))return;crFolha=[];crRenderFolha();}
+function crImprimir() {
+  const pz=document.getElementById('cr-print-single-badge');
+  pz.innerHTML=document.getElementById('cr-the-badge').outerHTML;
+  document.getElementById('cr-print-single-zone').style.display='flex';
+  document.getElementById('cr-folha-print-zone').style.display='none';
   window.print();
-  single.style.display = oldDisplay;
-  pz.innerHTML = '';
+  document.getElementById('cr-print-single-zone').style.display='none';
 }
-
-
+function crImprimirFolha() {
+  if(crFolha.length===0){crMsg('❌ A folha está vazia.','erro');return;}
+  document.getElementById('cr-print-folha-badges').innerHTML=crFolha.map(d=>crBuildBadgeHTML(d)).join('');
+  document.getElementById('cr-folha-print-zone').style.display='block';
+  document.getElementById('cr-print-single-zone').style.display='none';
+  window.print();
+  document.getElementById('cr-folha-print-zone').style.display='none';
+}
 function crResetar() {
-  document.getElementById('cr-badge-preview').style.display = 'none';
-  document.getElementById('cr-preview-empty').style.display = 'flex';
-  ['cr-empresa','cr-nome','cr-usuario','cr-senha'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('cr-badge-preview').style.display='none';
+  document.getElementById('cr-preview-empty').style.display='flex';
+  ['cr-empresa','cr-nome','cr-usuario','cr-senha'].forEach(id=>document.getElementById(id).value='');
   crSep='enter'; crSize='pvc';
   document.querySelector('input[name="cr-tamanho"][value="pvc"]').checked=true;
+  document.getElementById('cr-univ-sep-wrap').style.display='none';
 }
 function crMsg(txt,tipo) {
   const d=document.getElementById('msgFormCracha');
-  d.innerHTML = txt ? `<div class="msg-${tipo}" style="margin-bottom:16px;">${txt}</div>` : '';
+  d.innerHTML=txt?`<div class="msg-${tipo}" style="margin-bottom:12px;">${txt}</div>`:'';
   if(txt) setTimeout(()=>d.innerHTML='',5000);
 }
 
