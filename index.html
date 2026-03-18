@@ -861,174 +861,184 @@
 
       <!-- CRACHÁ PDV -->
       <section id="crachaSection" class="hidden" style="overflow:visible;">
-        <div class="page-header">
-          <div>
-            <h1>🪪 Gerador de Crachá PDV</h1>
-            <p>Gere crachás com código de barras para autorização automática no sistema de frente de caixa</p>
-          </div>
-        </div>
 
         <!-- ZONAS DE IMPRESSÃO -->
-        <div id="cr-print-single-zone" style="display:none;"><div id="cr-print-single-badge"></div></div>
-        <div id="cr-folha-print-zone" style="display:none;"><div class="cr-folha-print-grid" id="cr-print-folha-badges"></div></div>
+        <div id="cr-print-single-zone" style="display:none;position:fixed;inset:0;background:white;align-items:center;justify-content:center;z-index:9999;">
+          <div id="cr-print-single-badge"></div>
+        </div>
+        <div id="cr-folha-print-zone" style="display:none;position:absolute;top:0;left:0;width:100%;background:white;padding:8mm;z-index:9999;">
+          <div class="cr-folha-print-grid" id="cr-print-folha-badges"></div>
+        </div>
 
-        <!-- GRID 2 COLUNAS -->
-        <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;" id="crachaGrid">
+        <!-- ABAS -->
+        <div style="display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:20px;">
+          <button id="cr-tab-btn-gerador" onclick="crMudarAba('gerador',this)"
+            style="padding:10px 20px;border:none;background:none;font-size:0.88em;font-family:inherit;font-weight:600;color:var(--primary);border-bottom:3px solid var(--primary);margin-bottom:-2px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">🪪 Gerador</button>
+          <button id="cr-tab-btn-folha" onclick="crMudarAba('folha',this)"
+            style="padding:10px 20px;border:none;background:none;font-size:0.88em;font-family:inherit;font-weight:600;color:var(--text2);border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">🖨️ Folha de Impressão <span id="cr-folha-count" style="font-size:0.85em;color:var(--text2);font-weight:400;"></span></button>
+        </div>
 
-          <!-- COLUNA ESQUERDA: FORMULÁRIO -->
-          <div>
-            <!-- DADOS -->
-            <div class="section" style="margin-bottom:16px;padding:20px;">
-              <h2 style="font-size:1.1em;margin-bottom:16px;">📋 Dados do Crachá</h2>
-              <div id="msgFormCracha"></div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                <div class="form-group" style="margin-bottom:0;"><label>🏢 Empresa</label><input id="cr-empresa" type="text" placeholder="Ex: Minha Empresa Ltda"></div>
-                <div class="form-group" style="margin-bottom:0;"><label>👤 Nome exibido</label><input id="cr-nome" type="text" placeholder="Ex: João da Silva"></div>
-                <div class="form-group" style="margin-bottom:0;"><label>🔑 Usuário PDV</label><input id="cr-usuario" type="text" placeholder="Ex: joao.silva" autocomplete="off"></div>
-                <div class="form-group" style="margin-bottom:0;">
-                  <label>🔒 Senha PDV</label>
-                  <div style="position:relative;">
-                    <input id="cr-senha" type="text" placeholder="••••••••" autocomplete="off"
-                      style="height:44px!important;padding:0 40px 0 14px!important;border:2px solid var(--border)!important;border-radius:8px!important;font-size:0.92em!important;font-family:inherit!important;background:var(--bg2)!important;color:var(--text)!important;width:100%!important;box-sizing:border-box!important;">
-                    <button type="button" id="cr-btn-senha" onclick="crToggleSenha()"
-                      style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1em;color:var(--text2);padding:0;line-height:1;">👁️</button>
+        <!-- ABA GERADOR -->
+        <div id="cr-tab-gerador">
+          <!-- GRID 2 COLUNAS -->
+          <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;" id="crachaGrid">
+
+            <!-- COLUNA ESQUERDA -->
+            <div>
+              <div class="section" style="padding:16px 20px;margin-bottom:12px;">
+                <div style="font-size:0.78em;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--primary);display:inline-block;">📋 Dados do Crachá</div>
+                <div id="msgFormCracha"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                  <div style="display:flex;flex-direction:column;gap:4px;">
+                    <label style="font-size:0.8em;font-weight:600;color:var(--text2);">🏢 Empresa</label>
+                    <input id="cr-empresa" type="text" placeholder="Ex: Minha Empresa Ltda" style="height:38px!important;padding:0 12px!important;font-size:0.88em!important;">
                   </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- CONFIGURAÇÕES -->
-            <div class="section" style="margin-bottom:16px;padding:20px;">
-              <h2 style="font-size:1.1em;margin-bottom:16px;">⚙️ Configurações</h2>
-
-              <!-- SEPARADOR -->
-              <div class="form-group" style="margin-bottom:14px;">
-                <label>⌨️ Separador</label>
-                <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;">
-                  <div class="cr-sep-pill active" data-sep="enter" onclick="crSetSep(this)" style="padding:7px 12px;border:2px solid var(--primary);border-radius:20px;cursor:pointer;font-size:0.82em;font-weight:600;color:var(--primary);background:rgba(37,99,235,0.1);display:inline-flex;align-items:center;gap:4px;">ENTER <kbd style="background:rgba(37,99,235,0.15);border-radius:3px;padding:1px 4px;font-size:0.76em;font-family:monospace;color:var(--primary);">↵</kbd></div>
-                  <div class="cr-sep-pill" data-sep="tab" onclick="crSetSep(this)" style="padding:7px 12px;border:2px solid var(--border);border-radius:20px;cursor:pointer;font-size:0.82em;font-weight:600;color:var(--text2);background:var(--bg2);display:inline-flex;align-items:center;gap:4px;">TAB <kbd style="background:var(--border);border-radius:3px;padding:1px 4px;font-size:0.76em;font-family:monospace;">⇥</kbd></div>
-                  <div class="cr-sep-pill" data-sep="enter2" onclick="crSetSep(this)" style="padding:7px 12px;border:2px solid var(--border);border-radius:20px;cursor:pointer;font-size:0.82em;font-weight:600;color:var(--text2);background:var(--bg2);display:inline-flex;align-items:center;gap:4px;">ENTER+ENTER <kbd style="background:var(--border);border-radius:3px;padding:1px 4px;font-size:0.76em;font-family:monospace;">↵↵</kbd></div>
-                  <div class="cr-sep-pill" data-sep="univ" onclick="crSetSep(this)" style="padding:7px 12px;border:2px solid var(--border);border-radius:20px;cursor:pointer;font-size:0.82em;font-weight:600;color:var(--text2);background:var(--bg2);display:inline-flex;align-items:center;gap:4px;">🌐 Universal</div>
-                </div>
-                <div id="cr-univ-sep-wrap" style="display:none;margin-top:8px;">
-                  <p style="font-size:0.78em;color:var(--text2);margin-bottom:5px;">Escolha o separador:</p>
-                  <div style="display:flex;gap:5px;flex-wrap:wrap;">
-                    <button class="cr-univ-btn active" data-char=":" onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--primary);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--primary);background:rgba(37,99,235,0.08);font-family:monospace;">:</button>
-                    <button class="cr-univ-btn" data-char=";" onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">;</button>
-                    <button class="cr-univ-btn" data-char="|" onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">|</button>
-                    <button class="cr-univ-btn" data-char="/" onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">/</button>
-                    <button class="cr-univ-btn" data-char="-" onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">-</button>
-                    <button class="cr-univ-btn" data-char="," onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">,</button>
-                    <button class="cr-univ-btn" data-char="." onclick="crSetUnivSep(this)" style="padding:5px 11px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.9em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">.</button>
+                  <div style="display:flex;flex-direction:column;gap:4px;">
+                    <label style="font-size:0.8em;font-weight:600;color:var(--text2);">👤 Nome exibido</label>
+                    <input id="cr-nome" type="text" placeholder="Ex: João da Silva" style="height:38px!important;padding:0 12px!important;font-size:0.88em!important;">
                   </div>
-                </div>
-              </div>
-
-              <!-- TAMANHO + COR -->
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                <div class="form-group" style="margin-bottom:0;">
-                  <label>📐 Tamanho</label>
-                  <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
-                    <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--bg2);">
-                      <input type="radio" name="cr-tamanho" value="pvc" checked onchange="crSetSize(this)" style="accent-color:var(--primary);width:15px;height:15px!important;flex-shrink:0;min-height:unset!important;padding:0!important;border:none!important;box-shadow:none!important;background:none!important;">
-                      <span style="font-size:0.85em;font-weight:600;color:var(--text);flex:1;">Padrão <small style="font-weight:400;color:var(--text2);">(cartão)</small></span>
-                    </label>
-                    <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--bg2);">
-                      <input type="radio" name="cr-tamanho" value="big" onchange="crSetSize(this)" style="accent-color:var(--primary);width:15px;height:15px!important;flex-shrink:0;min-height:unset!important;padding:0!important;border:none!important;box-shadow:none!important;background:none!important;">
-                      <span style="font-size:0.85em;font-weight:600;color:var(--text);flex:1;">Grande</span>
-                    </label>
-                    <label style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--bg2);">
-                      <input type="radio" name="cr-tamanho" value="small" onchange="crSetSize(this)" style="accent-color:var(--primary);width:15px;height:15px!important;flex-shrink:0;min-height:unset!important;padding:0!important;border:none!important;box-shadow:none!important;background:none!important;">
-                      <span style="font-size:0.85em;font-weight:600;color:var(--text);flex:1;">Pequeno <small style="font-weight:400;color:var(--text2);">(3/folha)</small></span>
-                    </label>
+                  <div style="display:flex;flex-direction:column;gap:4px;">
+                    <label style="font-size:0.8em;font-weight:600;color:var(--text2);">🔑 Usuário PDV</label>
+                    <input id="cr-usuario" type="text" placeholder="Ex: joao.silva" autocomplete="off" style="height:38px!important;padding:0 12px!important;font-size:0.88em!important;">
                   </div>
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                  <label>🎨 Cor do Cabeçalho</label>
-                  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;align-items:center;">
-                    <div class="cr-swatch active" data-c1="#1e3a5f" data-c2="#2563eb" onclick="crSetCor(this)" title="Azul" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid var(--text);box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--text);background:linear-gradient(135deg,#1e3a5f,#2563eb);flex-shrink:0;"></div>
-                    <div class="cr-swatch" data-c1="#064e3b" data-c2="#10b981" onclick="crSetCor(this)" title="Verde" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#064e3b,#10b981);flex-shrink:0;"></div>
-                    <div class="cr-swatch" data-c1="#7f1d1d" data-c2="#ef4444" onclick="crSetCor(this)" title="Vermelho" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#7f1d1d,#ef4444);flex-shrink:0;"></div>
-                    <div class="cr-swatch" data-c1="#3b0764" data-c2="#7c3aed" onclick="crSetCor(this)" title="Roxo" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#3b0764,#7c3aed);flex-shrink:0;"></div>
-                    <div class="cr-swatch" data-c1="#7c2d12" data-c2="#f97316" onclick="crSetCor(this)" title="Laranja" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#7c2d12,#f97316);flex-shrink:0;"></div>
-                    <div class="cr-swatch" data-c1="#111827" data-c2="#374151" onclick="crSetCor(this)" title="Cinza" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#111827,#374151);flex-shrink:0;"></div>
-                    <div class="cr-swatch" data-c1="#831843" data-c2="#ec4899" onclick="crSetCor(this)" title="Rosa" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#831843,#ec4899);flex-shrink:0;"></div>
-                    <div class="cr-swatch" data-c1="#164e63" data-c2="#06b6d4" onclick="crSetCor(this)" title="Ciano" style="width:28px;height:28px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#164e63,#06b6d4);flex-shrink:0;"></div>
-                    <label style="display:flex;align-items:center;gap:5px;padding:4px 8px;border:1.5px solid var(--border);border-radius:7px;background:var(--bg2);cursor:pointer;font-size:0.78em;font-weight:600;color:var(--text2);">
-                      🖌️
-                      <input type="color" id="cr-picker1" value="#1e3a5f" oninput="crSetCorCustom()" style="width:22px;height:22px!important;border:none;background:none;padding:0;cursor:pointer;border-radius:3px;min-height:unset!important;">
-                      <input type="color" id="cr-picker2" value="#2563eb" oninput="crSetCorCustom()" style="width:22px;height:22px!important;border:none;background:none;padding:0;cursor:pointer;border-radius:3px;min-height:unset!important;margin-left:-2px;">
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- BOTÕES -->
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
-              <button class="btn btn-primary" onclick="crGerarCracha()" style="flex:1;">🪪 Gerar Crachá</button>
-              <button class="btn btn-warning" onclick="crGerarTodos()" style="flex:1;">🧪 Gerar Todos os Formatos</button>
-            </div>
-          </div>
-
-          <!-- COLUNA DIREITA: PRÉ-VISUALIZAÇÃO STICKY -->
-          <div style="position:sticky;top:94px;">
-            <div class="section" style="padding:20px;">
-              <h2 style="font-size:1.1em;margin-bottom:12px;">👁️ Pré-visualização</h2>
-
-              <div id="cr-preview-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:30px 10px;color:var(--text2);text-align:center;">
-                <div style="font-size:3em;opacity:0.25;">🪪</div>
-                <p style="font-size:0.84em;">Preencha os dados e clique em<br><strong>Gerar Crachá</strong></p>
-              </div>
-
-              <div id="cr-badge-preview" style="display:none;">
-                <div style="display:flex;justify-content:center;padding:10px 0 8px;">
-                  <div id="cr-print-zone">
-                    <div class="cr-badge-card cr-size-pvc" id="cr-the-badge">
-                      <div class="cr-badge-header-bar" id="cr-header-bar">
-                        <span style="font-weight:800;font-size:0.78em;color:#fff;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="cr-b-empresa">EMPRESA</span>
-                        <span style="font-size:0.6em;font-weight:700;background:rgba(255,255,255,0.2);color:#fff;padding:2px 8px;border-radius:4px;text-transform:uppercase;border:1px solid rgba(255,255,255,0.3);flex-shrink:0;">PDV</span>
-                      </div>
-                      <div style="padding:10px 14px 12px;display:flex;flex-direction:column;align-items:center;gap:5px;">
-                        <span style="font-size:0.56em;font-weight:700;letter-spacing:0.2em;color:#94a3b8;text-transform:uppercase;">Autorização PDV</span>
-                        <span style="font-size:0.92em;font-weight:800;color:#1e293b;text-align:center;line-height:1.3;" id="cr-b-nome">Nome do Responsável</span>
-                        <div id="cr-divider" style="width:28px;height:3px;background:#2563eb;border-radius:2px;margin:2px 0;"></div>
-                        <div style="background:#fff;padding:3px 6px 2px;border-radius:5px;display:flex;align-items:center;justify-content:center;">
-                          <svg id="cr-barcode"></svg>
-                        </div>
-                      </div>
-                      <div style="background:#f1f5f9;padding:5px 14px;display:flex;align-items:center;justify-content:center;gap:7px;border-top:1px solid #e2e8f0;">
-                        <div class="cr-footer-dot" style="width:4px;height:4px;background:#2563eb;border-radius:50%;"></div>
-                        <span style="font-size:0.5em;font-weight:700;letter-spacing:0.16em;color:#64748b;text-transform:uppercase;">Uso exclusivo no sistema PDV</span>
-                        <div class="cr-footer-dot" style="width:4px;height:4px;background:#2563eb;border-radius:50%;"></div>
-                      </div>
+                  <div style="display:flex;flex-direction:column;gap:4px;">
+                    <label style="font-size:0.8em;font-weight:600;color:var(--text2);">🔒 Senha PDV</label>
+                    <div style="position:relative;">
+                      <input id="cr-senha" type="text" placeholder="••••••••" autocomplete="off"
+                        style="height:38px!important;padding:0 36px 0 12px!important;font-size:0.88em!important;border:2px solid var(--border)!important;border-radius:8px!important;background:var(--bg2)!important;color:var(--text)!important;width:100%!important;box-sizing:border-box!important;">
+                      <button type="button" id="cr-btn-senha" onclick="crToggleSenha()"
+                        style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:0.9em;color:var(--text2);padding:0;line-height:1;">👁️</button>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:6px;">
-                  <button class="btn btn-success btn-sm" onclick="crAdicionarNaFolha()" style="flex:1;">➕ Folha</button>
-                  <button class="btn btn-info btn-sm"    onclick="crClonar()"          style="flex:1;">📋 Clonar</button>
+              <div class="section" style="padding:16px 20px;margin-bottom:12px;">
+                <div style="font-size:0.78em;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--primary);display:inline-block;">⚙️ Configurações</div>
+                <div style="margin-bottom:12px;">
+                  <label style="font-size:0.8em;font-weight:600;color:var(--text2);display:block;margin-bottom:6px;">⌨️ Separador</label>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <div class="cr-sep-pill active" data-sep="enter" onclick="crSetSep(this)" style="padding:6px 10px;border:2px solid var(--primary);border-radius:16px;cursor:pointer;font-size:0.78em;font-weight:600;color:var(--primary);background:rgba(37,99,235,0.1);display:inline-flex;align-items:center;gap:3px;">ENTER <kbd style="background:rgba(37,99,235,0.15);border-radius:3px;padding:1px 4px;font-size:0.75em;font-family:monospace;color:var(--primary);">↵</kbd></div>
+                    <div class="cr-sep-pill" data-sep="tab" onclick="crSetSep(this)" style="padding:6px 10px;border:2px solid var(--border);border-radius:16px;cursor:pointer;font-size:0.78em;font-weight:600;color:var(--text2);background:var(--bg2);display:inline-flex;align-items:center;gap:3px;">TAB <kbd style="background:var(--border);border-radius:3px;padding:1px 4px;font-size:0.75em;font-family:monospace;">⇥</kbd></div>
+                    <div class="cr-sep-pill" data-sep="enter2" onclick="crSetSep(this)" style="padding:6px 10px;border:2px solid var(--border);border-radius:16px;cursor:pointer;font-size:0.78em;font-weight:600;color:var(--text2);background:var(--bg2);display:inline-flex;align-items:center;gap:3px;">ENTER+ENTER <kbd style="background:var(--border);border-radius:3px;padding:1px 4px;font-size:0.75em;font-family:monospace;">↵↵</kbd></div>
+                    <div class="cr-sep-pill" data-sep="univ" onclick="crSetSep(this)" style="padding:6px 10px;border:2px solid var(--border);border-radius:16px;cursor:pointer;font-size:0.78em;font-weight:600;color:var(--text2);background:var(--bg2);display:inline-flex;align-items:center;gap:3px;">🌐 Universal</div>
+                  </div>
+                  <div id="cr-univ-sep-wrap" style="display:none;margin-top:7px;">
+                    <p style="font-size:0.75em;color:var(--text2);margin-bottom:4px;">Separador:</p>
+                    <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                      <button class="cr-univ-btn active" data-char=":" onclick="crSetUnivSep(this)" style="padding:4px 10px;border:1.5px solid var(--primary);border-radius:6px;cursor:pointer;font-size:0.88em;font-weight:700;color:var(--primary);background:rgba(37,99,235,0.08);font-family:monospace;">:</button>
+                      <button class="cr-univ-btn" data-char=";" onclick="crSetUnivSep(this)" style="padding:4px 10px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;font-size:0.88em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">;</button>
+                      <button class="cr-univ-btn" data-char="|" onclick="crSetUnivSep(this)" style="padding:4px 10px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;font-size:0.88em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">|</button>
+                      <button class="cr-univ-btn" data-char="/" onclick="crSetUnivSep(this)" style="padding:4px 10px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;font-size:0.88em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">/</button>
+                      <button class="cr-univ-btn" data-char="-" onclick="crSetUnivSep(this)" style="padding:4px 10px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;font-size:0.88em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">-</button>
+                      <button class="cr-univ-btn" data-char="," onclick="crSetUnivSep(this)" style="padding:4px 10px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;font-size:0.88em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">,</button>
+                      <button class="cr-univ-btn" data-char="." onclick="crSetUnivSep(this)" style="padding:4px 10px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;font-size:0.88em;font-weight:700;color:var(--text2);background:var(--bg2);font-family:monospace;">.</button>
+                    </div>
+                  </div>
                 </div>
-                <div style="display:flex;gap:7px;margin-top:7px;">
-                  <button class="btn btn-sm" style="flex:1;background:var(--border);color:var(--text);" onclick="crResetar()">🔄 Novo</button>
-                  <button class="btn btn-sm" style="flex:1;background:var(--border);color:var(--text);" onclick="crImprimir()">🖨️ Imprimir</button>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                  <div>
+                    <label style="font-size:0.8em;font-weight:600;color:var(--text2);display:block;margin-bottom:6px;">📐 Tamanho</label>
+                    <div style="display:flex;flex-direction:column;gap:5px;">
+                      <label style="display:flex;align-items:center;gap:7px;padding:6px 10px;border:2px solid var(--border);border-radius:7px;cursor:pointer;background:var(--bg2);font-size:0.83em;">
+                        <input type="radio" name="cr-tamanho" value="pvc" checked onchange="crSetSize(this)" style="accent-color:var(--primary);width:14px;height:14px!important;flex-shrink:0;min-height:unset!important;padding:0!important;border:none!important;box-shadow:none!important;background:none!important;">
+                        <span style="font-weight:600;color:var(--text);">Padrão</span><small style="color:var(--text2);">(cartão)</small>
+                      </label>
+                      <label style="display:flex;align-items:center;gap:7px;padding:6px 10px;border:2px solid var(--border);border-radius:7px;cursor:pointer;background:var(--bg2);font-size:0.83em;">
+                        <input type="radio" name="cr-tamanho" value="big" onchange="crSetSize(this)" style="accent-color:var(--primary);width:14px;height:14px!important;flex-shrink:0;min-height:unset!important;padding:0!important;border:none!important;box-shadow:none!important;background:none!important;">
+                        <span style="font-weight:600;color:var(--text);">Grande</span>
+                      </label>
+                      <label style="display:flex;align-items:center;gap:7px;padding:6px 10px;border:2px solid var(--border);border-radius:7px;cursor:pointer;background:var(--bg2);font-size:0.83em;">
+                        <input type="radio" name="cr-tamanho" value="small" onchange="crSetSize(this)" style="accent-color:var(--primary);width:14px;height:14px!important;flex-shrink:0;min-height:unset!important;padding:0!important;border:none!important;box-shadow:none!important;background:none!important;">
+                        <span style="font-weight:600;color:var(--text);">Pequeno</span><small style="color:var(--text2);">(3/folha)</small>
+                      </label>
+                    </div>
+                  </div>
+                  <div>
+                    <label style="font-size:0.8em;font-weight:600;color:var(--text2);display:block;margin-bottom:6px;">🎨 Cor do Cabeçalho</label>
+                    <div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;">
+                      <div class="cr-swatch active" data-c1="#1e3a5f" data-c2="#2563eb" onclick="crSetCor(this)" title="Azul" style="width:26px;height:26px;border-radius:6px;cursor:pointer;border:2.5px solid var(--text);box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--text);background:linear-gradient(135deg,#1e3a5f,#2563eb);flex-shrink:0;"></div>
+                      <div class="cr-swatch" data-c1="#064e3b" data-c2="#10b981" onclick="crSetCor(this)" title="Verde" style="width:26px;height:26px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#064e3b,#10b981);flex-shrink:0;"></div>
+                      <div class="cr-swatch" data-c1="#7f1d1d" data-c2="#ef4444" onclick="crSetCor(this)" title="Vermelho" style="width:26px;height:26px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#7f1d1d,#ef4444);flex-shrink:0;"></div>
+                      <div class="cr-swatch" data-c1="#3b0764" data-c2="#7c3aed" onclick="crSetCor(this)" title="Roxo" style="width:26px;height:26px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#3b0764,#7c3aed);flex-shrink:0;"></div>
+                      <div class="cr-swatch" data-c1="#7c2d12" data-c2="#f97316" onclick="crSetCor(this)" title="Laranja" style="width:26px;height:26px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#7c2d12,#f97316);flex-shrink:0;"></div>
+                      <div class="cr-swatch" data-c1="#111827" data-c2="#374151" onclick="crSetCor(this)" title="Cinza" style="width:26px;height:26px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#111827,#374151);flex-shrink:0;"></div>
+                      <div class="cr-swatch" data-c1="#831843" data-c2="#ec4899" onclick="crSetCor(this)" title="Rosa" style="width:26px;height:26px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#831843,#ec4899);flex-shrink:0;"></div>
+                      <div class="cr-swatch" data-c1="#164e63" data-c2="#06b6d4" onclick="crSetCor(this)" title="Ciano" style="width:26px;height:26px;border-radius:6px;cursor:pointer;border:2.5px solid transparent;background:linear-gradient(135deg,#164e63,#06b6d4);flex-shrink:0;"></div>
+                      <label style="display:flex;align-items:center;gap:4px;padding:4px 7px;border:1.5px solid var(--border);border-radius:6px;background:var(--bg2);cursor:pointer;font-size:0.75em;font-weight:600;color:var(--text2);">
+                        🖌️
+                        <input type="color" id="cr-picker1" value="#1e3a5f" oninput="crSetCorCustom()" style="width:20px;height:20px!important;border:none;background:none;padding:0;cursor:pointer;min-height:unset!important;">
+                        <input type="color" id="cr-picker2" value="#2563eb" oninput="crSetCorCustom()" style="width:20px;height:20px!important;border:none;background:none;padding:0;cursor:pointer;min-height:unset!important;margin-left:-1px;">
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:10px;">
+                <button class="btn btn-primary" onclick="crGerarCracha()" style="flex:1;">🪪 Gerar Crachá</button>
+                <button class="btn btn-warning" onclick="crGerarTodos()" style="flex:1;">🧪 Gerar Todos os Formatos</button>
+              </div>
+            </div>
+
+            <!-- COLUNA DIREITA: PREVIEW -->
+            <div style="position:sticky;top:94px;">
+              <div class="section" style="padding:16px;">
+                <div style="font-size:0.78em;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--primary);display:inline-block;">👁️ Pré-visualização</div>
+                <div id="cr-preview-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px 10px;color:var(--text2);text-align:center;">
+                  <div style="font-size:2.5em;opacity:0.2;">🪪</div>
+                  <p style="font-size:0.8em;line-height:1.5;">Preencha os dados e<br>clique em <strong>Gerar Crachá</strong></p>
+                </div>
+                <div id="cr-badge-preview" style="display:none;">
+                  <div style="display:flex;justify-content:center;padding:6px 0 8px;">
+                    <div id="cr-print-zone">
+                      <div class="cr-badge-card cr-size-pvc" id="cr-the-badge">
+                        <div class="cr-badge-header-bar" id="cr-header-bar" style="-webkit-print-color-adjust:exact;print-color-adjust:exact;">
+                          <span style="font-weight:800;font-size:0.78em;color:#fff;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="cr-b-empresa">EMPRESA</span>
+                          <span style="font-size:0.6em;font-weight:700;background:rgba(255,255,255,0.2);color:#fff;padding:2px 8px;border-radius:4px;text-transform:uppercase;border:1px solid rgba(255,255,255,0.3);flex-shrink:0;">PDV</span>
+                        </div>
+                        <div style="padding:10px 14px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                          <span style="font-size:0.56em;font-weight:700;letter-spacing:0.2em;color:#94a3b8;text-transform:uppercase;">Autorização PDV</span>
+                          <span style="font-size:0.9em;font-weight:800;color:#1e293b;text-align:center;line-height:1.3;" id="cr-b-nome">Nome</span>
+                          <div id="cr-divider" style="width:28px;height:3px;background:#2563eb;border-radius:2px;margin:1px 0;"></div>
+                          <div style="background:#fff;padding:3px 6px 1px;border-radius:5px;display:flex;align-items:center;justify-content:center;"><svg id="cr-barcode"></svg></div>
+                        </div>
+                        <div style="background:#f1f5f9;padding:4px 12px;display:flex;align-items:center;justify-content:center;gap:6px;border-top:1px solid #e2e8f0;">
+                          <div class="cr-footer-dot" style="width:4px;height:4px;background:#2563eb;border-radius:50%;"></div>
+                          <span style="font-size:0.5em;font-weight:700;letter-spacing:0.14em;color:#64748b;text-transform:uppercase;">Uso exclusivo no sistema PDV</span>
+                          <div class="cr-footer-dot" style="width:4px;height:4px;background:#2563eb;border-radius:50%;"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;">
+                    <button class="btn btn-success btn-sm" onclick="crAdicionarNaFolha()" style="font-size:0.76em;padding:7px 6px;">➕ Folha</button>
+                    <button class="btn btn-info btn-sm" onclick="crClonar()" style="font-size:0.76em;padding:7px 6px;">📋 Clonar</button>
+                    <button class="btn btn-sm" style="background:var(--border);color:var(--text);font-size:0.76em;padding:7px 6px;" onclick="crResetar()">🔄 Novo</button>
+                    <button class="btn btn-sm" style="background:var(--border);color:var(--text);font-size:0.76em;padding:7px 6px;" onclick="crImprimir()">🖨️ Imprimir</button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- FOLHA DE IMPRESSÃO -->
-        <div id="cr-folha-wrap" class="section" style="display:none;margin-top:0;padding:20px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
-            <h2 style="font-size:1.1em;margin:0;">🖨️ Folha de Impressão <span id="cr-folha-count" style="font-size:0.75em;color:var(--text2);font-weight:400;"></span></h2>
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-danger btn-sm" onclick="crLimparFolha()">🗑️ Limpar</button>
-              <button class="btn btn-success btn-sm" onclick="crImprimirFolha()">🖨️ Imprimir folha</button>
+        <!-- ABA FOLHA -->
+        <div id="cr-tab-folha" style="display:none;">
+          <div class="section" style="padding:16px 20px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+              <div style="font-size:0.78em;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);padding-bottom:6px;border-bottom:2px solid var(--primary);display:inline-block;">🖨️ Crachás na Folha</div>
+              <div style="display:flex;gap:8px;">
+                <button class="btn btn-danger btn-sm" onclick="crLimparFolha()">🗑️ Limpar</button>
+                <button class="btn btn-success btn-sm" onclick="crImprimirFolha()">🖨️ Imprimir folha</button>
+              </div>
             </div>
+            <div id="cr-folha-vazio" style="text-align:center;padding:40px;color:var(--text2);">
+              <div style="font-size:2.5em;margin-bottom:10px;opacity:0.2;">🖨️</div>
+              <p style="font-size:0.88em;">Nenhum crachá adicionado ainda.<br>Gere um crachá e clique em <strong>➕ Folha</strong>.</p>
+            </div>
+            <div id="cr-folha-grid" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;"></div>
           </div>
-          <div id="cr-folha-grid" style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;"></div>
         </div>
 
       </section>
@@ -2044,6 +2054,18 @@ function abrirInstalacoes(botao) {
 
 
 
+
+function crMudarAba(aba, btn) {
+  document.getElementById('cr-tab-gerador').style.display = aba==='gerador' ? 'block' : 'none';
+  document.getElementById('cr-tab-folha').style.display   = aba==='folha'   ? 'block' : 'none';
+  const btnG = document.getElementById('cr-tab-btn-gerador');
+  const btnF = document.getElementById('cr-tab-btn-folha');
+  btnG.style.color        = aba==='gerador' ? 'var(--primary)' : 'var(--text2)';
+  btnG.style.borderBottom = aba==='gerador' ? '3px solid var(--primary)' : '3px solid transparent';
+  btnF.style.color        = aba==='folha'   ? 'var(--primary)' : 'var(--text2)';
+  btnF.style.borderBottom = aba==='folha'   ? '3px solid var(--primary)' : '3px solid transparent';
+}
+
 function abrirCracha(botao) {
   document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
   document.querySelectorAll('.topbar-row2 nav button').forEach(b => b.classList.remove('active'));
@@ -2168,6 +2190,7 @@ function crGerarTodos() {
     document.body.removeChild(svgEl);
   });
   crRenderFolha();
+  crMudarAba('folha', null);
   crMsg('✅ '+crFolha.length+' formatos gerados na folha!','sucesso');
 }
 
@@ -2203,12 +2226,20 @@ function crBuildBadgeHTML(d) {
   </div>`;
 }
 function crRenderFolha() {
-  const wrap=document.getElementById('cr-folha-wrap');
   const grid=document.getElementById('cr-folha-grid');
   const count=document.getElementById('cr-folha-count');
-  if(crFolha.length===0){wrap.style.display='none';return;}
-  wrap.style.display='block';
+  const tabCount=document.getElementById('cr-tab-folha-count');
+  const vazio=document.getElementById('cr-folha-vazio');
+  if(crFolha.length===0){
+    grid.innerHTML='';
+    if(vazio) vazio.style.display='block';
+    count.textContent='';
+    if(tabCount){ tabCount.style.display='none'; tabCount.textContent=''; }
+    return;
+  }
+  if(vazio) vazio.style.display='none';
   count.textContent=`(${crFolha.length} crachá${crFolha.length>1?'s':''})`;
+  if(tabCount){ tabCount.style.display='inline'; tabCount.textContent=crFolha.length; }
   grid.innerHTML='';
   crFolha.forEach(d=>{
     const item=document.createElement('div');
@@ -2220,7 +2251,9 @@ function crRenderFolha() {
 }
 function crAdicionarNaFolha() {
   if(document.getElementById('cr-badge-preview').style.display==='none'){crMsg('❌ Gere um crachá primeiro.','erro');return;}
-  crFolha.push(crCapturarDadosAtuais()); crRenderFolha(); crMsg('✅ Adicionado à folha!','sucesso');
+  crFolha.push(crCapturarDadosAtuais()); crRenderFolha();
+  crMudarAba('folha', null);
+  crMsg('✅ Adicionado à folha!','sucesso');
 }
 function crClonar() {
   if(document.getElementById('cr-badge-preview').style.display==='none'){crMsg('❌ Gere um crachá primeiro.','erro');return;}
