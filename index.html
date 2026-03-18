@@ -10,6 +10,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   <style>
     :root {
       --primary: #2563eb; --dark: #1e40af; --success: #10b981; --warning: #f59e0b;
@@ -592,6 +593,140 @@
       .cr-badge-card { box-shadow:none !important; border:1px solid #aaa !important; break-inside:avoid !important; page-break-inside:avoid !important; }
       .cr-badge-header-bar { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
     }
+
+    /* ══ INSTALAÇÕES ══ */
+    #instalacoesSection .inst-container { max-width: 1400px; margin: 0 auto; }
+    #instalacoesSection .inst-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 25px; }
+    #instalacoesSection .inst-form-group { display: flex; flex-direction: column; }
+    #instalacoesSection .inst-form-group label { font-weight: 600; margin-bottom: 8px; color: var(--text); font-size: 0.95em; }
+    #instalacoesSection input[type="text"]:not(.login-box input),
+    #instalacoesSection input[type="date"]:not(.login-box input),
+    #instalacoesSection select:not(.login-box select),
+    #instalacoesSection textarea {
+      padding: 12px 15px; border: 2px solid var(--border); border-radius: 8px;
+      font-size: 0.95em; font-family: inherit; background: var(--bg2);
+      color: var(--text); transition: all 0.3s ease; width: 100%;
+    }
+    #instalacoesSection .inst-btn {
+      padding: 12px 28px; border: none; border-radius: 8px; font-size: 0.95em;
+      font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+      text-transform: uppercase; letter-spacing: 0.5px; display: inline-block;
+      margin-right: 10px; margin-bottom: 10px; font-family: inherit;
+    }
+    #instalacoesSection .inst-btn-primary { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; width: 100%; }
+    #instalacoesSection .inst-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.3); }
+    #instalacoesSection .inst-btn-secondary { background: var(--info); color: white; }
+    #instalacoesSection .inst-btn-secondary:hover { background: #0891b2; transform: translateY(-2px); }
+    #instalacoesSection .inst-btn-success { background: var(--success); color: white; }
+    #instalacoesSection .inst-btn-success:hover { background: #059669; }
+    #instalacoesSection .inst-btn-danger { background: var(--danger); color: white; }
+    #instalacoesSection .inst-btn-danger:hover { background: #dc2626; }
+    #instalacoesSection .inst-btn-reset { background: var(--border); color: var(--text); margin-top: 20px; width: 100%; }
+    body.dark-mode #instalacoesSection .inst-btn-reset { background: #475569; color: #f1f5f9; }
+    #instalacoesSection .inst-button-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+    #instalacoesSection .inst-projects-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    #instalacoesSection .inst-project-card {
+      background: var(--card); padding: 20px; border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid var(--primary);
+      transition: all 0.3s ease;
+    }
+    #instalacoesSection .inst-project-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.12); transform: translateY(-2px); }
+    #instalacoesSection .inst-project-card h3 { font-size: 1.2em; margin-bottom: 10px; color: var(--text); }
+    #instalacoesSection .inst-project-card p { font-size: 0.9em; color: var(--text2); margin-bottom: 5px; }
+    #instalacoesSection .inst-project-card.finalizado { border-left-color: #10b981; opacity: 0.85; }
+    #instalacoesSection .inst-project-card.finalizado h3 { color: var(--text2); }
+    #instalacoesSection .inst-project-card-buttons { display: flex; gap: 10px; margin-top: 15px; }
+    #instalacoesSection .inst-project-card-buttons button { flex: 1; padding: 8px 12px; font-size: 0.85em; }
+    #instalacoesSection .inst-progress-container { margin-bottom: 30px; }
+    #instalacoesSection .inst-progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    #instalacoesSection .inst-progress-header h3 { font-size: 1.1em; color: var(--text); margin-bottom: 0; }
+    #instalacoesSection .inst-progress-percentage { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.9em; }
+    #instalacoesSection .inst-progress-bar { width: 100%; height: 10px; background: var(--border); border-radius: 10px; overflow: hidden; }
+    #instalacoesSection .inst-progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--success)); border-radius: 10px; width: 0%; transition: width 0.4s ease; }
+    #instalacoesSection .inst-info-card { background: linear-gradient(135deg, var(--bg2), var(--card)); padding: 20px; border-radius: 12px; border-left: 4px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background 0.3s ease; }
+    #instalacoesSection .inst-info-card label { font-size: 0.85em; color: var(--text2); margin-bottom: 5px; font-weight: 600; display: block; }
+    #instalacoesSection .inst-info-card p { font-size: 1.1em; font-weight: 600; color: var(--text); }
+    #instalacoesSection .inst-client-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    #instalacoesSection .inst-timeline-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    #instalacoesSection .inst-timeline-item { padding: 20px; border-radius: 12px; border-left: 5px solid #8b5cf6; background: var(--card); box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s ease; }
+    #instalacoesSection .inst-timeline-item:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+    #instalacoesSection .inst-timeline-item h3 { font-size: 1.1em; margin-bottom: 8px; color: var(--text); }
+    #instalacoesSection .inst-timeline-dates { font-size: 0.85em; color: var(--text2); margin-bottom: 15px; font-weight: 500; }
+    #instalacoesSection .inst-phases-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-bottom: 30px; }
+    #instalacoesSection .inst-phase { border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.3s ease; }
+    #instalacoesSection .inst-phase:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+    #instalacoesSection .inst-phase-header { padding: 20px; color: white; font-weight: 700; font-size: 1.1em; display: flex; justify-content: space-between; align-items: center; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    #instalacoesSection .inst-phase.inst-phase-1 .inst-phase-header { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    #instalacoesSection .inst-phase.inst-phase-2 .inst-phase-header { background: linear-gradient(135deg, #ec4899, #db2777); }
+    #instalacoesSection .inst-phase.inst-phase-3 .inst-phase-header { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    #instalacoesSection .inst-phase.inst-phase-4 .inst-phase-header { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+    #instalacoesSection .inst-phase.inst-phase-5 .inst-phase-header { background: linear-gradient(135deg, #10b981, #059669); }
+    #instalacoesSection .inst-phase-counter { background: rgba(255,255,255,0.3); padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: 600; }
+    #instalacoesSection .inst-phase-content { padding: 20px; background: var(--card); transition: background 0.3s ease; }
+    #instalacoesSection .inst-checklist { list-style: none; margin-bottom: 15px; }
+    #instalacoesSection .inst-checklist-item { display: block; margin-bottom: 12px; padding: 10px; border-radius: 8px; background: var(--bg2); transition: all 0.2s ease; }
+    #instalacoesSection .inst-checklist-item:hover { background: var(--border); }
+    #instalacoesSection .inst-checklist-item-row { display: flex; align-items: flex-start; margin-bottom: 8px; }
+    #instalacoesSection .inst-checklist-item input[type="checkbox"] { cursor: pointer; margin-right: 12px; margin-top: 4px; width: 18px; height: 18px !important; min-height: 18px !important; accent-color: var(--primary); flex-shrink: 0; padding: 0 !important; border: none !important; box-shadow: none !important; background: none !important; }
+    #instalacoesSection .inst-checklist-item label { cursor: pointer; flex: 1; margin: 0; font-weight: 500; color: var(--text); height: auto !important; line-height: 1.4 !important; padding: 0 !important; border: none !important; background: none !important; box-shadow: none !important; width: auto !important; }
+    #instalacoesSection .inst-checklist-item input[type="checkbox"]:checked + label { color: var(--text2); text-decoration: line-through; }
+    #instalacoesSection .inst-date-wrapper { padding-left: 30px; margin-top: 8px; }
+    #instalacoesSection .inst-date-label { font-size: 0.85em; color: var(--text2); font-weight: 600; margin-bottom: 5px; display: block; }
+    #instalacoesSection .inst-date-wrapper input[type="date"] { width: 100%; padding: 8px 10px; font-size: 0.9em; border: 1px solid var(--primary); background: var(--card); color: var(--text); border-radius: 6px; cursor: pointer; height: auto !important; }
+    #instalacoesSection .inst-status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 600; margin-top: 10px; }
+    #instalacoesSection .inst-status-completed { background: rgba(16,185,129,0.15); color: var(--success); }
+    #instalacoesSection .inst-status-in-progress { background: rgba(245,158,11,0.15); color: var(--warning); }
+    #instalacoesSection .inst-status-pending { background: rgba(239,68,68,0.15); color: var(--danger); }
+    #instalacoesSection .inst-badge-finalizado { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.78em; font-weight: 700; margin-bottom: 8px; background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+    #instalacoesSection .inst-badge-andamento { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.78em; font-weight: 700; margin-bottom: 8px; background: rgba(245,158,11,0.12); color: #d97706; border: 1px solid rgba(245,158,11,0.25); }
+    #instalacoesSection .inst-chart-container { position: relative; height: 400px; margin: 30px 0; padding: 20px; background: var(--card); border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.3s ease; }
+    #instalacoesSection .inst-projetos-filtro { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; align-items: center; }
+    #instalacoesSection .inst-projetos-filtro-wrap { flex: 1; min-width: 220px; }
+    #instalacoesSection .inst-projetos-filtro-wrap input { width: 100%; }
+    #instalacoesSection .inst-btn-filtrar { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; border: none; border-radius: 8px; padding: 0 24px; height: 46px; font-size: 0.9em; font-weight: 700; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; font-family: inherit; margin: 0; }
+    #instalacoesSection .inst-btn-filtrar:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(37,99,235,0.35); }
+    #instalacoesSection .inst-btn-limpar-filtro { background: var(--bg2); color: var(--text2); border: 2px solid var(--border); border-radius: 8px; padding: 0 18px; height: 46px; font-size: 0.9em; font-weight: 600; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; font-family: inherit; margin: 0; }
+    #instalacoesSection .inst-btn-limpar-filtro:hover { border-color: var(--primary); color: var(--primary); }
+    #instalacoesSection .inst-vazio { text-align: center; padding: 40px 20px; color: var(--text2); grid-column: 1 / -1; }
+    #instalacoesSection .inst-vazio-icon { font-size: 3em; margin-bottom: 12px; }
+    #instalacoesSection .inst-resultado-info { font-size: 0.85em; color: var(--text2); margin-bottom: 16px; padding: 8px 14px; background: rgba(37,99,235,0.06); border-radius: 8px; border-left: 3px solid var(--primary); display: none; }
+    /* Modais instalação */
+    #instNewPhaseModal, #instTimelineModal, #instNewTimelineModal, #instChecklistModal {
+      display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+      width: 100%; height: 100%; background: rgba(15,23,42,0.6);
+      backdrop-filter: blur(4px); align-items: center; justify-content: center;
+    }
+    #instNewPhaseModal.inst-modal-open, #instTimelineModal.inst-modal-open,
+    #instNewTimelineModal.inst-modal-open, #instChecklistModal.inst-modal-open { display: flex; }
+    .inst-modal-content {
+      background: var(--card); border-radius: 20px; width: 90%; max-width: 700px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.25); max-height: 88vh; overflow: hidden;
+      display: flex; flex-direction: column; border: 1px solid var(--border);
+      animation: fadeIn 0.25s ease-out;
+    }
+    .inst-modal-header {
+      font-size: 1.2em; font-weight: 700; color: var(--text);
+      padding: 22px 28px 18px; background: linear-gradient(135deg, var(--bg2), var(--card));
+      border-bottom: 2px solid var(--border); border-radius: 20px 20px 0 0;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .inst-modal-header::before { content: ''; display: block; width: 5px; height: 26px; background: linear-gradient(180deg, var(--primary), var(--dark)); border-radius: 4px; flex-shrink: 0; }
+    .inst-modal-body { padding: 24px 28px; overflow-y: auto; flex: 1; }
+    .inst-modal-footer { display: flex; gap: 12px; justify-content: flex-end; padding: 16px 28px; border-top: 1px solid var(--border); background: var(--bg2); border-radius: 0 0 20px 20px; }
+    .inst-modal-close { background: transparent; color: var(--text2); padding: 9px 22px; border: 2px solid var(--border); border-radius: 8px; font-weight: 600; font-size: 0.9em; cursor: pointer; font-family: inherit; }
+    .inst-modal-close:hover { background: var(--border); color: var(--text); }
+    .inst-modal-save { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; padding: 9px 26px; border: none; border-radius: 8px; font-weight: 700; font-size: 0.9em; cursor: pointer; font-family: inherit; }
+    .inst-modal-save:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,0.35); }
+    .inst-edit-section { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid var(--border); }
+    .inst-edit-section:last-child { border-bottom: none; margin-bottom: 0; }
+    .inst-edit-section h4 { margin-bottom: 14px; color: var(--text); font-size: 1em; font-weight: 700; padding: 10px 14px; background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(37,99,235,0.03)); border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0; }
+    .inst-edit-item { margin-bottom: 12px; padding: 13px 15px; background: var(--bg2); border-radius: 10px; border: 1px solid var(--border); }
+    .inst-edit-item:hover { border-color: var(--primary); }
+    .inst-edit-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px; }
+    .inst-edit-item-header span { font-size: 0.8em; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+    #instalacoesSection input[type="text"].inst-edit-input,
+    #instalacoesSection input[type="date"].inst-edit-input { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9em; background: var(--card); color: var(--text); width: 100%; height: auto !important; }
+
     .hidden { display: none !important; }
 
     @media (max-width: 960px) {
@@ -853,8 +988,175 @@
 
       <!-- INSTALAÇÕES -->
       <section id="instalacoesSection" class="hidden" style="overflow:visible;">
-        <iframe id="iframeInstalacoes" src="" scrolling="auto"
-          style="width:100%; height:calc(100vh - 75px); border:none; display:block;"></iframe>
+        <div class="page-header">
+          <div>
+            <h1>📊 Painel de Implantação ERP</h1>
+            <p>Customização completa de cronograma e checklists de implementação</p>
+          </div>
+        </div>
+
+        <div class="inst-container">
+
+          <!-- PROJETOS -->
+          <div class="section" id="inst-projectsSection">
+            <h2>Meus Projetos</h2>
+            <div class="inst-projetos-filtro">
+              <div class="inst-projetos-filtro-wrap">
+                <input type="text" id="inst-projetosBusca" placeholder="🔍 Buscar por nome do cliente ou CNPJ..." oninput="instFiltrarProjetos()" autocomplete="off" style="height:46px;">
+              </div>
+              <button class="inst-btn-filtrar" onclick="instMostrarTodosProjetos()">🔍 Filtrar</button>
+              <button class="inst-btn-limpar-filtro" onclick="instLimparFiltro()">🧹 Limpar</button>
+            </div>
+            <div id="inst-projetosInfo" class="inst-resultado-info"></div>
+            <div class="inst-projects-list" id="inst-projectsList"></div>
+            <hr style="margin:30px 0;border:none;border-top:1px solid var(--border);">
+            <h2 style="margin-top:30px;">Novo Projeto</h2>
+          </div>
+
+          <!-- NOVO PROJETO -->
+          <div class="section">
+            <h2>Informações do Cliente</h2>
+            <div class="inst-form-grid">
+              <div class="inst-form-group" style="grid-column:1/-1;">
+                <label>Nome do Cliente</label>
+                <input type="text" id="inst-clientName" placeholder="Cliente selecionado aparecerá aqui" readonly style="background:var(--bg2);cursor:default;">
+                <div style="margin-top:10px;display:flex;gap:10px;align-items:center;">
+                  <input type="text" id="inst-clienteBusca" placeholder="🔍 Buscar por nome ou CNPJ..." autocomplete="off" oninput="instBuscarClienteCards()" style="flex:1;">
+                  <button type="button" onclick="instLimparCliente()" class="inst-btn inst-btn-reset" style="margin:0;width:auto;padding:10px 18px;font-size:0.85em;">✕ Limpar</button>
+                </div>
+                <div id="inst-clienteResultado" style="display:none;margin-top:12px;">
+                  <div id="inst-clienteGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;max-height:340px;overflow-y:auto;padding:4px 2px;"></div>
+                </div>
+              </div>
+              <div class="inst-form-group">
+                <label>Data de Início</label>
+                <input type="date" id="inst-startDate">
+              </div>
+              <div class="inst-form-group">
+                <label>Responsável pela Implantação</label>
+                <input type="text" id="inst-responsible" placeholder="Nome do responsável">
+              </div>
+            </div>
+            <button class="inst-btn inst-btn-primary" onclick="instIniciarProjeto()">Iniciar Projeto</button>
+            <button class="inst-btn inst-btn-reset" onclick="instResetarForm()">Limpar</button>
+          </div>
+
+          <!-- RESUMO DO PROJETO -->
+          <div class="section" id="inst-projectSection" style="display:none;">
+            <h2>Resumo do Projeto</h2>
+            <div class="inst-client-info">
+              <div class="inst-info-card"><label>Cliente</label><p id="inst-displayName">-</p></div>
+              <div class="inst-info-card"><label>CNPJ/CPF</label><p id="inst-displayCNPJ">-</p></div>
+              <div class="inst-info-card"><label>Data de Início</label><p id="inst-displayDate">-</p></div>
+              <div class="inst-info-card"><label>Responsável</label><p id="inst-displayResp">-</p></div>
+            </div>
+            <div id="inst-statusBanner" style="display:none;margin-bottom:20px;padding:16px 20px;border-radius:12px;background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.04));border:2px solid rgba(16,185,129,0.3);align-items:center;gap:12px;">
+              <span style="font-size:1.8em;">✅</span>
+              <div><p style="font-weight:700;color:#10b981;font-size:1.05em;margin:0;">Projeto Finalizado</p><p id="inst-finishedDate" style="font-size:0.85em;color:var(--text2);margin:0;"></p></div>
+            </div>
+            <div class="inst-button-group">
+              <button class="inst-btn inst-btn-success" onclick="instPrintPDF()">🖨️ Imprimir PDF</button>
+              <button class="inst-btn inst-btn-success" onclick="instSalvar()">💾 Salvar Projeto</button>
+              <button class="inst-btn" id="inst-btnFinalizar" onclick="instToggleFinalizar()" style="background:linear-gradient(135deg,#10b981,#059669);color:white;">✅ Finalizar Projeto</button>
+              <button class="inst-btn inst-btn-danger" onclick="instVoltarProjetos()">← Voltar Projetos</button>
+            </div>
+          </div>
+
+          <!-- PROGRESSO -->
+          <div class="section" id="inst-progressSection" style="display:none;">
+            <h2>Progresso Geral</h2>
+            <div class="inst-progress-container">
+              <div class="inst-progress-header">
+                <h3>Conclusão do Projeto</h3>
+                <span class="inst-progress-percentage"><span id="inst-progressPct">0</span>%</span>
+              </div>
+              <div class="inst-progress-bar"><div class="inst-progress-fill" id="inst-progressFill"></div></div>
+            </div>
+          </div>
+
+          <!-- GRÁFICO -->
+          <div class="section" id="inst-chartSection" style="display:none;">
+            <h2>Gráfico de Entrega dos Processos</h2>
+            <div class="inst-chart-container"><canvas id="inst-deliveryChart"></canvas></div>
+          </div>
+
+          <!-- CRONOGRAMA -->
+          <div class="section" id="inst-timelineSection" style="display:none;">
+            <h2>Cronograma de Implantação</h2>
+            <div style="margin-bottom:20px;">
+              <button class="inst-btn inst-btn-secondary" onclick="instOpenTimelineEditor()">✏️ Editar Cronograma</button>
+              <button class="inst-btn inst-btn-success" onclick="instOpenNewTimeline()" style="width:auto;">+ Nova Etapa</button>
+            </div>
+            <div class="inst-timeline-container" id="inst-timelineContainer"></div>
+          </div>
+
+          <!-- CHECKLISTS -->
+          <div class="section" id="inst-checklistsSection" style="display:none;">
+            <h2>Checklists por Fase</h2>
+            <div style="margin-bottom:20px;">
+              <button class="inst-btn inst-btn-secondary" onclick="instOpenChecklistEditor()">✏️ Editar Checklists</button>
+              <button class="inst-btn inst-btn-success" onclick="instAddNewPhase()" style="width:auto;">+ Nova Fase</button>
+            </div>
+            <div class="inst-phases-container" id="inst-phasesContainer"></div>
+          </div>
+
+        </div><!-- /inst-container -->
+
+        <!-- MODAIS INSTALAÇÃO -->
+        <div id="instNewPhaseModal" class="modal" style="z-index:3000;">
+          <div class="inst-modal-content">
+            <div class="inst-modal-header">➕ Nova Fase</div>
+            <div class="inst-modal-body">
+              <div style="margin-bottom:18px;"><label style="font-weight:600;margin-bottom:8px;display:block;">Nome da Fase</label><input type="text" id="inst-newPhase_name" placeholder="Ex: Validação Final" style="width:100%;"></div>
+              <div><label style="font-weight:600;margin-bottom:8px;display:block;">Itens do Checklist <span style="font-weight:400;color:var(--text2);font-size:0.9em;">(um por linha)</span></label><textarea id="inst-newPhase_items" rows="6" placeholder="Item 1&#10;Item 2&#10;Item 3" style="width:100%;"></textarea></div>
+            </div>
+            <div class="inst-modal-footer">
+              <button class="inst-modal-close" onclick="instCloseModal('instNewPhaseModal')">✕ Cancelar</button>
+              <button class="inst-modal-save" onclick="instSaveNewPhase()">💾 Salvar Fase</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="instTimelineModal" class="modal" style="z-index:3000;">
+          <div class="inst-modal-content">
+            <div class="inst-modal-header">✏️ Editar Cronograma</div>
+            <div class="inst-modal-body" id="inst-timelineModalBody"></div>
+            <div class="inst-modal-footer">
+              <button class="inst-modal-close" onclick="instCloseModal('instTimelineModal')">✕ Cancelar</button>
+              <button class="inst-modal-save" onclick="instSaveTimelineChanges()">💾 Salvar Alterações</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="instNewTimelineModal" class="modal" style="z-index:3000;">
+          <div class="inst-modal-content">
+            <div class="inst-modal-header">➕ Nova Etapa na Cronologia</div>
+            <div class="inst-modal-body">
+              <div style="margin-bottom:18px;"><label style="font-weight:600;margin-bottom:8px;display:block;">Título da Etapa</label><input type="text" id="inst-newTL_title" placeholder="Ex: Validação Final" style="width:100%;"></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;">
+                <div><label style="font-weight:600;margin-bottom:8px;display:block;">Data Início</label><input type="date" id="inst-newTL_start" style="width:100%;"></div>
+                <div><label style="font-weight:600;margin-bottom:8px;display:block;">Data Fim</label><input type="date" id="inst-newTL_end" style="width:100%;"></div>
+              </div>
+              <div><label style="font-weight:600;margin-bottom:8px;display:block;">Descrição <span style="font-weight:400;color:var(--text2);">(opcional)</span></label><textarea id="inst-newTL_desc" rows="3" placeholder="Detalhes sobre esta etapa..." style="width:100%;"></textarea></div>
+            </div>
+            <div class="inst-modal-footer">
+              <button class="inst-modal-close" onclick="instCloseModal('instNewTimelineModal')">✕ Cancelar</button>
+              <button class="inst-modal-save" onclick="instSaveNewTimeline()">💾 Salvar Etapa</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="instChecklistModal" class="modal" style="z-index:3000;">
+          <div class="inst-modal-content">
+            <div class="inst-modal-header">✏️ Editar Checklists</div>
+            <div class="inst-modal-body" id="inst-checklistModalBody"></div>
+            <div class="inst-modal-footer">
+              <button class="inst-modal-close" onclick="instCloseModal('instChecklistModal')">✕ Cancelar</button>
+              <button class="inst-modal-save" onclick="instSaveChecklistChanges()">💾 Salvar Alterações</button>
+            </div>
+          </div>
+        </div>
+
       </section>
 
 
@@ -2043,14 +2345,576 @@ function abrirInstalacoes(botao) {
   document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
   document.querySelectorAll('.topbar-row2 nav button').forEach(b => b.classList.remove('active'));
   document.getElementById('instalacoesSection').classList.remove('hidden');
-  const iframe = document.getElementById('iframeInstalacoes');
-  if (!iframe.getAttribute('data-loaded')) {
-    iframe.setAttribute('data-loaded', '1');
-    iframe.src = './instalacao.html';
-  }
   botao.classList.add('active');
   document.getElementById('sidebar').classList.remove('open');
+  instCarregarProjetos();
 }
+
+/* ══════════════════════════════════════════
+   INSTALAÇÕES — JS INTEGRADO
+══════════════════════════════════════════ */
+(function() {
+
+const _instSB = supabase.createClient(
+  'https://boendmrotsttljydigld.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvZW5kbXJvdHN0dGxqeWRpZ2xkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1OTI5NTksImV4cCI6MjA4MjE2ODk1OX0.k6vVvD6kNV8r-a9lR6jaTcAm1wz5c_jbTDnjKlpo0cE'
+);
+
+let _instTodos = {};
+let instPhases = [], instWeeks = [];
+let instProjectId = null, instProjectData = null, instChart = null;
+let _instCarregado = false;
+
+const instDefaultPhases = [
+  {id:'phase-1',name:'Diagnóstico',phaseNumber:'1',items:['Checklist operação preenchido','Infraestrutura validada','Equipamentos confirmados','Conversão alinhada','Certificado digital solicitado','TEF validado']},
+  {id:'phase-2',name:'Preparação',phaseNumber:'2',items:['Treinamento cadastro realizado','Produtos cadastrados','Preços definidos','Etiquetas prontas','Dados revisados']},
+  {id:'phase-3',name:'Instalação',phaseNumber:'3',items:['Atualização final de dados','Instalação dos caixas','Testes realizados','Treinamento operadores','Go Live realizado']},
+  {id:'phase-4',name:'Consolidação',phaseNumber:'4',items:['Treinamento Comercial','Treinamento Financeiro','Treinamento Fiscal','Dúvidas resolvidas']},
+  {id:'phase-5',name:'Entrega',phaseNumber:'5',items:['Cliente operando sozinho','Pendências resolvidas','Formalização de entrega','Encaminhado para suporte']}
+];
+const instDefaultWeeks = [
+  {id:'week1',title:'Diagnóstico e Planejamento',phaseNumber:'1'},
+  {id:'week2',title:'Preparação e Cadastros',phaseNumber:'2'},
+  {id:'week3',title:'Instalação e Go Live',phaseNumber:'3'},
+  {id:'week4',title:'Treinamentos Estratégicos e Entrega',phaseNumber:'4'}
+];
+
+/* ── DB ── */
+async function _instGetAll() {
+  const {data,error} = await _instSB.from('erp_projects').select('*').order('created_at',{ascending:false});
+  if(error){console.error(error);return {};}
+  const r={};
+  (data||[]).forEach(row=>{
+    const dr=row.dates||{};
+    r[row.project_id]={
+      id:row.project_id,clientName:row.client_name,
+      clientCNPJ:dr._clientCNPJ||'',finalizado:dr._finalizado||false,finalizadoEm:dr._finalizadoEm||'',
+      startDate:row.start_date,responsible:row.responsible,
+      dates:Object.fromEntries(Object.entries(dr).filter(([k])=>!k.startsWith('_'))),
+      phases:row.phases||[],weeks:row.weeks||{},
+      checklistStates:row.checklist_states||{},checklistDates:row.checklist_dates||{},
+      checklistNotes:row.checklist_notes||{},createdAt:row.created_at,savedAt:row.saved_at
+    };
+  });
+  return r;
+}
+async function _instSave(p) {
+  const dates=Object.assign({},p.dates||{},{_clientCNPJ:p.clientCNPJ||'',_finalizado:p.finalizado||false,_finalizadoEm:p.finalizadoEm||''});
+  const row={project_id:p.id,client_name:p.clientName,start_date:p.startDate,responsible:p.responsible,
+    dates,phases:p.phases||[],weeks:p.weeks||[],checklist_states:p.checklistStates||{},
+    checklist_dates:p.checklistDates||{},checklist_notes:p.checklistNotes||{},saved_at:p.savedAt};
+  const {error}=await _instSB.from('erp_projects').upsert(row,{onConflict:'project_id'});
+  return !error;
+}
+async function _instDelete(id) {
+  const {error}=await _instSB.from('erp_projects').delete().eq('project_id',id);
+  return !error;
+}
+
+/* ── CARREGAMENTO ── */
+window.instCarregarProjetos = async function() {
+  if(_instCarregado) return;
+  _instCarregado = false; // sempre recarrega ao abrir
+  _instTodos = await _instGetAll();
+  _instCarregado = true;
+  _instRenderLista(_instTodos, null);
+};
+
+/* ── FILTRO ── */
+window.instFiltrarProjetos = function() {
+  const t = document.getElementById('inst-projetosBusca').value.trim().toLowerCase();
+  if(!t){ document.getElementById('inst-projectsList').innerHTML='<div class="inst-vazio"><div class="inst-vazio-icon">🔍</div><p>Use o campo de busca ou clique em <strong>Filtrar</strong>.</p></div>'; document.getElementById('inst-projetosInfo').style.display='none'; return; }
+  const f=Object.fromEntries(Object.entries(_instTodos).filter(([,p])=>(p.clientName||'').toLowerCase().includes(t)||(p.clientCNPJ||'').toLowerCase().includes(t)||(p.responsible||'').toLowerCase().includes(t)));
+  _instRenderLista(f,t);
+};
+window.instMostrarTodosProjetos = function() {
+  const t=document.getElementById('inst-projetosBusca').value.trim();
+  if(t) instFiltrarProjetos(); else _instRenderLista(_instTodos,null);
+};
+window.instLimparFiltro = function() {
+  document.getElementById('inst-projetosBusca').value='';
+  document.getElementById('inst-projetosInfo').style.display='none';
+  document.getElementById('inst-projectsList').innerHTML='<div class="inst-vazio"><div class="inst-vazio-icon">🔍</div><p>Use o campo de busca ou clique em <strong>Filtrar</strong>.</p></div>';
+};
+
+function _instHL(txt,t) {
+  if(!t||!txt) return txt||'';
+  return String(txt).replace(new RegExp('('+t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark style="background:rgba(37,99,235,0.15);color:var(--primary);border-radius:3px;padding:0 2px;">$1</mark>');
+}
+
+function _instRenderLista(projetos, termo) {
+  const list=document.getElementById('inst-projectsList');
+  const info=document.getElementById('inst-projetosInfo');
+  list.innerHTML='';
+  const n=Object.keys(projetos).length;
+  if(termo){info.style.display='block';info.textContent=n>0?'🔍 '+n+' projeto(s) para "'+termo+'"':'😕 Nenhum projeto para "'+termo+'"';}
+  else info.style.display='none';
+  if(!n){list.innerHTML='<div class="inst-vazio"><div class="inst-vazio-icon">'+(termo?'😕':'📋')+'</div><p>'+(termo?'Nenhum encontrado.':'Nenhum projeto salvo.')+'</p></div>';return;}
+  Object.entries(projetos).forEach(([id,p])=>{
+    const pct=_instCalcProgress(p);
+    const card=document.createElement('div');
+    card.className='inst-project-card'+(p.finalizado?' finalizado':'');
+    card.innerHTML=(p.finalizado?'<span class="inst-badge-finalizado">✅ Finalizado</span>':'<span class="inst-badge-andamento">🔄 Em andamento</span>')
+      +'<h3>👤 '+(termo?_instHL(p.clientName,termo):(p.clientName||'—'))+'</h3>'
+      +(p.clientCNPJ?'<p><strong>CNPJ/CPF:</strong> '+(termo?_instHL(p.clientCNPJ,termo):p.clientCNPJ)+'</p>':'')
+      +'<p><strong>Responsável:</strong> '+(termo?_instHL(p.responsible,termo):(p.responsible||'—'))+'</p>'
+      +'<p><strong>Início:</strong> '+_instFmtDate(p.startDate)+'</p>'
+      +'<p><strong>Progresso:</strong> '+pct+'%</p>'
+      +(p.finalizado&&p.finalizadoEm?'<p style="font-size:0.82em;color:#10b981;font-weight:600;">✅ '+p.finalizadoEm+'</p>':'')
+      +'<p style="font-size:0.85em;color:var(--text2);">Salvo: '+(p.savedAt||'—')+'</p>'
+      +'<div class="inst-project-card-buttons">'
+      +'<button class="inst-btn inst-btn-secondary" onclick="instAbrirProjeto(\''+id+'\')">📂 Abrir</button>'
+      +(p.finalizado
+        ?'<button class="inst-btn" style="background:linear-gradient(135deg,#6b7280,#4b5563);color:white;font-size:0.82em;padding:8px 10px;" onclick="instFinalizarLista(\''+id+'\',false)">🔄 Reabrir</button>'
+        :'<button class="inst-btn" style="background:linear-gradient(135deg,#10b981,#059669);color:white;font-size:0.82em;padding:8px 10px;" onclick="instFinalizarLista(\''+id+'\',true)">✅ Finalizar</button>')
+      +'<button class="inst-btn inst-btn-danger" onclick="instDeletar(\''+id+'\')">🗑️ Deletar</button>'
+      +'</div>';
+    list.appendChild(card);
+  });
+}
+
+/* ── BUSCA CLIENTE ── */
+window.instBuscarClienteCards = async function() {
+  const v=document.getElementById('inst-clienteBusca').value.trim();
+  const r=document.getElementById('inst-clienteResultado');
+  const g=document.getElementById('inst-clienteGrid');
+  if(!v){r.style.display='none';return;}
+  try{
+    const {data}=await _instSB.from('clientes').select('nome,razao_social,cnpj,endereco,observacoes').or('nome.ilike.%'+v+'%,cnpj.ilike.%'+v+'%').limit(20);
+    g.innerHTML='';
+    if(!data||!data.length){g.innerHTML='<p style="color:var(--text2);padding:12px;">Nenhum cliente encontrado.</p>';r.style.display='block';return;}
+    data.forEach(c=>{
+      const card=document.createElement('div');
+      card.style.cssText='background:var(--card);padding:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-left:4px solid var(--primary);cursor:pointer;transition:all 0.2s ease;';
+      card.innerHTML='<h3 style="font-size:1.05em;margin-bottom:8px;color:var(--text);">👤 '+c.nome+'</h3>'
+        +(c.cnpj?'<p style="font-size:0.88em;color:var(--text2);margin-bottom:4px;"><strong>CNPJ/CPF:</strong> '+c.cnpj+'</p>':'')
+        +'<div style="margin-top:10px;"><button style="background:linear-gradient(135deg,var(--primary),var(--dark));color:white;border:none;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:0.85em;font-weight:600;">✔ Selecionar</button></div>';
+      card.querySelector('button').onclick=function(e){
+        e.stopPropagation();
+        const inp=document.getElementById('inst-clientName');
+        inp.value=c.nome; inp.dataset.cnpj=c.cnpj||'';
+        document.getElementById('inst-clienteBusca').value='';
+        r.style.display='none';
+      };
+      g.appendChild(card);
+    });
+    r.style.display='block';
+  }catch(e){console.error(e);}
+};
+window.instLimparCliente = function() {
+  document.getElementById('inst-clientName').value='';
+  document.getElementById('inst-clientName').dataset.cnpj='';
+  document.getElementById('inst-clienteBusca').value='';
+  document.getElementById('inst-clienteResultado').style.display='none';
+};
+
+/* ── PROJETO ── */
+window.instIniciarProjeto = function() {
+  const n=document.getElementById('inst-clientName').value.trim();
+  const d=document.getElementById('inst-startDate').value;
+  const r=document.getElementById('inst-responsible').value.trim();
+  if(!n||!d||!r){alert('Preencha todos os campos!');return;}
+  instProjectId=Date.now().toString();
+  instProjectData={id:instProjectId,clientName:n,clientCNPJ:document.getElementById('inst-clientName').dataset.cnpj||'',
+    startDate:d,responsible:r,dates:_instGenDates(d),phases:JSON.parse(JSON.stringify(instDefaultPhases)),
+    weeks:JSON.parse(JSON.stringify(instDefaultWeeks)),checklistStates:{},checklistDates:{},checklistNotes:{},
+    createdAt:new Date().toLocaleString('pt-BR')};
+  instPhases=JSON.parse(JSON.stringify(instProjectData.phases));
+  instWeeks=JSON.parse(JSON.stringify(instProjectData.weeks));
+  _instShowProjeto(n,d,r,instProjectData.clientCNPJ);
+  _instRenderTimeline(instProjectData.dates);
+  _instRenderChecklists();
+  _instUpdateProgress();
+  _instRenderChart();
+};
+
+function _instGenDates(s) {
+  const d=new Date(s),r={};
+  for(let w=1;w<=4;w++){const ws=new Date(d);ws.setDate(ws.getDate()+(w-1)*7);const we=new Date(ws);we.setDate(we.getDate()+6);r['week'+w]={start:ws.toISOString().split('T')[0],end:we.toISOString().split('T')[0]};}
+  return r;
+}
+
+function _instShowProjeto(name,date,resp,cnpj) {
+  ['inst-projectsSection','inst-projectSection','inst-progressSection','inst-chartSection','inst-timelineSection','inst-checklistsSection'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display = id==='inst-projectsSection' ? 'none' : 'block';
+  });
+  document.getElementById('inst-displayName').textContent=name;
+  document.getElementById('inst-displayCNPJ').textContent=cnpj||'—';
+  document.getElementById('inst-displayDate').textContent=_instFmtDate(date);
+  document.getElementById('inst-displayResp').textContent=resp;
+}
+
+window.instVoltarProjetos = function() {
+  ['inst-projectSection','inst-progressSection','inst-chartSection','inst-timelineSection','inst-checklistsSection'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display='none';
+  });
+  const ps=document.getElementById('inst-projectsSection'); if(ps) ps.style.display='block';
+  _instCarregado=false; instCarregarProjetos();
+};
+
+window.instResetarForm = function() {
+  ['inst-clientName','inst-startDate','inst-responsible'].forEach(id=>document.getElementById(id).value='');
+  instProjectId=null; instProjectData=null;
+  instPhases=JSON.parse(JSON.stringify(instDefaultPhases));
+  instWeeks=JSON.parse(JSON.stringify(instDefaultWeeks));
+  if(instChart){instChart.destroy();instChart=null;}
+};
+
+/* ── TIMELINE ── */
+function _instRenderTimeline(dates) {
+  const c=document.getElementById('inst-timelineContainer'); if(!c) return;
+  c.innerHTML='';
+  instWeeks.forEach(w=>{
+    const wd=dates[w.id]||{};
+    const ds=wd.start?_instFmtDate(wd.start)+' até '+_instFmtDate(wd.end):'Sem datas';
+    const div=document.createElement('div'); div.className='inst-timeline-item';
+    div.innerHTML='<h3>'+w.title+'</h3><div class="inst-timeline-dates">'+ds+'</div>'
+      +(w.description?'<p style="font-size:0.88em;color:var(--text2);margin-top:8px;">'+w.description+'</p>':'')
+      +'<button class="inst-btn inst-btn-danger" onclick="instRemoveTimeline(\''+w.id+'\')" style="padding:4px 10px;font-size:0.8em;margin-top:10px;width:auto;">✕ Remover</button>';
+    c.appendChild(div);
+  });
+}
+
+window.instOpenTimelineEditor = function() {
+  const b=document.getElementById('inst-timelineModalBody'); b.innerHTML='';
+  instWeeks.forEach(w=>{
+    const wd=instProjectData.dates[w.id]||{};
+    const s=document.createElement('div'); s.className='inst-edit-section';
+    s.innerHTML='<h4>'+w.title+'</h4>'
+      +'<div style="margin-bottom:14px;"><label style="font-weight:600;margin-bottom:6px;display:block;font-size:0.9em;">Título</label><input type="text" class="inst-edit-input" id="inste_'+w.id+'_title" value="'+w.title+'" style="width:100%;"></div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">'
+      +'<div><label style="font-weight:600;margin-bottom:6px;display:block;font-size:0.9em;">📅 Início</label><input type="date" class="inst-edit-input" id="inste_'+w.id+'_start" value="'+(wd.start||'')+'" style="width:100%;"></div>'
+      +'<div><label style="font-weight:600;margin-bottom:6px;display:block;font-size:0.9em;">📅 Fim</label><input type="date" class="inst-edit-input" id="inste_'+w.id+'_end" value="'+(wd.end||'')+'" style="width:100%;"></div>'
+      +'</div>';
+    b.appendChild(s);
+  });
+  _instOpenModal('instTimelineModal');
+};
+window.instSaveTimelineChanges = function() {
+  const nd={};
+  for(const w of instWeeks){
+    const s=document.getElementById('inste_'+w.id+'_start').value;
+    const e=document.getElementById('inste_'+w.id+'_end').value;
+    const t=document.getElementById('inste_'+w.id+'_title').value;
+    if(!s||!e||!t){alert('Preencha todos!');return;}
+    if(new Date(s)>new Date(e)){alert(w.title+': Início maior que fim!');return;}
+    nd[w.id]={start:s,end:e}; w.title=t;
+  }
+  instProjectData.dates=nd; instProjectData.weeks=instWeeks;
+  _instRenderTimeline(nd); instCloseModal('instTimelineModal');
+};
+window.instOpenNewTimeline = function() {
+  ['inst-newTL_title','inst-newTL_start','inst-newTL_end','inst-newTL_desc'].forEach(id=>document.getElementById(id).value='');
+  _instOpenModal('instNewTimelineModal');
+};
+window.instSaveNewTimeline = function() {
+  const t=document.getElementById('inst-newTL_title').value.trim();
+  if(!t){alert('Título obrigatório!');return;}
+  const s=document.getElementById('inst-newTL_start').value;
+  const e=document.getElementById('inst-newTL_end').value;
+  const d=document.getElementById('inst-newTL_desc').value.trim();
+  const id='custom-'+Date.now();
+  instWeeks.push({id,title:t,phaseNumber:'',custom:true,description:d});
+  if(!instProjectData.dates) instProjectData.dates={};
+  if(s||e) instProjectData.dates[id]={start:s||'',end:e||''};
+  instProjectData.weeks=instWeeks;
+  _instRenderTimeline(instProjectData.dates); instCloseModal('instNewTimelineModal');
+};
+window.instRemoveTimeline = function(id) {
+  if(!confirm('Remover etapa?')) return;
+  instWeeks=instWeeks.filter(w=>w.id!==id);
+  if(instProjectData.dates) delete instProjectData.dates[id];
+  instProjectData.weeks=instWeeks; _instRenderTimeline(instProjectData.dates||{});
+};
+
+/* ── CHECKLISTS ── */
+function _instRenderChecklists() {
+  const c=document.getElementById('inst-phasesContainer'); if(!c) return;
+  c.innerHTML='';
+  instPhases.forEach(ph=>{
+    const div=document.createElement('div');
+    div.className='inst-phase inst-phase-'+ph.phaseNumber; div.id='inst-'+ph.id;
+    const hdr=document.createElement('div'); hdr.className='inst-phase-header';
+    hdr.innerHTML='<span>Fase '+ph.phaseNumber+': '+ph.name+'</span><span class="inst-phase-counter"><span class="inst-cc">0</span>/<span class="inst-tc">'+ph.items.length+'</span></span>';
+    const cnt=document.createElement('div'); cnt.className='inst-phase-content';
+    const ul=document.createElement('ul'); ul.className='inst-checklist';
+    ph.items.forEach((item,idx)=>{
+      const iid='inst-'+ph.id+'-item-'+idx;
+      const li=document.createElement('li'); li.className='inst-checklist-item';
+      const row=document.createElement('div'); row.className='inst-checklist-item-row';
+      const cb=document.createElement('input'); cb.type='checkbox'; cb.id=iid;
+      cb.onchange=()=>{_instSaveState(ph.id,idx,cb.checked);_instUpdateProgress();_instUpdateCounter(ph.id);_instRenderChart();const dw=li.querySelector('.inst-date-wrapper');if(dw)dw.style.display=cb.checked?'block':'none';};
+      const lbl=document.createElement('label'); lbl.htmlFor=iid; lbl.textContent=item;
+      row.appendChild(cb); row.appendChild(lbl); li.appendChild(row);
+      const dw=document.createElement('div'); dw.className='inst-date-wrapper'; dw.style.display='none';
+      const dl=document.createElement('label'); dl.className='inst-date-label'; dl.textContent='Data de conclusão:';
+      const di=document.createElement('input'); di.type='date'; di.id='inst-date-'+iid;
+      di.onchange=()=>_instSaveDate(ph.id,idx,di.value);
+      dw.appendChild(dl); dw.appendChild(di); li.appendChild(dw);
+      const nw=document.createElement('div'); nw.style.cssText='padding-left:30px;margin-top:6px;';
+      const ni=document.createElement('textarea'); ni.placeholder='Observação...'; ni.rows=2;
+      ni.style.cssText='width:100%;padding:8px 10px;font-size:0.85em;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-family:inherit;resize:vertical;min-height:52px;';
+      ni.id='inst-note-'+iid;
+      if(instProjectData.checklistNotes&&instProjectData.checklistNotes[ph.id]&&instProjectData.checklistNotes[ph.id][idx]!==undefined) ni.value=instProjectData.checklistNotes[ph.id][idx];
+      ni.oninput=()=>_instSaveNote(ph.id,idx,ni.value);
+      nw.appendChild(ni); li.appendChild(nw); ul.appendChild(li);
+    });
+    cnt.appendChild(ul);
+    const sb=document.createElement('div'); sb.className='inst-status-badge inst-status-pending'; sb.textContent='Não iniciado'; sb.id='inst-status-'+ph.id;
+    cnt.appendChild(sb); div.appendChild(hdr); div.appendChild(cnt); c.appendChild(div);
+  });
+  _instLoadStates();
+}
+function _instUpdateCounter(phId) {
+  const el=document.getElementById('inst-'+phId); if(!el) return;
+  const ch=el.querySelectorAll('input[type="checkbox"]:checked').length;
+  const tot=el.querySelectorAll('input[type="checkbox"]').length;
+  el.querySelector('.inst-cc').textContent=ch; el.querySelector('.inst-tc').textContent=tot;
+  const sb=el.querySelector('#inst-status-'+phId);
+  if(ch===0){sb.className='inst-status-badge inst-status-pending';sb.textContent='Não iniciado';}
+  else if(ch===tot){sb.className='inst-status-badge inst-status-completed';sb.textContent='Concluído ✓';}
+  else{sb.className='inst-status-badge inst-status-in-progress';sb.textContent='Em progresso...';}
+}
+function _instUpdateProgress() {
+  let tot=0,ch=0;
+  instPhases.forEach(ph=>{const el=document.getElementById('inst-'+ph.id);if(el){tot+=el.querySelectorAll('input[type="checkbox"]').length;ch+=el.querySelectorAll('input[type="checkbox"]:checked').length;}});
+  const pct=tot>0?Math.round((ch/tot)*100):0;
+  document.getElementById('inst-progressPct').textContent=pct;
+  document.getElementById('inst-progressFill').style.width=pct+'%';
+}
+function _instSaveState(phId,idx,v){if(!instProjectData.checklistStates)instProjectData.checklistStates={};if(!instProjectData.checklistStates[phId])instProjectData.checklistStates[phId]={};instProjectData.checklistStates[phId][idx]=v;}
+function _instSaveDate(phId,idx,v){if(!instProjectData.checklistDates)instProjectData.checklistDates={};if(!instProjectData.checklistDates[phId])instProjectData.checklistDates[phId]={};instProjectData.checklistDates[phId][idx]=v;}
+function _instSaveNote(phId,idx,v){if(!instProjectData.checklistNotes)instProjectData.checklistNotes={};if(!instProjectData.checklistNotes[phId])instProjectData.checklistNotes[phId]={};instProjectData.checklistNotes[phId][idx]=v;}
+function _instLoadStates() {
+  if(!instProjectData||!instProjectData.checklistStates) return;
+  Object.keys(instProjectData.checklistStates).forEach(phId=>{
+    Object.keys(instProjectData.checklistStates[phId]).forEach(idx=>{
+      const cb=document.getElementById('inst-'+phId+'-item-'+idx);
+      if(cb){cb.checked=instProjectData.checklistStates[phId][idx];const li=cb.closest('.inst-checklist-item');if(li){const dw=li.querySelector('.inst-date-wrapper');if(dw)dw.style.display=cb.checked?'block':'none';}}
+      const di=document.getElementById('inst-date-inst-'+phId+'-item-'+idx);
+      if(di&&instProjectData.checklistDates&&instProjectData.checklistDates[phId]&&instProjectData.checklistDates[phId][idx]) di.value=instProjectData.checklistDates[phId][idx];
+    });
+    _instUpdateCounter(phId);
+  });
+  _instUpdateProgress();
+}
+
+/* ── CHECKLIST EDITOR ── */
+window.instOpenChecklistEditor = function() {
+  const b=document.getElementById('inst-checklistModalBody'); b.innerHTML='';
+  instPhases.forEach(ph=>{
+    const s=document.createElement('div'); s.className='inst-edit-section';
+    let ih='';
+    ph.items.forEach((item,idx)=>{
+      const noteVal=(instProjectData.checklistNotes&&instProjectData.checklistNotes[ph.id]&&instProjectData.checklistNotes[ph.id][idx])?instProjectData.checklistNotes[ph.id][idx]:'';
+      ih+='<div class="inst-edit-item"><div class="inst-edit-item-header"><span>Item '+(idx+1)+'</span><button onclick="instRemoveItem(\''+ph.id+'\','+idx+')" style="background:none;border:1px solid var(--border);border-radius:6px;padding:4px 7px;cursor:pointer;color:var(--danger);font-size:0.95em;">🗑</button></div>'
+        +'<label style="font-size:0.82em;font-weight:700;color:var(--text2);display:block;margin-bottom:5px;">Descrição</label>'
+        +'<input type="text" class="inst-edit-input" id="instei_'+ph.id+'_item_'+idx+'" value="'+item.replace(/"/g,"&quot;")+'" style="width:100%;margin-bottom:8px;">'
+        +'<label style="font-size:0.82em;font-weight:700;color:var(--text2);display:block;margin-bottom:5px;">💬 Observação</label>'
+        +'<input type="text" class="inst-edit-input" id="instei_'+ph.id+'_note_'+idx+'" value="'+noteVal.replace(/"/g,"&quot;")+'" placeholder="Observação..." style="width:100%;"></div>';
+    });
+    s.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><h4 style="margin:0;">Fase '+ph.phaseNumber+': '+ph.name+'</h4><button class="inst-btn inst-btn-danger" onclick="instRemovePhase(\''+ph.id+'\')" style="padding:6px 14px;font-size:0.8em;width:auto;margin:0;">🗑 Excluir</button></div>'
+      +'<div style="margin-bottom:16px;"><label style="font-weight:700;margin-bottom:6px;display:block;font-size:0.9em;">Nome da Fase</label><input type="text" class="inst-edit-input" id="instei_'+ph.id+'_name" value="'+ph.name+'" style="width:100%;"></div>'
+      +'<div>'+ih+'</div>'
+      +'<button class="inst-btn inst-btn-success" onclick="instAddItem(\''+ph.id+'\')" style="width:100%;margin-top:6px;padding:10px;font-size:0.9em;">+ Adicionar Item</button>';
+    b.appendChild(s);
+  });
+  _instOpenModal('instChecklistModal');
+};
+function _instFlushEditor() {
+  instPhases.forEach(ph=>{
+    const ni=document.getElementById('instei_'+ph.id+'_name');
+    if(ni&&ni.value.trim()) ph.name=ni.value.trim();
+    if(!instProjectData.checklistNotes) instProjectData.checklistNotes={};
+    if(!instProjectData.checklistNotes[ph.id]) instProjectData.checklistNotes[ph.id]={};
+    ph.items=ph.items.map((item,idx)=>{
+      const ii=document.getElementById('instei_'+ph.id+'_item_'+idx);
+      const nii=document.getElementById('instei_'+ph.id+'_note_'+idx);
+      if(nii) instProjectData.checklistNotes[ph.id][idx]=nii.value;
+      return ii?(ii.value||item):item;
+    });
+  });
+}
+window.instAddItem = function(phId) {
+  _instFlushEditor();
+  const ph=instPhases.find(p=>p.id===phId);
+  if(ph){ph.items.push('Novo item');instOpenChecklistEditor();}
+};
+window.instRemoveItem = function(phId,idx) {
+  if(!confirm('Remover item?')) return;
+  _instFlushEditor();
+  const ph=instPhases.find(p=>p.id===phId);
+  if(ph){ph.items.splice(idx,1);if(instProjectData.checklistNotes&&instProjectData.checklistNotes[phId]){const ns={};Object.keys(instProjectData.checklistNotes[phId]).forEach(k=>{const ki=parseInt(k);if(ki<idx)ns[ki]=instProjectData.checklistNotes[phId][k];else if(ki>idx)ns[ki-1]=instProjectData.checklistNotes[phId][k];});instProjectData.checklistNotes[phId]=ns;}instOpenChecklistEditor();}
+};
+window.instSaveChecklistChanges = function() {
+  if(!instProjectData.checklistNotes) instProjectData.checklistNotes={};
+  for(const ph of instPhases){
+    const ni=document.getElementById('instei_'+ph.id+'_name');
+    if(!ni) return;
+    if(!ni.value){alert('Nome não pode estar vazio!');return;}
+    ph.name=ni.value;
+    if(!instProjectData.checklistNotes[ph.id]) instProjectData.checklistNotes[ph.id]={};
+    ph.items=ph.items.map((item,idx)=>{
+      const v=document.getElementById('instei_'+ph.id+'_item_'+idx).value;
+      if(!v){alert('Itens não podem estar vazios!');return null;}
+      const nv=document.getElementById('instei_'+ph.id+'_note_'+idx);
+      if(nv) instProjectData.checklistNotes[ph.id][idx]=nv.value;
+      return v;
+    }).filter(Boolean);
+  }
+  instProjectData.phases=instPhases; _instRenderChecklists(); _instRenderChart(); instCloseModal('instChecklistModal');
+};
+window.instRemovePhase = function(phId) {
+  if(!confirm('Remover fase?')) return;
+  _instFlushEditor(); instPhases=instPhases.filter(p=>p.id!==phId);
+  ['checklistStates','checklistDates','checklistNotes'].forEach(k=>{if(instProjectData[k]) delete instProjectData[k][phId];});
+  instOpenChecklistEditor();
+};
+window.instAddNewPhase = function() {
+  document.getElementById('inst-newPhase_name').value='';
+  document.getElementById('inst-newPhase_items').value='';
+  _instOpenModal('instNewPhaseModal');
+};
+window.instSaveNewPhase = function() {
+  const n=document.getElementById('inst-newPhase_name').value.trim();
+  if(!n){alert('Nome obrigatório!');return;}
+  const items=document.getElementById('inst-newPhase_items').value.split('\n').map(i=>i.trim()).filter(Boolean);
+  if(!items.length){alert('Adicione pelo menos um item!');return;}
+  instPhases.push({id:'phase-'+Date.now(),name:n,phaseNumber:String(instPhases.length+1),items});
+  instProjectData.phases=instPhases; _instRenderChecklists(); _instRenderChart(); instCloseModal('instNewPhaseModal');
+};
+
+/* ── GRÁFICO ── */
+function _instRenderChart() {
+  const canvas=document.getElementById('inst-deliveryChart'); if(!canvas) return;
+  const labels=[],data=[],colors=['#8b5cf6','#ec4899','#f59e0b','#06b6d4','#10b981'];
+  instPhases.forEach((ph,i)=>{
+    const el=document.getElementById('inst-'+ph.id);
+    const ch=el?el.querySelectorAll('input[type="checkbox"]:checked').length:0;
+    const tot=el?el.querySelectorAll('input[type="checkbox"]').length:0;
+    labels.push('Fase '+ph.phaseNumber+': '+ph.name);
+    data.push(tot>0?Math.round((ch/tot)*100):0);
+  });
+  if(instChart){instChart.destroy();instChart=null;}
+  if(typeof Chart==='undefined') return;
+  instChart=new Chart(canvas,{type:'bar',data:{labels,datasets:[{label:'Progresso (%)',data,backgroundColor:colors,borderColor:colors,borderWidth:2,borderRadius:8,barThickness:40}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true}},scales:{x:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}}}}});
+}
+
+/* ── FINALIZAR ── */
+window.instToggleFinalizar = function() {
+  const f=instProjectData.finalizado;
+  if(f){if(!confirm('Reabrir projeto?'))return;instProjectData.finalizado=false;instProjectData.finalizadoEm=null;}
+  else{if(!confirm('Finalizar projeto? Será salvo automaticamente.'))return;instProjectData.finalizado=true;instProjectData.finalizadoEm=new Date().toLocaleString('pt-BR');}
+  _instAtualizarBanner(); instSalvar(true);
+};
+function _instAtualizarBanner() {
+  const b=document.getElementById('inst-statusBanner');
+  const btn=document.getElementById('inst-btnFinalizar');
+  if(instProjectData&&instProjectData.finalizado){
+    b.style.display='flex'; document.getElementById('inst-finishedDate').textContent='Finalizado em: '+(instProjectData.finalizadoEm||'');
+    btn.textContent='🔄 Reabrir Projeto'; btn.style.background='linear-gradient(135deg,#6b7280,#4b5563)';
+  } else {
+    b.style.display='none';
+    if(btn){btn.textContent='✅ Finalizar Projeto';btn.style.background='linear-gradient(135deg,#10b981,#059669)';}
+  }
+}
+window.instSalvar = async function(silencioso=false) {
+  if(!instProjectId){alert('Nenhum projeto em edição!');return;}
+  instProjectData.phases=instPhases; instProjectData.weeks=instWeeks;
+  instProjectData.savedAt=new Date().toLocaleString('pt-BR');
+  const ok=await _instSave(instProjectData);
+  if(!ok){alert('Erro ao salvar.');return;}
+  if(!silencioso){alert('✓ Projeto salvo!');instVoltarProjetos();}
+};
+
+/* ── FINALIZAR DA LISTA ── */
+window.instFinalizarLista = async function(id,f) {
+  const p=_instTodos[id]; if(!p) return;
+  if(!confirm(f?'Finalizar projeto de '+p.clientName+'?':'Reabrir projeto de '+p.clientName+'?')) return;
+  p.finalizado=f; p.finalizadoEm=f?new Date().toLocaleString('pt-BR'):''; p.savedAt=new Date().toLocaleString('pt-BR');
+  const ok=await _instSave(p);
+  if(!ok){alert('Erro ao salvar.');return;}
+  _instTodos[id]=p; instMostrarTodosProjetos();
+};
+
+/* ── DELETAR ── */
+window.instDeletar = async function(id) {
+  if(!confirm('Deletar projeto? Não pode ser desfeito!')) return;
+  await _instDelete(id); delete _instTodos[id]; _instRenderLista(_instTodos,null);
+};
+
+/* ── ABRIR PROJETO ── */
+window.instAbrirProjeto = async function(id) {
+  const p=_instTodos[id]||await _instGetAll().then(all=>all[id]);
+  if(!p){alert('Projeto não encontrado!');return;}
+  if(!_instTodos[id]) _instTodos=await _instGetAll();
+  const pd=_instTodos[id];
+  instProjectId=id; instProjectData=JSON.parse(JSON.stringify(pd));
+  instPhases=JSON.parse(JSON.stringify(pd.phases||instDefaultPhases));
+  instWeeks=JSON.parse(JSON.stringify(pd.weeks||instDefaultWeeks));
+  _instShowProjeto(pd.clientName,pd.startDate,pd.responsible,pd.clientCNPJ);
+  _instRenderTimeline(pd.dates||{}); _instRenderChecklists(); _instRenderChart(); _instAtualizarBanner();
+};
+
+/* ── CALCULAR PROGRESSO ── */
+function _instCalcProgress(p) {
+  if(!p.phases) return 0;
+  let tot=0,ch=0;
+  p.phases.forEach(ph=>{if(ph.items) tot+=ph.items.length;});
+  if(p.checklistStates) Object.values(p.checklistStates).forEach(pi=>Object.values(pi).forEach(v=>{if(v)ch++;}));
+  return tot>0?Math.round((ch/tot)*100):0;
+}
+
+/* ── FORMAT DATE ── */
+function _instFmtDate(d) {
+  if(!d) return '—';
+  return new Date(d+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+
+/* ── PDF ── */
+window.instPrintPDF = function() {
+  const name=document.getElementById('inst-displayName').textContent;
+  const resp=document.getElementById('inst-displayResp').textContent;
+  const date=document.getElementById('inst-displayDate').textContent;
+  const pct=document.getElementById('inst-progressPct').textContent;
+  const cnpj=document.getElementById('inst-displayCNPJ').textContent;
+  let html='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Segoe UI,Arial,sans-serif;background:white;color:#333;padding:40px 30px;}.header{text-align:center;margin-bottom:40px;border-bottom:3px solid #2563eb;padding-bottom:25px;}.header h1{color:#2563eb;font-size:28px;font-weight:700;}.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:30px;}.info-card{background:#f3f4f6;padding:16px;border-left:5px solid #2563eb;border-radius:8px;}.info-card label{font-weight:700;color:#6b7280;font-size:11px;text-transform:uppercase;display:block;margin-bottom:6px;}.info-card p{color:#1f2937;font-size:14px;font-weight:600;}.progress-bar{width:100%;height:12px;background:#e5e7eb;border-radius:10px;overflow:hidden;margin:10px 0 20px;}.progress-fill{height:100%;background:linear-gradient(90deg,#2563eb,#10b981);border-radius:10px;width:'+pct+'%;}.phases{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;}.phase{border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;}.ph{color:white;padding:12px;font-weight:700;font-size:13px;}.ph1{background:linear-gradient(135deg,#8b5cf6,#7c3aed);}.ph2{background:linear-gradient(135deg,#ec4899,#db2777);}.ph3{background:linear-gradient(135deg,#f59e0b,#d97706);}.ph4{background:linear-gradient(135deg,#06b6d4,#0891b2);}.ph5{background:linear-gradient(135deg,#10b981,#059669);}.pc{padding:12px;}.pc li{font-size:12px;margin-bottom:6px;padding-left:18px;position:relative;color:#374151;list-style:none;}.pc li:before{content:"o";position:absolute;left:0;color:#d1d5db;font-weight:700;}.pc li.ok:before{content:"✓";color:#10b981;}</style></head><body>';
+  html+='<div class="header"><h1>PAINEL DE IMPLANTAÇÃO ERP</h1><p style="color:#6b7280;font-size:13px;">'+new Date().toLocaleDateString('pt-BR')+'</p></div>';
+  html+='<div class="info-grid"><div class="info-card"><label>Cliente</label><p>'+name+'</p></div><div class="info-card"><label>CNPJ/CPF</label><p>'+cnpj+'</p></div><div class="info-card"><label>Data Início</label><p>'+date+'</p></div><div class="info-card"><label>Responsável</label><p>'+resp+'</p></div></div>';
+  html+='<strong>Progresso: '+pct+'%</strong><div class="progress-bar"><div class="progress-fill"></div></div>';
+  html+='<div class="phases">';
+  const pcls=['ph1','ph2','ph3','ph4','ph5'];
+  instPhases.forEach((ph,i)=>{
+    const el=document.getElementById('inst-'+ph.id);
+    const ch=el?el.querySelectorAll('input[type="checkbox"]:checked').length:0;
+    const tot=el?el.querySelectorAll('input[type="checkbox"]').length:0;
+    const pct2=tot>0?Math.round((ch/tot)*100):0;
+    html+='<div class="phase"><div class="ph '+pcls[i%5]+'">Fase '+ph.phaseNumber+': '+ph.name+' — '+pct2+'%</div><ul class="pc">';
+    const cbs=el?el.querySelectorAll('input[type="checkbox"]'):[];
+    ph.items.forEach((item,idx)=>{ html+='<li class="'+(cbs[idx]&&cbs[idx].checked?'ok':'')+'">'+item+'</li>'; });
+    html+='</ul></div>';
+  });
+  html+='</div></body></html>';
+  const w=window.open('','InstERP');
+  if(!w){alert('Permita pop-ups!');return;}
+  w.document.write(html); w.document.close(); setTimeout(()=>{w.focus();w.print();},300);
+};
+
+/* ── MODAIS ── */
+window.instCloseModal = function(id) { document.getElementById(id).style.display='none'; };
+function _instOpenModal(id) { document.getElementById(id).style.display='flex'; }
+
+/* ── CLICK FORA DO MODAL ── */
+document.addEventListener('click',function(e){
+  ['instNewPhaseModal','instTimelineModal','instNewTimelineModal','instChecklistModal'].forEach(id=>{
+    const m=document.getElementById(id);
+    if(m&&e.target===m) m.style.display='none';
+  });
+});
+
+})(); // end IIFE
+
 
 
 
