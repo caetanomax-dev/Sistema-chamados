@@ -101,7 +101,7 @@
       display: flex;
       align-items: center;
       padding: 0 28px;
-      height: 64px;
+      height: 72px;
     }
     .topbar-brand {
       display: flex; align-items: center; gap: 14px;
@@ -114,10 +114,22 @@
       font-size: 1.3em; flex-shrink: 0;
       box-shadow: 0 4px 12px rgba(37,99,235,0.3);
       overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    /* Com logo: maior, fundo completamente transparente */
+    .topbar-brand-icon.tem-logo {
+      width: 56px;
+      height: 56px;
+      background: transparent !important;
+      box-shadow: none !important;
+      border-radius: 0;
+      padding: 0;
     }
     .topbar-brand-icon img {
-      width: 100% !important; height: 100% !important;
-      object-fit: contain; border-radius: 8px;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain;
+      display: block;
     }
     .topbar-brand h1 {
       font-size: 1.35em; font-weight: 800; white-space: nowrap; letter-spacing: -0.3px;
@@ -734,6 +746,7 @@
       .topbar-row1 { padding: 0 12px; height: 56px; gap: 10px; }
       .topbar-brand h1 { font-size: 1em; }
       .topbar-brand-icon { width: 34px; height: 34px; font-size: 1em; }
+      .topbar-brand-icon.tem-logo { width: 44px; height: 44px; background: transparent !important; box-shadow: none !important; border-radius: 0; }
       .topbar-row2 { display: none; }
       .topbar-row2.aberto, .topbar.open .topbar-row2 {
         display: flex; flex-direction: column; align-items: stretch;
@@ -789,7 +802,7 @@
         </button>
         <div class="topbar-brand">
           <div class="topbar-brand-icon" id="logoWrap">
-            <img id="logoEmpresa" class="hidden" style="width:100%;height:100%;object-fit:contain;border-radius:8px;">
+            <img id="logoEmpresa" class="hidden" style="object-fit:contain;border-radius:6px;">
             <span id="logoIcon">📋</span>
           </div>
           <h1 id="nomeEmpresa">Sistema de Chamados</h1>
@@ -1164,6 +1177,13 @@
       <!-- CRACHÁ PDV -->
       <section id="crachaSection" class="hidden" style="overflow:visible;">
 
+        <div class="page-header">
+          <div>
+            <h1>🪪 Gerador de Crachá PDV</h1>
+            <p>Gere crachás com código de barras para autorização automática no sistema de frente de caixa</p>
+          </div>
+        </div>
+
         <!-- ZONAS DE IMPRESSÃO -->
         <div id="cr-print-single-zone" style="display:none;position:fixed;inset:0;background:white;align-items:center;justify-content:center;z-index:9999;">
           <div id="cr-print-single-badge"></div>
@@ -1418,9 +1438,21 @@
             <input type="checkbox" id="permExcluirChamados" style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
             <label for="permExcluirChamados" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">🗑️ Excluir Chamados</label>
           </div>
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
             <input type="checkbox" id="permUsuarios" style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
             <label for="permUsuarios" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">👨‍💼 Admin</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <input type="checkbox" id="permAuditoria" checked style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+            <label for="permAuditoria" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">🔍 Auditoria</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <input type="checkbox" id="permInstalacoes" checked style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+            <label for="permInstalacoes" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">📅 Instalações</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;">
+            <input type="checkbox" id="permCracha" checked style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+            <label for="permCracha" style="cursor:pointer;font-weight:500;font-size:0.95em;margin:0;">🪪 Crachá PDV</label>
           </div>
         </div>
       </div>
@@ -1544,7 +1576,7 @@ const app = {
       document.getElementById('usuarioEmail').innerText = this.usuarioAtual.email;
       try{
         const {data} = await sb.from('usuarios').select('permissoes').eq('email',this.usuarioAtual.email).single();
-        const perms = data?.permissoes ? JSON.parse(data.permissoes) : {chamados:true,clientes:true,relatorios:true,excluirChamados:false,usuarios:true,auditoria:true};
+        const perms = data?.permissoes ? JSON.parse(data.permissoes) : {chamados:true,clientes:true,relatorios:true,excluirChamados:false,usuarios:true,auditoria:true,instalacoes:true,cracha:true};
         this.salvarPermissoes(perms);
         this.mostrarAbasPermitidas(perms);
       }catch(e){
@@ -1557,16 +1589,21 @@ const app = {
 
   mostrarAbasPermitidas(perms){
     document.querySelectorAll('.topbar-row2 nav button').forEach(btn=>{
-      // ✅ CORREÇÃO: ignora botões externos (como o Crachá PDV)
-      if(btn.dataset.externo) return;
       const txt = btn.innerText;
       let aba='';
-      if(txt.includes('Chamados')) aba='chamados';
-      else if(txt.includes('Clientes')) aba='clientes';
+      if(txt.includes('Chamados'))   aba='chamados';
+      else if(txt.includes('Clientes'))   aba='clientes';
       else if(txt.includes('Relatórios')) aba='relatorios';
-      else if(txt.includes('Usuários')) aba='usuarios';
-      else if(txt.includes('Auditoria')) aba='auditoria';
-      btn.style.display=(aba&&perms[aba]===false)?'none':'flex';
+      else if(txt.includes('Usuários'))   aba='usuarios';
+      else if(txt.includes('Auditoria'))  aba='auditoria';
+      else if(txt.includes('Instalações'))aba='instalacoes';
+      else if(txt.includes('Crachá'))     aba='cracha';
+      // Se a permissão for explicitamente false, esconde; se não estiver definida (undefined), mostra
+      if(aba && perms[aba]===false){
+        btn.style.display='none';
+      } else {
+        btn.style.display='flex';
+      }
     });
   },
 
@@ -2034,7 +2071,7 @@ const app = {
       if(!data||!data.length) return tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text2);">Nenhum usuário</td></tr>';
       data.forEach(u=>{
         const perms=u.permissoes?JSON.parse(u.permissoes):{};
-        const lista=[perms.chamados&&'Chamados',perms.clientes&&'Clientes',perms.relatorios&&'Relatórios',perms.usuarios&&'Admin'].filter(Boolean).join(', ')||'—';
+        const lista=[perms.chamados&&'Chamados',perms.clientes&&'Clientes',perms.relatorios&&'Relatórios',perms.usuarios&&'Admin',perms.auditoria!==false&&'Auditoria',perms.instalacoes!==false&&'Instalações',perms.cracha!==false&&'Crachá'].filter(Boolean).join(', ')||'—';
         tbody.innerHTML+=`<tr>
           <td><strong>${u.nome||u.email}</strong></td><td>${u.email}</td>
           <td><span style="font-size:0.82em;color:var(--text2);">${lista}</span></td>
@@ -2057,6 +2094,9 @@ const app = {
     document.getElementById('permRelatorios').checked=true;
     document.getElementById('permExcluirChamados').checked=false;
     document.getElementById('permUsuarios').checked=false;
+    document.getElementById('permAuditoria').checked=true;
+    document.getElementById('permInstalacoes').checked=true;
+    document.getElementById('permCracha').checked=true;
     document.getElementById('msgNovoUsuario').innerHTML='';
     document.querySelector('#modalNovoUsuario .modal-header').innerText='👨‍💼 Novo Usuário';
     document.getElementById('btnSalvarUsuario').innerText='💾 Criar';
@@ -2078,7 +2118,7 @@ const app = {
     try{
       const {data,error}=await sb.auth.signUp({email,password:senha,options:{data:{full_name:nome}}});
       if(error) return this.msgNU('❌ '+error.message);
-      const perms={chamados:document.getElementById('permChamados').checked,clientes:document.getElementById('permClientes').checked,relatorios:document.getElementById('permRelatorios').checked,excluirChamados:document.getElementById('permExcluirChamados').checked,usuarios:document.getElementById('permUsuarios').checked};
+      const perms={chamados:document.getElementById('permChamados').checked,clientes:document.getElementById('permClientes').checked,relatorios:document.getElementById('permRelatorios').checked,excluirChamados:document.getElementById('permExcluirChamados').checked,usuarios:document.getElementById('permUsuarios').checked,auditoria:document.getElementById('permAuditoria').checked,instalacoes:document.getElementById('permInstalacoes').checked,cracha:document.getElementById('permCracha').checked};
       const {error:dbErr}=await sb.from('usuarios').insert({id:data.user.id,nome,email,permissoes:JSON.stringify(perms),criado_em:new Date().toISOString()});
       if(dbErr) return this.msgNU('❌ '+dbErr.message);
       this.msgNU('✅ Usuário criado!');
@@ -2106,6 +2146,9 @@ const app = {
     document.getElementById('permRelatorios').checked=perms.relatorios;
     document.getElementById('permExcluirChamados').checked=perms.excluirChamados||false;
     document.getElementById('permUsuarios').checked=perms.usuarios;
+    document.getElementById('permAuditoria').checked=perms.auditoria!==false;
+    document.getElementById('permInstalacoes').checked=perms.instalacoes!==false;
+    document.getElementById('permCracha').checked=perms.cracha!==false;
     document.querySelector('#modalNovoUsuario .modal-header').innerText='✏️ Editar — '+nome;
     document.getElementById('btnSalvarUsuario').innerText='💾 Atualizar';
     document.getElementById('btnSalvarUsuario').onclick=()=>this.salvarEdicaoUsuario(id);
@@ -2114,12 +2157,11 @@ const app = {
   },
 
   async salvarEdicaoUsuario(id){
-    const perms={chamados:document.getElementById('permChamados').checked,clientes:document.getElementById('permClientes').checked,relatorios:document.getElementById('permRelatorios').checked,excluirChamados:document.getElementById('permExcluirChamados').checked,usuarios:document.getElementById('permUsuarios').checked};
+    const perms={chamados:document.getElementById('permChamados').checked,clientes:document.getElementById('permClientes').checked,relatorios:document.getElementById('permRelatorios').checked,excluirChamados:document.getElementById('permExcluirChamados').checked,usuarios:document.getElementById('permUsuarios').checked,auditoria:document.getElementById('permAuditoria').checked,instalacoes:document.getElementById('permInstalacoes').checked,cracha:document.getElementById('permCracha').checked};
     try{
       const {error}=await sb.from('usuarios').update({permissoes:JSON.stringify(perms)}).eq('id',id);
       if(error) return this.msgNU('❌ '+error.message);
-      this.msgNU('✅ Atualizado!');
-      setTimeout(()=>this.fecharModalNovoUsuario(),1500);
+      this.fecharModalNovoUsuario();
       this.carregarUsuarios();
     }catch(e){ this.msgNU('❌ '+e.message); }
   },
@@ -2280,10 +2322,9 @@ const app = {
       if(error) return this.mostrarErro('Erro ao salvar: '+error.message);
       if(nome) document.getElementById('nomeEmpresa').innerText=nome;
       if(logo){
-        const img=document.getElementById('logoEmpresa');
-        img.src=logo; img.classList.remove('hidden');
-        const icon=document.getElementById('logoIcon');
-        if(icon) icon.style.display='none';
+        _aplicarLogo(logo);
+      } else {
+        _removerLogo();
       }
       alert('✅ Configurações salvas!');
     }catch(e){ this.mostrarErro('Erro: '+e.message); }
@@ -2297,10 +2338,7 @@ const app = {
       document.getElementById('confLogo').value=data.logo_url||'';
       if(data.empresa) document.getElementById('nomeEmpresa').innerText=data.empresa;
       if(data.logo_url){
-        const img=document.getElementById('logoEmpresa');
-        img.src=data.logo_url; img.classList.remove('hidden');
-        const icon=document.getElementById('logoIcon');
-        if(icon) icon.style.display='none';
+        _aplicarLogo(data.logo_url);
       }
     }catch(e){ console.error(e); }
   },
@@ -2342,6 +2380,7 @@ const app = {
 };
 
 function abrirInstalacoes(botao) {
+  try{ const p=JSON.parse(localStorage.getItem('userPermissions')||'{}'); if(p.instalacoes===false){alert('❌ Sem permissão para Instalações');return;} }catch(e){}
   document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
   document.querySelectorAll('.topbar-row2 nav button').forEach(b => b.classList.remove('active'));
   document.getElementById('instalacoesSection').classList.remove('hidden');
@@ -2413,11 +2452,14 @@ async function _instDelete(id) {
 
 /* ── CARREGAMENTO ── */
 window.instCarregarProjetos = async function() {
+  // Carrega os dados em background mas NÃO renderiza — usuário precisa buscar
   if(_instCarregado) return;
-  _instCarregado = false; // sempre recarrega ao abrir
   _instTodos = await _instGetAll();
   _instCarregado = true;
-  _instRenderLista(_instTodos, null);
+  // Mostra estado inicial vazio (aguardando busca)
+  document.getElementById('inst-projectsList').innerHTML =
+    '<div class="inst-vazio"><div class="inst-vazio-icon">🔍</div><p>Use o campo de busca acima ou clique em <strong>Filtrar</strong> para ver os projetos.</p></div>';
+  document.getElementById('inst-projetosInfo').style.display = 'none';
 };
 
 /* ── FILTRO ── */
@@ -2550,7 +2592,9 @@ window.instVoltarProjetos = function() {
     const el=document.getElementById(id); if(el) el.style.display='none';
   });
   const ps=document.getElementById('inst-projectsSection'); if(ps) ps.style.display='block';
-  _instCarregado=false; instCarregarProjetos();
+  _instCarregado=false;
+  _instTodos={};
+  instCarregarProjetos();
 };
 
 window.instResetarForm = function() {
@@ -2931,6 +2975,7 @@ function crMudarAba(aba, btn) {
 }
 
 function abrirCracha(botao) {
+  try{ const p=JSON.parse(localStorage.getItem('userPermissions')||'{}'); if(p.cracha===false){alert('❌ Sem permissão para Crachá PDV');return;} }catch(e){}
   document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
   document.querySelectorAll('.topbar-row2 nav button').forEach(b => b.classList.remove('active'));
   document.getElementById('crachaSection').classList.remove('hidden');
@@ -3154,6 +3199,27 @@ function crMsg(txt,tipo) {
   const d=document.getElementById('msgFormCracha');
   d.innerHTML=txt?`<div class="msg-${tipo}" style="margin-bottom:12px;">${txt}</div>`:'';
   if(txt) setTimeout(()=>d.innerHTML='',5000);
+}
+
+function _aplicarLogo(url) {
+  const wrap = document.getElementById('logoWrap');
+  const img  = document.getElementById('logoEmpresa');
+  const icon = document.getElementById('logoIcon');
+  if(!wrap || !img) return;
+  img.src = url;
+  img.classList.remove('hidden');
+  wrap.classList.add('tem-logo');
+  if(icon) icon.style.display = 'none';
+  img.onerror = function() { _removerLogo(); };
+}
+
+function _removerLogo() {
+  const wrap = document.getElementById('logoWrap');
+  const img  = document.getElementById('logoEmpresa');
+  const icon = document.getElementById('logoIcon');
+  if(img) { img.src = ''; img.classList.add('hidden'); }
+  if(wrap) wrap.classList.remove('tem-logo');
+  if(icon) icon.style.display = '';
 }
 
 window.addEventListener('load',()=>app.init());
