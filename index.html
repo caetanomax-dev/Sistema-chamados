@@ -739,6 +739,23 @@
     #instalacoesSection input[type="text"].inst-edit-input,
     #instalacoesSection input[type="date"].inst-edit-input { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9em; background: var(--card); color: var(--text); width: 100%; height: auto !important; }
 
+
+    /* ══ DASHBOARD ══ */
+    .dash-card {
+      background: var(--card); border-radius: 14px; padding: 18px 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.07); display: flex; align-items: center;
+      gap: 16px; transition: all 0.3s ease; animation: fadeIn 0.5s ease-out;
+      border-left: 4px solid transparent;
+    }
+    .dash-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+    .dash-card-icon {
+      width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 1.5em;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .dash-card-label { font-size: 0.78em; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .dash-card-value { font-size: 2em; font-weight: 800; color: var(--text); line-height: 1; }
+
     .hidden { display: none !important; }
 
     @media (max-width: 960px) {
@@ -820,6 +837,7 @@
       </div>
       <div class="topbar-row2">
         <nav>
+          <button id="nav-btn-dashboard" onclick="abrirDashboard(this)">📊 Dashboard</button>
           <button class="active" onclick="app.aba('chamados',this)">📋 Chamados</button>
           <button onclick="app.aba('clientes',this)">👥 Clientes</button>
           <button onclick="app.aba('relatorios',this)">📊 Relatórios</button>
@@ -835,6 +853,116 @@
     <!-- CONTENT -->
     <main class="content">
       <div id="msgErro"></div>
+
+      <!-- DASHBOARD -->
+      <section id="dashboardSection" class="hidden" style="overflow:visible;">
+
+        <div class="page-header">
+          <div>
+            <h1>📊 Dashboard</h1>
+            <p>Visão geral em tempo real do sistema</p>
+          </div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <select id="dash-periodo" onchange="dashCarregar()" style="height:38px;padding:0 12px;border:2px solid var(--border);border-radius:8px;background:var(--bg2);color:var(--text);font-family:inherit;font-size:0.88em;width:auto;">
+              <option value="7">Últimos 7 dias</option>
+              <option value="30" selected>Últimos 30 dias</option>
+              <option value="90">Últimos 90 dias</option>
+              <option value="365">Último ano</option>
+              <option value="0">Todos</option>
+            </select>
+            <button onclick="dashCarregar()" class="btn btn-primary" style="padding:8px 18px;font-size:0.85em;">🔄 Atualizar</button>
+          </div>
+        </div>
+
+        <!-- CARDS RESUMO -->
+        <div id="dash-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;">
+          <div class="dash-card" id="dash-card-total">
+            <div class="dash-card-icon" style="background:linear-gradient(135deg,#2563eb,#1e40af);">📋</div>
+            <div class="dash-card-body">
+              <div class="dash-card-label">Total Chamados</div>
+              <div class="dash-card-value" id="dash-v-total">—</div>
+            </div>
+          </div>
+          <div class="dash-card" id="dash-card-pendentes">
+            <div class="dash-card-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706);">⏳</div>
+            <div class="dash-card-body">
+              <div class="dash-card-label">Pendentes</div>
+              <div class="dash-card-value" id="dash-v-pendentes" style="color:#d97706;">—</div>
+            </div>
+          </div>
+          <div class="dash-card" id="dash-card-resolvidos">
+            <div class="dash-card-icon" style="background:linear-gradient(135deg,#10b981,#059669);">✅</div>
+            <div class="dash-card-body">
+              <div class="dash-card-label">Resolvidos</div>
+              <div class="dash-card-value" id="dash-v-resolvidos" style="color:#10b981;">—</div>
+            </div>
+          </div>
+          <div class="dash-card" id="dash-card-hoje">
+            <div class="dash-card-icon" style="background:linear-gradient(135deg,#06b6d4,#0891b2);">📅</div>
+            <div class="dash-card-body">
+              <div class="dash-card-label">Abertos Hoje</div>
+              <div class="dash-card-value" id="dash-v-hoje" style="color:#06b6d4;">—</div>
+            </div>
+          </div>
+          <div class="dash-card" id="dash-card-clientes">
+            <div class="dash-card-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">👥</div>
+            <div class="dash-card-body">
+              <div class="dash-card-label">Clientes Ativos</div>
+              <div class="dash-card-value" id="dash-v-clientes" style="color:#7c3aed;">—</div>
+            </div>
+          </div>
+          <div class="dash-card" id="dash-card-inst">
+            <div class="dash-card-icon" style="background:linear-gradient(135deg,#ec4899,#db2777);">📅</div>
+            <div class="dash-card-body">
+              <div class="dash-card-label">Instalações</div>
+              <div class="dash-card-value" id="dash-v-inst" style="color:#ec4899;">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRÁFICOS LINHA 1 -->
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:20px;">
+          <div class="section" style="padding:22px;">
+            <h2 style="font-size:1.05em;margin-bottom:16px;border-bottom:none;padding-bottom:0;">📈 Chamados por Dia</h2>
+            <div style="position:relative;height:240px;"><canvas id="dash-chartDia"></canvas></div>
+          </div>
+          <div class="section" style="padding:22px;">
+            <h2 style="font-size:1.05em;margin-bottom:16px;border-bottom:none;padding-bottom:0;">🎯 Status</h2>
+            <div style="position:relative;height:240px;"><canvas id="dash-chartStatus"></canvas></div>
+          </div>
+        </div>
+
+        <!-- GRÁFICOS LINHA 2 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+          <div class="section" style="padding:22px;">
+            <h2 style="font-size:1.05em;margin-bottom:16px;border-bottom:none;padding-bottom:0;">🗂️ Por Categoria</h2>
+            <div style="position:relative;height:240px;"><canvas id="dash-chartCategoria"></canvas></div>
+          </div>
+          <div class="section" style="padding:22px;">
+            <h2 style="font-size:1.05em;margin-bottom:16px;border-bottom:none;padding-bottom:0;">👨‍💼 Por Técnico</h2>
+            <div style="position:relative;height:240px;"><canvas id="dash-chartTecnico"></canvas></div>
+          </div>
+        </div>
+
+        <!-- GRÁFICOS LINHA 3 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+          <div class="section" style="padding:22px;">
+            <h2 style="font-size:1.05em;margin-bottom:16px;border-bottom:none;padding-bottom:0;">🔧 Por Tipo de Atendimento</h2>
+            <div style="position:relative;height:220px;"><canvas id="dash-chartTipo"></canvas></div>
+          </div>
+          <div class="section" style="padding:22px;">
+            <h2 style="font-size:1.05em;margin-bottom:16px;border-bottom:none;padding-bottom:0;">🏆 Top 5 Clientes</h2>
+            <div style="position:relative;height:220px;"><canvas id="dash-chartClientes"></canvas></div>
+          </div>
+        </div>
+
+        <!-- LOADING -->
+        <div id="dash-loading" style="display:none;text-align:center;padding:60px 20px;color:var(--text2);">
+          <div style="font-size:2em;margin-bottom:12px;animation:spin 1s linear infinite;display:inline-block;">⏳</div>
+          <p>Carregando dados...</p>
+        </div>
+
+      </section>
 
       <!-- CHAMADOS -->
       <section id="chamados">
@@ -885,57 +1013,166 @@
       <!-- RELATÓRIOS -->
       <section id="relatorios" class="hidden">
         <div class="page-header">
-          <div><h1>📊 Relatórios</h1><p>Consulta e exportação de chamados</p></div>
+          <div><h1>📊 Relatórios</h1><p>Consulta e exportação por módulo</p></div>
         </div>
-        <div class="filtros-box section">
-          <h2>Filtros</h2>
-          <div class="form-grid">
-            <div class="form-group"><label>ID do Chamado</label><input id="fIdChamado" type="number" placeholder="Filtrar por ID"></div>
-            <div class="form-group">
-              <label>Cliente</label>
-              <div class="autocomplete-wrap">
-                <input id="fCliente" type="text" placeholder="Filtrar por cliente" autocomplete="off" oninput="app.buscarClientesFiltro()" onblur="setTimeout(()=>{document.getElementById('listaClientesFiltro').style.display='none'},200)">
-                <div class="autocomplete-list" id="listaClientesFiltro"></div>
+
+        <!-- SUB-ABAS -->
+        <div style="display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:20px;flex-wrap:wrap;">
+          <button id="rel-tab-btn-chamados" onclick="relMudarAba('chamados',this)"
+            style="padding:10px 18px;border:none;background:none;font-size:0.88em;font-family:inherit;font-weight:600;color:var(--primary);border-bottom:3px solid var(--primary);margin-bottom:-2px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">📋 Chamados</button>
+          <button id="rel-tab-btn-clientes" onclick="relMudarAba('clientes',this)"
+            style="padding:10px 18px;border:none;background:none;font-size:0.88em;font-family:inherit;font-weight:600;color:var(--text2);border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">👥 Clientes</button>
+          <button id="rel-tab-btn-instalacoes" onclick="relMudarAba('instalacoes',this)"
+            style="padding:10px 18px;border:none;background:none;font-size:0.88em;font-family:inherit;font-weight:600;color:var(--text2);border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">📅 Instalações</button>
+          <button id="rel-tab-btn-usuarios" onclick="relMudarAba('usuarios',this)"
+            style="padding:10px 18px;border:none;background:none;font-size:0.88em;font-family:inherit;font-weight:600;color:var(--text2);border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">👨‍💼 Usuários</button>
+        </div>
+
+        <!-- ── ABA CHAMADOS ── -->
+        <div id="rel-tab-chamados">
+          <div class="filtros-box section">
+            <h2>Filtros — Chamados</h2>
+            <div class="form-grid">
+              <div class="form-group"><label>ID do Chamado</label><input id="fIdChamado" type="number" placeholder="Filtrar por ID"></div>
+              <div class="form-group">
+                <label>Cliente</label>
+                <div class="autocomplete-wrap">
+                  <input id="fCliente" type="text" placeholder="Filtrar por cliente" autocomplete="off" oninput="app.buscarClientesFiltro()" onblur="setTimeout(()=>{document.getElementById('listaClientesFiltro').style.display='none'},200)">
+                  <div class="autocomplete-list" id="listaClientesFiltro"></div>
+                </div>
               </div>
+              <div class="form-group"><label>CNPJ</label><input id="fCNPJ" type="text" placeholder="Filtrar por CNPJ"></div>
+              <div class="form-group"><label>Solicitante</label><input id="fSolicitante" type="text" placeholder="Filtrar por solicitante"></div>
+              <div class="form-group"><label>Técnico</label><select id="fTecnico"><option value="">Todos os Técnicos</option></select></div>
+              <div class="form-group">
+                <label>Categoria</label>
+                <select id="fCategoria">
+                  <option value="">Todas as Categorias</option>
+                  <option>Caixa</option><option>Equipamento</option><option>Retaguarda</option>
+                  <option>Treinamento</option><option>Apresentação</option><option>Instalação</option>
+                  <option>Sitef</option><option>Outros</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Tipo de Atendimento</label>
+                <select id="fTipoAtendimento"><option value="">Todos os Tipos</option><option>Remoto</option><option>Presencial</option></select>
+              </div>
+              <div class="form-group">
+                <label>Status</label>
+                <select id="fStatus"><option value="">Todos</option><option value="pendente">Pendente</option><option value="resolvido">Resolvido</option></select>
+              </div>
+              <div class="form-group"><label>Data Início</label><input id="fDataInicio" type="date"></div>
+              <div class="form-group"><label>Data Fim</label><input id="fDataFim" type="date"></div>
             </div>
-            <div class="form-group"><label>CNPJ</label><input id="fCNPJ" type="text" placeholder="Filtrar por CNPJ"></div>
-            <div class="form-group"><label>Solicitante</label><input id="fSolicitante" type="text" placeholder="Filtrar por solicitante"></div>
-            <div class="form-group"><label>Técnico</label><select id="fTecnico"><option value="">Todos os Técnicos</option></select></div>
-            <div class="form-group">
-              <label>Categoria</label>
-              <select id="fCategoria">
-                <option value="">Todas as Categorias</option>
-                <option>Caixa</option><option>Equipamento</option><option>Retaguarda</option>
-                <option>Treinamento</option><option>Apresentação</option><option>Instalação</option>
-                <option>Sitef</option><option>Outros</option>
-              </select>
+            <div class="btn-toolbar" style="justify-content:center;margin-top:10px;">
+              <button class="btn btn-primary" onclick="app.relatorio()">🔍 Filtrar</button>
+              <button class="btn btn-success" onclick="app.imprimirRelatorio()">🖨️ Imprimir</button>
+              <button class="btn btn-info" onclick="relChamadosCSV()">📥 Exportar CSV</button>
+              <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.limparFiltrosRelatorio()">🧹 Limpar</button>
             </div>
-            <div class="form-group">
-              <label>Tipo de Atendimento</label>
-              <select id="fTipoAtendimento"><option value="">Todos os Tipos</option><option>Remoto</option><option>Presencial</option></select>
-            </div>
-            <div class="form-group">
-              <label>Status</label>
-              <select id="fStatus"><option value="">Todos</option><option value="pendente">Pendente</option><option value="resolvido">Resolvido</option></select>
-            </div>
-            <div class="form-group"><label>Data Início</label><input id="fDataInicio" type="date"></div>
-            <div class="form-group"><label>Data Fim</label><input id="fDataFim" type="date"></div>
           </div>
-          <div class="btn-toolbar" style="justify-content:center;margin-top:10px;">
-            <button class="btn btn-primary" onclick="app.relatorio()">🔍 Filtrar</button>
-            <button class="btn btn-success" onclick="app.imprimirRelatorio()">🖨️ Imprimir</button>
-            <button class="btn" style="background:var(--border);color:var(--text);" onclick="app.limparFiltrosRelatorio()">🧹 Limpar</button>
+          <div class="section">
+            <div class="tabela-scroll">
+              <table>
+                <thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Tipo</th><th>Status</th><th>Descrição</th></tr></thead>
+                <tbody id="resultadoRelatorio"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ── ABA CLIENTES ── -->
+        <div id="rel-tab-clientes" style="display:none;">
+          <div class="filtros-box section">
+            <h2>Filtros — Clientes</h2>
+            <div class="form-grid">
+              <div class="form-group"><label>Nome</label><input id="relCli-nome" type="text" placeholder="Filtrar por nome"></div>
+              <div class="form-group"><label>CNPJ/CPF</label><input id="relCli-cnpj" type="text" placeholder="Filtrar por CNPJ/CPF"></div>
+              <div class="form-group"><label>Razão Social</label><input id="relCli-razao" type="text" placeholder="Filtrar por razão social"></div>
+              <div class="form-group"><label>Endereço</label><input id="relCli-endereco" type="text" placeholder="Filtrar por endereço"></div>
+            </div>
+            <div class="btn-toolbar" style="justify-content:center;margin-top:10px;">
+              <button class="btn btn-primary" onclick="relClientesFiltrar()">🔍 Filtrar</button>
+              <button class="btn btn-success" onclick="relClientesImprimir()">🖨️ Imprimir</button>
+              <button class="btn btn-info" onclick="relClientesCSV()">📥 Exportar CSV</button>
+              <button class="btn" style="background:var(--border);color:var(--text);" onclick="relClientesLimpar()">🧹 Limpar</button>
+            </div>
+          </div>
+          <div class="section">
+            <div id="relCli-info" style="font-size:0.85em;color:var(--text2);margin-bottom:12px;display:none;"></div>
+            <div class="tabela-scroll">
+              <table>
+                <thead><tr><th>Nome</th><th>Razão Social</th><th>CNPJ/CPF</th><th>Endereço</th><th>Observações</th></tr></thead>
+                <tbody id="relCli-tbody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
-        <div class="section">
-          <div class="tabela-scroll">
-            <table>
-              <thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Solicitante</th><th>Técnico</th><th>Categoria</th><th>Tipo</th><th>Status</th><th>Descrição</th></tr></thead>
-              <tbody id="resultadoRelatorio"></tbody>
-            </table>
+
+        <!-- ── ABA INSTALAÇÕES ── -->
+        <div id="rel-tab-instalacoes" style="display:none;">
+          <div class="filtros-box section">
+            <h2>Filtros — Instalações</h2>
+            <div class="form-grid">
+              <div class="form-group"><label>Cliente</label><input id="relInst-cliente" type="text" placeholder="Filtrar por cliente"></div>
+              <div class="form-group"><label>Responsável</label><input id="relInst-resp" type="text" placeholder="Filtrar por responsável"></div>
+              <div class="form-group">
+                <label>Status</label>
+                <select id="relInst-status">
+                  <option value="">Todos</option>
+                  <option value="andamento">Em andamento</option>
+                  <option value="finalizado">Finalizado</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Data Início (a partir de)</label><input id="relInst-dataInicio" type="date"></div>
+            </div>
+            <div class="btn-toolbar" style="justify-content:center;margin-top:10px;">
+              <button class="btn btn-primary" onclick="relInstFiltrar()">🔍 Filtrar</button>
+              <button class="btn btn-success" onclick="relInstImprimir()">🖨️ Imprimir</button>
+              <button class="btn btn-info" onclick="relInstCSV()">📥 Exportar CSV</button>
+              <button class="btn" style="background:var(--border);color:var(--text);" onclick="relInstLimpar()">🧹 Limpar</button>
+            </div>
+          </div>
+          <div class="section">
+            <div id="relInst-info" style="font-size:0.85em;color:var(--text2);margin-bottom:12px;display:none;"></div>
+            <div class="tabela-scroll">
+              <table>
+                <thead><tr><th>Cliente</th><th>CNPJ/CPF</th><th>Responsável</th><th>Data Início</th><th>Progresso</th><th>Status</th><th>Salvo em</th></tr></thead>
+                <tbody id="relInst-tbody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
+
+        <!-- ── ABA USUÁRIOS ── -->
+        <div id="rel-tab-usuarios" style="display:none;">
+          <div class="filtros-box section">
+            <h2>Filtros — Usuários</h2>
+            <div class="form-grid">
+              <div class="form-group"><label>Nome</label><input id="relUsu-nome" type="text" placeholder="Filtrar por nome"></div>
+              <div class="form-group"><label>Email</label><input id="relUsu-email" type="text" placeholder="Filtrar por email"></div>
+            </div>
+            <div class="btn-toolbar" style="justify-content:center;margin-top:10px;">
+              <button class="btn btn-primary" onclick="relUsuFiltrar()">🔍 Filtrar</button>
+              <button class="btn btn-success" onclick="relUsuImprimir()">🖨️ Imprimir</button>
+              <button class="btn btn-info" onclick="relUsuCSV()">📥 Exportar CSV</button>
+              <button class="btn" style="background:var(--border);color:var(--text);" onclick="relUsuLimpar()">🧹 Limpar</button>
+            </div>
+          </div>
+          <div class="section">
+            <div id="relUsu-info" style="font-size:0.85em;color:var(--text2);margin-bottom:12px;display:none;"></div>
+            <div class="tabela-scroll">
+              <table>
+                <thead><tr><th>Nome</th><th>Email</th><th>Permissões</th><th>Cadastro</th></tr></thead>
+                <tbody id="relUsu-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
       </section>
+
 
       <!-- USUÁRIOS -->
       <section id="usuarios" class="hidden">
@@ -1532,6 +1769,7 @@ function setupThemeToggle(){
     const dark = document.body.classList.contains('dark-mode');
     localStorage.setItem('darkMode', dark);
     document.querySelector('.theme-icon').textContent = dark ? '☀️' : '🌙';
+    if(window._dashOnThemeChange) window._dashOnThemeChange();
   });
 }
 
@@ -1576,7 +1814,7 @@ const app = {
       document.getElementById('usuarioEmail').innerText = this.usuarioAtual.email;
       try{
         const {data} = await sb.from('usuarios').select('permissoes').eq('email',this.usuarioAtual.email).single();
-        const perms = data?.permissoes ? JSON.parse(data.permissoes) : {chamados:true,clientes:true,relatorios:true,excluirChamados:false,usuarios:true,auditoria:true,instalacoes:true,cracha:true};
+        const perms = data?.permissoes ? JSON.parse(data.permissoes) : {chamados:true,clientes:true,relatorios:true,excluirChamados:false,usuarios:true,auditoria:true,instalacoes:true,cracha:true,dashboard:true};
         this.salvarPermissoes(perms);
         this.mostrarAbasPermitidas(perms);
       }catch(e){
@@ -1598,6 +1836,7 @@ const app = {
       else if(txt.includes('Auditoria'))  aba='auditoria';
       else if(txt.includes('Instalações'))aba='instalacoes';
       else if(txt.includes('Crachá'))     aba='cracha';
+      else if(txt.includes('Dashboard'))  aba='dashboard';
       // Se a permissão for explicitamente false, esconde; se não estiver definida (undefined), mostra
       if(aba && perms[aba]===false){
         btn.style.display='none';
@@ -1625,7 +1864,7 @@ const app = {
     if(id==='clientes') this.carregarClientes();
     if(id==='usuarios') this.carregarUsuarios();
     if(id==='auditoria') this.carregarAuditoria();
-    if(id==='relatorios') this.carregarTecnicos();
+    if(id==='relatorios') { this.carregarTecnicos(); relMudarAba('chamados', document.getElementById('rel-tab-btn-chamados')); }
   },
 
   obterPermissoes(){ try{ return JSON.parse(localStorage.getItem('userPermissions')||'{}'); }catch{ return {}; } },
@@ -2038,6 +2277,8 @@ const app = {
           </td>
         </tr>`;
       });
+      // Gerar gráficos automaticamente após filtrar
+
     }catch(e){ this.mostrarErro('Erro: '+e.message); }
   },
 
@@ -2045,6 +2286,7 @@ const app = {
     ['fIdChamado','fCliente','fCNPJ','fSolicitante','fDataInicio','fDataFim'].forEach(id=>document.getElementById(id).value='');
     ['fTecnico','fCategoria','fTipoAtendimento','fStatus'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('resultadoRelatorio').innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text2);">Use os filtros para pesquisar</td></tr>';
+    
   },
 
   imprimirRelatorio(){
@@ -2961,6 +3203,457 @@ document.addEventListener('click',function(e){
 
 
 
+
+
+/* ══════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════ */
+let _dashCharts = {};
+let _dashCarregado = false;
+
+function abrirDashboard(botao) {
+  try{ const p=JSON.parse(localStorage.getItem('userPermissions')||'{}'); if(p.dashboard===false){alert('❌ Sem permissão para Dashboard');return;} }catch(e){}
+  document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+  document.querySelectorAll('.topbar-row2 nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('dashboardSection').classList.remove('hidden');
+  if(botao) botao.classList.add('active');
+  document.getElementById('sidebar').classList.remove('open');
+  dashCarregar();
+}
+
+async function dashCarregar() {
+  const loading = document.getElementById('dash-loading');
+  loading.style.display = 'block';
+
+  try {
+    const periodo = parseInt(document.getElementById('dash-periodo').value);
+    const hoje    = new Date();
+    const dataRef = periodo > 0 ? new Date(hoje.getTime() - periodo*24*60*60*1000).toISOString().split('T')[0] : null;
+
+    // Buscar chamados
+    let qCh = sb.from('chamados').select('*').order('created_at',{ascending:false});
+    if(dataRef) qCh = qCh.gte('created_at', dataRef+'T00:00:00');
+    const [{data: chamados}, {data: clientes}, {data: projetos}] = await Promise.all([
+      qCh,
+      sb.from('clientes').select('id,nome'),
+      sb.from('erp_projects').select('project_id,dates')
+    ]);
+
+    const ch = chamados || [];
+    const hj = hoje.toISOString().split('T')[0];
+
+    // ── CARDS ──
+    document.getElementById('dash-v-total').textContent     = ch.length;
+    document.getElementById('dash-v-pendentes').textContent = ch.filter(c=>c.status==='pendente').length;
+    document.getElementById('dash-v-resolvidos').textContent= ch.filter(c=>c.status==='resolvido').length;
+    document.getElementById('dash-v-hoje').textContent      = ch.filter(c=>c.created_at&&c.created_at.startsWith(hj)).length;
+    document.getElementById('dash-v-clientes').textContent  = (clientes||[]).length;
+    const instFinal = (projetos||[]).filter(p=>(p.dates||{})._finalizado===true).length;
+    const instTotal = (projetos||[]).length;
+    document.getElementById('dash-v-inst').textContent = `${instFinal}/${instTotal}`;
+
+    // Destruir gráficos anteriores
+    Object.values(_dashCharts).forEach(c=>{ try{c.destroy();}catch(e){} });
+    _dashCharts = {};
+
+    const CORES = ['#2563eb','#10b981','#f59e0b','#ef4444','#7c3aed','#06b6d4','#ec4899','#f97316','#84cc16','#14b8a6'];
+    const isDark = document.body.classList.contains('dark-mode');
+    const textColor = isDark ? '#94a3b8' : '#6b7280';
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+
+    // ── GRÁFICO 1: Por Dia ──
+    const diaCount={};
+    ch.forEach(c=>{ const d=c.created_at?c.created_at.substring(0,10):''; if(d) diaCount[d]=(diaCount[d]||0)+1; });
+    const dias = Object.keys(diaCount).sort();
+    _dashCharts.dia = new Chart(document.getElementById('dash-chartDia'), {
+      type:'line',
+      data:{ labels: dias.map(d=>new Date(d+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})),
+        datasets:[{ label:'Chamados', data:dias.map(d=>diaCount[d]),
+          borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,0.12)',
+          fill:true, tension:0.4, pointRadius:4, pointBackgroundColor:'#2563eb', borderWidth:2 }] },
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false} },
+        scales:{ x:{ticks:{color:textColor,font:{size:10}},grid:{color:gridColor}}, y:{beginAtZero:true,ticks:{color:textColor,stepSize:1},grid:{color:gridColor}} } }
+    });
+
+    // ── GRÁFICO 2: Status ──
+    const stCount={'Pendente':ch.filter(c=>c.status==='pendente').length,'Resolvido':ch.filter(c=>c.status==='resolvido').length};
+    _dashCharts.status = new Chart(document.getElementById('dash-chartStatus'), {
+      type:'doughnut',
+      data:{ labels:['Pendente','Resolvido'],
+        datasets:[{ data:[stCount.Pendente,stCount.Resolvido],
+          backgroundColor:['#f59e0b','#10b981'], borderWidth:3,
+          borderColor: isDark?'#1e293b':'#ffffff' }] },
+      options:{ responsive:true, maintainAspectRatio:false, cutout:'65%',
+        plugins:{ legend:{ position:'bottom', labels:{color:textColor,font:{size:11},padding:12} } } }
+    });
+
+    // ── GRÁFICO 3: Por Categoria ──
+    const catCount={};
+    ch.forEach(c=>{ const k=c.categoria||'N/A'; catCount[k]=(catCount[k]||0)+1; });
+    const catSorted=Object.entries(catCount).sort((a,b)=>b[1]-a[1]);
+    _dashCharts.cat = new Chart(document.getElementById('dash-chartCategoria'), {
+      type:'bar',
+      data:{ labels:catSorted.map(x=>x[0]),
+        datasets:[{ data:catSorted.map(x=>x[1]), backgroundColor:CORES, borderRadius:6, borderSkipped:false }] },
+      options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
+        plugins:{ legend:{display:false} },
+        scales:{ x:{beginAtZero:true,ticks:{color:textColor,stepSize:1},grid:{color:gridColor}}, y:{ticks:{color:textColor,font:{size:11}},grid:{display:false}} } }
+    });
+
+    // ── GRÁFICO 4: Por Técnico ──
+    const tecCount={};
+    ch.forEach(c=>{ const k=c.tecnico||'N/A'; tecCount[k]=(tecCount[k]||0)+1; });
+    const tecSorted=Object.entries(tecCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    _dashCharts.tec = new Chart(document.getElementById('dash-chartTecnico'), {
+      type:'bar',
+      data:{ labels:tecSorted.map(x=>x[0]),
+        datasets:[{ data:tecSorted.map(x=>x[1]), backgroundColor:CORES, borderRadius:6, borderSkipped:false }] },
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false} },
+        scales:{ x:{ticks:{color:textColor,font:{size:10}},grid:{color:gridColor}}, y:{beginAtZero:true,ticks:{color:textColor,stepSize:1},grid:{color:gridColor}} } }
+    });
+
+    // ── GRÁFICO 5: Por Tipo ──
+    const tipoCount={};
+    ch.forEach(c=>{ const k=c.tipo_atendimento||'N/A'; tipoCount[k]=(tipoCount[k]||0)+1; });
+    _dashCharts.tipo = new Chart(document.getElementById('dash-chartTipo'), {
+      type:'pie',
+      data:{ labels:Object.keys(tipoCount),
+        datasets:[{ data:Object.values(tipoCount), backgroundColor:CORES,
+          borderWidth:3, borderColor:isDark?'#1e293b':'#ffffff' }] },
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ position:'bottom', labels:{color:textColor,font:{size:11},padding:12} } } }
+    });
+
+    // ── GRÁFICO 6: Top 5 Clientes ──
+    const cliCount={};
+    ch.forEach(c=>{ const k=c.cliente||'N/A'; cliCount[k]=(cliCount[k]||0)+1; });
+    const cliSorted=Object.entries(cliCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    _dashCharts.cli = new Chart(document.getElementById('dash-chartClientes'), {
+      type:'bar',
+      data:{ labels:cliSorted.map(x=>x[0].length>18?x[0].substring(0,16)+'…':x[0]),
+        datasets:[{ data:cliSorted.map(x=>x[1]),
+          backgroundColor:['#2563eb','#7c3aed','#10b981','#f59e0b','#ef4444'],
+          borderRadius:6, borderSkipped:false }] },
+      options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
+        plugins:{ legend:{display:false} },
+        scales:{ x:{beginAtZero:true,ticks:{color:textColor,stepSize:1},grid:{color:gridColor}}, y:{ticks:{color:textColor,font:{size:11}},grid:{display:false}} } }
+    });
+
+  } catch(e) {
+    console.error('Dashboard error:', e);
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+/* Recriar gráficos ao trocar tema (cores mudam) */
+(function(){
+  const origToggle = window.setupThemeToggle;
+  window._dashOnThemeChange = function(){
+    const sec = document.getElementById('dashboardSection');
+    if(sec && !sec.classList.contains('hidden')) {
+      setTimeout(dashCarregar, 50);
+    }
+  };
+})();
+
+/* ══════════════════════════════════════════
+   RELATÓRIOS — SUB-ABAS
+══════════════════════════════════════════ */
+function relMudarAba(aba, btn) {
+  ['chamados','clientes','instalacoes','usuarios'].forEach(a => {
+    const tab = document.getElementById('rel-tab-'+a);
+    const b   = document.getElementById('rel-tab-btn-'+a);
+    if(tab) tab.style.display = a===aba ? 'block' : 'none';
+    if(b){
+      b.style.color        = a===aba ? 'var(--primary)' : 'var(--text2)';
+      b.style.borderBottom = a===aba ? '3px solid var(--primary)' : '3px solid transparent';
+    }
+  });
+  // Carregar técnicos quando abrir chamados
+  if(aba==='chamados') app.carregarTecnicos();
+}
+
+/* ── CLIENTES ── */
+async function relClientesFiltrar() {
+  const nome    = document.getElementById('relCli-nome').value.trim();
+  const cnpj    = document.getElementById('relCli-cnpj').value.trim();
+  const razao   = document.getElementById('relCli-razao').value.trim();
+  const end     = document.getElementById('relCli-endereco').value.trim();
+  try {
+    let q = sb.from('clientes').select('*');
+    const filtros = [];
+    if(nome)  filtros.push(`nome.ilike.%${nome}%`);
+    if(cnpj)  filtros.push(`cnpj.ilike.%${cnpj}%`);
+    if(razao) filtros.push(`razao_social.ilike.%${razao}%`);
+    if(end)   filtros.push(`endereco.ilike.%${end}%`);
+    if(filtros.length) q = q.or(filtros.join(','));
+    const {data, error} = await q.order('nome',{ascending:true});
+    if(error) throw error;
+    const tbody = document.getElementById('relCli-tbody');
+    const info  = document.getElementById('relCli-info');
+    tbody.innerHTML = '';
+    info.style.display = 'block';
+    info.textContent   = `🔍 ${(data||[]).length} cliente(s) encontrado(s)`;
+    if(!data||!data.length){
+      tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text2);">Nenhum resultado</td></tr>';
+      return;
+    }
+    data.forEach(c=>{
+      tbody.innerHTML+=`<tr>
+        <td><strong>${c.nome||'—'}</strong></td>
+        <td>${c.razao_social||'—'}</td>
+        <td>${c.cnpj||'—'}</td>
+        <td>${c.endereco||'—'}</td>
+        <td style="font-size:0.85em;color:var(--text2);">${c.observacoes||'—'}</td>
+      </tr>`;
+    });
+  } catch(e) { alert('Erro: '+e.message); }
+}
+function relClientesLimpar() {
+  ['relCli-nome','relCli-cnpj','relCli-razao','relCli-endereco'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('relCli-tbody').innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text2);">Use os filtros para pesquisar</td></tr>';
+  document.getElementById('relCli-info').style.display='none';
+}
+function relClientesImprimir() {
+  const rows = document.getElementById('relCli-tbody').querySelectorAll('tr');
+  if(!rows.length || rows[0].querySelector('td[colspan]')){ alert('Faça uma busca primeiro!'); return; }
+  const empresa = document.getElementById('nomeEmpresa').innerText;
+  let html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;padding:30px;color:#333;}h1{color:#2563eb;margin-bottom:5px;}p{color:#666;font-size:13px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;}th,td{padding:9px;border-bottom:1px solid #ddd;font-size:12px;text-align:left;}th{background:#2563eb;color:white;}</style></head><body><h1>${empresa}</h1><p>Relatório de Clientes — ${new Date().toLocaleDateString('pt-BR')}</p><table><thead><tr><th>Nome</th><th>Razão Social</th><th>CNPJ/CPF</th><th>Endereço</th><th>Observações</th></tr></thead><tbody>`;
+  rows.forEach(r=>{
+    const cells=r.querySelectorAll('td');
+    if(cells.length<2) return;
+    html+=`<tr>${Array.from(cells).map(c=>`<td>${c.innerText}</td>`).join('')}</tr>`;
+  });
+  html+=`</tbody></table><p style="margin-top:20px;color:#999;text-align:center;font-size:11px;">Total: ${rows.length} registros</p></body></html>`;
+  const w=window.open('','','width=1200,height=800'); w.document.write(html); w.document.close(); w.print();
+}
+
+/* ── INSTALAÇÕES ── */
+async function relInstFiltrar() {
+  try {
+    // Busca os projetos do Supabase
+    const {data, error} = await sb.from('erp_projects').select('*').order('created_at',{ascending:false});
+    if(error) throw error;
+    const cliente    = document.getElementById('relInst-cliente').value.trim().toLowerCase();
+    const resp       = document.getElementById('relInst-resp').value.trim().toLowerCase();
+    const status     = document.getElementById('relInst-status').value;
+    const dataInicio = document.getElementById('relInst-dataInicio').value;
+    let resultados = (data||[]).map(row=>{
+      const dr = row.dates||{};
+      return {
+        clientName: row.client_name||'—',
+        clientCNPJ: dr._clientCNPJ||'—',
+        responsible: row.responsible||'—',
+        startDate:   row.start_date||'',
+        finalizado:  dr._finalizado||false,
+        finalizadoEm: dr._finalizadoEm||'',
+        savedAt:     row.saved_at||'—',
+        phases:      row.phases||[],
+        checklistStates: row.checklist_states||{}
+      };
+    });
+    if(cliente)    resultados=resultados.filter(p=>(p.clientName||'').toLowerCase().includes(cliente));
+    if(resp)       resultados=resultados.filter(p=>(p.responsible||'').toLowerCase().includes(resp));
+    if(status==='finalizado')  resultados=resultados.filter(p=>p.finalizado===true);
+    if(status==='andamento')   resultados=resultados.filter(p=>!p.finalizado);
+    if(dataInicio) resultados=resultados.filter(p=>p.startDate && p.startDate>=dataInicio);
+    const tbody = document.getElementById('relInst-tbody');
+    const info  = document.getElementById('relInst-info');
+    tbody.innerHTML='';
+    info.style.display='block';
+    info.textContent=`🔍 ${resultados.length} projeto(s) encontrado(s)`;
+    if(!resultados.length){
+      tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text2);">Nenhum resultado</td></tr>';
+      return;
+    }
+    resultados.forEach(p=>{
+      // Calcular progresso
+      let tot=0,ch=0;
+      (p.phases||[]).forEach(ph=>{if(ph.items) tot+=ph.items.length;});
+      if(p.checklistStates) Object.values(p.checklistStates).forEach(pi=>Object.values(pi).forEach(v=>{if(v)ch++;}));
+      const pct = tot>0?Math.round((ch/tot)*100):0;
+      const statusBadge = p.finalizado
+        ? '<span style="background:rgba(16,185,129,0.15);color:#10b981;padding:3px 10px;border-radius:20px;font-size:0.8em;font-weight:700;">✅ Finalizado</span>'
+        : '<span style="background:rgba(245,158,11,0.12);color:#d97706;padding:3px 10px;border-radius:20px;font-size:0.8em;font-weight:700;">🔄 Em andamento</span>';
+      const dtFormatada = p.startDate ? new Date(p.startDate+'T00:00:00').toLocaleDateString('pt-BR') : '—';
+      tbody.innerHTML+=`<tr>
+        <td><strong>${p.clientName}</strong></td>
+        <td>${p.clientCNPJ}</td>
+        <td>${p.responsible}</td>
+        <td>${dtFormatada}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="flex:1;height:6px;background:var(--border);border-radius:4px;min-width:60px;">
+              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--primary),var(--success));border-radius:4px;"></div>
+            </div>
+            <span style="font-size:0.82em;font-weight:700;color:var(--text2);white-space:nowrap;">${pct}%</span>
+          </div>
+        </td>
+        <td>${statusBadge}</td>
+        <td style="font-size:0.82em;color:var(--text2);">${p.savedAt}</td>
+      </tr>`;
+    });
+  } catch(e) { alert('Erro: '+e.message); }
+}
+function relInstLimpar() {
+  ['relInst-cliente','relInst-resp','relInst-dataInicio'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('relInst-status').value='';
+  document.getElementById('relInst-tbody').innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text2);">Use os filtros para pesquisar</td></tr>';
+  document.getElementById('relInst-info').style.display='none';
+}
+function relInstImprimir() {
+  const rows = document.getElementById('relInst-tbody').querySelectorAll('tr');
+  if(!rows.length || rows[0].querySelector('td[colspan]')){ alert('Faça uma busca primeiro!'); return; }
+  const empresa = document.getElementById('nomeEmpresa').innerText;
+  let html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;padding:30px;color:#333;}h1{color:#2563eb;margin-bottom:5px;}p{color:#666;font-size:13px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;}th,td{padding:9px;border-bottom:1px solid #ddd;font-size:12px;text-align:left;}th{background:#2563eb;color:white;}</style></head><body><h1>${empresa}</h1><p>Relatório de Instalações — ${new Date().toLocaleDateString('pt-BR')}</p><table><thead><tr><th>Cliente</th><th>CNPJ/CPF</th><th>Responsável</th><th>Data Início</th><th>Progresso</th><th>Status</th><th>Salvo em</th></tr></thead><tbody>`;
+  rows.forEach(r=>{
+    const cells=r.querySelectorAll('td');
+    if(cells.length<2) return;
+    html+=`<tr>${Array.from(cells).map(c=>`<td>${c.innerText}</td>`).join('')}</tr>`;
+  });
+  html+=`</tbody></table><p style="margin-top:20px;color:#999;text-align:center;font-size:11px;">Total: ${rows.length} registros</p></body></html>`;
+  const w=window.open('','','width=1200,height=800'); w.document.write(html); w.document.close(); w.print();
+}
+
+/* ── AUDITORIA ── */
+/* ── USUÁRIOS ── */
+async function relUsuFiltrar() {
+  try {
+    const {data, error} = await sb.from('usuarios').select('*').order('criado_em',{ascending:false});
+    if(error) throw error;
+    let r = data||[];
+    const nome  = document.getElementById('relUsu-nome').value.trim().toLowerCase();
+    const email = document.getElementById('relUsu-email').value.trim().toLowerCase();
+    if(nome)  r=r.filter(u=>(u.nome||u.email||'').toLowerCase().includes(nome));
+    if(email) r=r.filter(u=>(u.email||'').toLowerCase().includes(email));
+    const tbody = document.getElementById('relUsu-tbody');
+    const info  = document.getElementById('relUsu-info');
+    tbody.innerHTML=''; info.style.display='block';
+    info.textContent=`🔍 ${r.length} usuário(s) encontrado(s)`;
+    if(!r.length){ tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2);">Nenhum resultado</td></tr>'; return; }
+    r.forEach(u=>{
+      const perms=u.permissoes?JSON.parse(u.permissoes):{};
+      const lista=[perms.chamados&&'Chamados',perms.clientes&&'Clientes',perms.relatorios&&'Relatórios',perms.usuarios&&'Admin',perms.auditoria!==false&&'Auditoria',perms.instalacoes!==false&&'Instalações',perms.cracha!==false&&'Crachá'].filter(Boolean).join(', ')||'—';
+      tbody.innerHTML+=`<tr>
+        <td><strong>${u.nome||u.email}</strong></td>
+        <td>${u.email}</td>
+        <td style="font-size:0.82em;color:var(--text2);">${lista}</td>
+        <td>${u.criado_em?new Date(u.criado_em).toLocaleDateString('pt-BR'):'—'}</td>
+      </tr>`;
+    });
+  } catch(e) { alert('Erro: '+e.message); }
+}
+function relUsuLimpar() {
+  ['relUsu-nome','relUsu-email'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('relUsu-tbody').innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2);">Use os filtros para pesquisar</td></tr>';
+  document.getElementById('relUsu-info').style.display='none';
+}
+function relUsuImprimir() {
+  const rows = document.getElementById('relUsu-tbody').querySelectorAll('tr');
+  if(!rows.length || rows[0].querySelector('td[colspan]')){ alert('Faça uma busca primeiro!'); return; }
+  const empresa = document.getElementById('nomeEmpresa').innerText;
+  let html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;padding:30px;color:#333;}h1{color:#2563eb;margin-bottom:5px;}p{color:#666;font-size:13px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;}th,td{padding:9px;border-bottom:1px solid #ddd;font-size:12px;text-align:left;}th{background:#2563eb;color:white;}</style></head><body><h1>${empresa}</h1><p>Relatório de Usuários — ${new Date().toLocaleDateString('pt-BR')}</p><table><thead><tr><th>Nome</th><th>Email</th><th>Permissões</th><th>Cadastro</th></tr></thead><tbody>`;
+  rows.forEach(r=>{ const cells=r.querySelectorAll('td'); if(cells.length<2) return; html+=`<tr>${Array.from(cells).map(c=>`<td>${c.innerText}</td>`).join('')}</tr>`; });
+  html+=`</tbody></table><p style="margin-top:20px;color:#999;text-align:center;font-size:11px;">Total: ${rows.length} registros</p></body></html>`;
+  const w=window.open('','','width=1000,height=700'); w.document.write(html); w.document.close(); w.print();
+}
+function relUsuCSV() {
+  const rows = document.getElementById('relUsu-tbody').querySelectorAll('tr');
+  if(!rows.length || rows[0].querySelector('td[colspan]')){ alert('Faça uma busca primeiro!'); return; }
+  let csv = 'Nome,Email,Permissões,Cadastro\n';
+  rows.forEach(r=>{ const cells=r.querySelectorAll('td'); if(cells.length<2) return; csv+=Array.from(cells).map(c=>'"'+c.innerText.replace(/"/g,'""')+'"').join(',')+'\n'; });
+  _relDownloadCSV(csv,'usuarios.csv');
+}
+
+/* ── CSV Clientes ── */
+function relClientesCSV() {
+  const rows = document.getElementById('relCli-tbody').querySelectorAll('tr');
+  if(!rows.length || rows[0].querySelector('td[colspan]')){ alert('Faça uma busca primeiro!'); return; }
+  let csv = 'Nome,Razão Social,CNPJ/CPF,Endereço,Observações\n';
+  rows.forEach(r=>{ const cells=r.querySelectorAll('td'); if(cells.length<2) return; csv+=Array.from(cells).map(c=>'"'+c.innerText.replace(/"/g,'""')+'"').join(',')+'\n'; });
+  _relDownloadCSV(csv,'clientes.csv');
+}
+
+/* ── CSV Instalações ── */
+function relInstCSV() {
+  const rows = document.getElementById('relInst-tbody').querySelectorAll('tr');
+  if(!rows.length || rows[0].querySelector('td[colspan]')){ alert('Faça uma busca primeiro!'); return; }
+  let csv = 'Cliente,CNPJ/CPF,Responsável,Data Início,Progresso,Status,Salvo em\n';
+  rows.forEach(r=>{ const cells=r.querySelectorAll('td'); if(cells.length<2) return; csv+=Array.from(cells).map(c=>'"'+c.innerText.replace(/"/g,'""')+'"').join(',')+'\n'; });
+  _relDownloadCSV(csv,'instalacoes.csv');
+}
+
+/* ── CSV Chamados ── */
+function relChamadosCSV() {
+  const rows = document.getElementById('resultadoRelatorio').querySelectorAll('tr');
+  if(!rows.length || rows[0].querySelector('td[colspan]')){ alert('Faça uma busca primeiro!'); return; }
+  let csv = 'ID,Data,Cliente,Solicitante,Técnico,Categoria,Tipo,Status,Descrição\n';
+  rows.forEach(r=>{ const cells=r.querySelectorAll('td'); if(cells.length<2) return; csv+=Array.from(cells).map(c=>'"'+c.innerText.replace(/"/g,'""')+'"').join(',')+'\n'; });
+  _relDownloadCSV(csv,'chamados.csv');
+}
+
+/* ── helper download CSV ── */
+function _relDownloadCSV(csv, filename) {
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href=url; a.download=filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+/* ── Gráficos Chamados ── */
+let _relCharts = {};
+function relGerarGraficos(dados) {
+  if(!dados||!dados.length){ document.getElementById('relCh-graficos').style.display='none'; return; }
+  document.getElementById('relCh-graficos').style.display='block';
+
+  // Destruir gráficos anteriores
+  Object.values(_relCharts).forEach(c=>{ try{c.destroy();}catch(e){} });
+  _relCharts={};
+
+  const cores=['#2563eb','#10b981','#f59e0b','#ef4444','#7c3aed','#06b6d4','#ec4899','#f97316','#84cc16','#14b8a6'];
+
+  // 1. Por Categoria
+  const catCount={};
+  dados.forEach(c=>{ const k=c.categoria||'N/A'; catCount[k]=(catCount[k]||0)+1; });
+  _relCharts.cat = new Chart(document.getElementById('relCh-chartCategoria'),{
+    type:'doughnut',
+    data:{ labels:Object.keys(catCount), datasets:[{ data:Object.values(catCount), backgroundColor:cores, borderWidth:2, borderColor:'var(--card)' }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right', labels:{ font:{size:11}, padding:8 } } } }
+  });
+
+  // 2. Por Status
+  const stCount={'Pendente':0,'Resolvido':0};
+  dados.forEach(c=>{ if(c.status==='pendente') stCount['Pendente']++; else stCount['Resolvido']++; });
+  _relCharts.st = new Chart(document.getElementById('relCh-chartStatus'),{
+    type:'pie',
+    data:{ labels:Object.keys(stCount), datasets:[{ data:Object.values(stCount), backgroundColor:['#f59e0b','#10b981'], borderWidth:2, borderColor:'var(--card)' }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right', labels:{ font:{size:11} } } } }
+  });
+
+  // 3. Por Técnico (top 8)
+  const tecCount={};
+  dados.forEach(c=>{ const k=c.tecnico||'N/A'; tecCount[k]=(tecCount[k]||0)+1; });
+  const tecSorted=Object.entries(tecCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  _relCharts.tec = new Chart(document.getElementById('relCh-chartTecnico'),{
+    type:'bar',
+    data:{ labels:tecSorted.map(x=>x[0]), datasets:[{ label:'Chamados', data:tecSorted.map(x=>x[1]), backgroundColor:cores, borderRadius:6, borderSkipped:false }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ ticks:{font:{size:10}} }, y:{beginAtZero:true,ticks:{stepSize:1}} } }
+  });
+
+  // 4. Por Dia (últimos 30 dias)
+  const diaCount={};
+  dados.forEach(c=>{ const d=c.created_at?c.created_at.substring(0,10):''; if(d) diaCount[d]=(diaCount[d]||0)+1; });
+  const dias=Object.keys(diaCount).sort().slice(-30);
+  _relCharts.dia = new Chart(document.getElementById('relCh-chartDia'),{
+    type:'line',
+    data:{ labels:dias.map(d=>new Date(d+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})), datasets:[{ label:'Chamados', data:dias.map(d=>diaCount[d]), borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,0.1)', fill:true, tension:0.4, pointRadius:3, pointBackgroundColor:'#2563eb' }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ticks:{font:{size:10}}}, y:{beginAtZero:true,ticks:{stepSize:1}} } }
+  });
+}
 
 
 function crMudarAba(aba, btn) {
